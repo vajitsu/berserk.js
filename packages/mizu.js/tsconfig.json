@@ -1,0 +1,17 @@
+{
+  "include": ["src"],
+  "exclude": ["dist", "build", "node_modules"],
+  "compilerOptions": {
+    "target": "ESNext",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "command": ["src/managers/commands/command.ts"],
+      "utils": ["src/utils/index.ts"],
+      "event": ["src/managers/events/event.ts"],
+      "presets/*": ["src/presets/*"]
+    }
+  }
+}

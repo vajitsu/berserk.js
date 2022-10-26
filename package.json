@@ -17,6 +17,7 @@
     "eslint-config-custom": "*",
     "prettier": "latest",
     "tsconfig-paths": "^4.1.0",
+    "tsup": "^6.3.0",
     "turbo": "latest"
   },
   "engines": {
@@ -24,6 +25,7 @@
   },
   "packageManager": "npm@8.19.2",
   "dependencies": {
+    "chalk": "^5.1.2",
     "config": "^3.3.8"
   }
 }

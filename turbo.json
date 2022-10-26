@@ -3,7 +3,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**", ".mizu/**"]
     },
     "lint": {
       "outputs": []
@@ -11,5 +11,8 @@
     "dev": {
       "cache": false
     }
-  }
+  },
+  "globalDependencies": [
+    ".env"
+  ]
 }

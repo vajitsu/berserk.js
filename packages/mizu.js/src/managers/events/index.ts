@@ -1,8 +1,8 @@
 import event from "./event";
-import { bot } from "../../index"
+import { bot } from "../.."
 
 // Preset Events
-import readyEvent from "../../events/ready"
+import readyEvent from "presets/events/ready"
 
 export default class eventManager {
     constructor(private instance: bot) {
@@ -11,10 +11,11 @@ export default class eventManager {
 
     private registerEvents() {
         if (
-            typeof bot.instance.options.presetEvents === "boolean" 
-            && bot.instance.options.presetEvents
+            typeof bot.instance.config.presets.events === "boolean" 
+            && bot.instance.config.presets.events
         ) {
             this.registerEvent(new readyEvent(this.instance));
+            // this.registerEvent()
         }
     }
 

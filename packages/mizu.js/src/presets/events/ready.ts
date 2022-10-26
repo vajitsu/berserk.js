@@ -1,5 +1,5 @@
-import event from "../managers/events/event"
-import { bot } from "../";
+import event from "../../managers/events/event"
+import { bot } from "../../";
 
 export default class readyEvent extends event<"ready"> {
     constructor(instance: bot) {

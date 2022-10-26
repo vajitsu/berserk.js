@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "config": "3.3.8",
-    "discord": "*",
+    "mizu.js": "*",
     "dotenv": "16.0.3"
   },
   "devDependencies": {
