@@ -1,5 +1,5 @@
 {
-  "name": "The Last Legend",
+  "name": "lastlegend",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
@@ -13,13 +13,17 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@types/config": "^3.3.0",
     "eslint-config-custom": "*",
     "prettier": "latest",
+    "tsconfig-paths": "^4.1.0",
     "turbo": "latest"
   },
   "engines": {
     "node": ">=14.0.0"
   },
-  "dependencies": {},
-  "packageManager": "npm@8.19.2"
+  "packageManager": "npm@8.19.2",
+  "dependencies": {
+    "config": "^3.3.8"
+  }
 }
