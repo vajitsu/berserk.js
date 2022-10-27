@@ -45436,7 +45436,9 @@ var interactionEvent = class extends event {
   }
   async run(interaction) {
     if (!this.instance.ready)
-      return void console.log(`Ignoring interaction event as client isn't ready yet`);
+      return void console.log(
+        `Ignoring interaction event as client isn't ready yet`
+      );
     if (interaction.isChatInputCommand()) {
       if (!interaction.inGuild)
         return;
@@ -45464,15 +45466,19 @@ var eventManager = class {
   registerEvent(event2) {
     if (typeof bot.instance.config.presets.events === "boolean" && bot.instance.config.presets.events) {
       console.warn(
-        `${source_default.black.bgYellow(" WARNING ")} ${source_default.red(`You opted-in for preset events, to add events opt-out of the event preset`)}`
+        `${source_default.black.bgYellow(" WARNING ")} ${source_default.red(
+          `You opted-in for preset events, to add events opt-out of the event preset`
+        )}`
       );
       return;
     }
     if (event2.name !== "interactionCreate" && !this.getEvent("interactionCreate") && typeof bot.instance.config.presets.commands === "boolean" && bot.instance.config.presets.commands)
       console.warn(
-        `${source_default.black.bgYellow(" WARNING ")} ${source_default.red(`The 'interactionCreate' event is missing
+        `${source_default.black.bgYellow(" WARNING ")} ${source_default.red(
+          `The 'interactionCreate' event is missing
 This is required to use preset slash commands
-Please create or opt-in to preset events`)}`
+Please create or opt-in to preset events`
+        )}`
       );
     this.events[event2.name] = event2;
     this.instance.client.on(event2.name, event2.run.bind(event2));
