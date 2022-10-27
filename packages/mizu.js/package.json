@@ -1,10 +1,11 @@
 {
   "name": "mizu.js",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "description": "A powerful library for interacting with Discord.js",
+  "private": false,
   "scripts": {
     "lint": "TIMING=1 eslint \"**/*.ts*\"",
     "build": "tsup src/index.ts --format cjs --dts",

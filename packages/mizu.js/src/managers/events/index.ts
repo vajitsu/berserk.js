@@ -4,6 +4,7 @@ import { bot } from "index"
 
 // Preset Events
 import readyEvent from "presets/events/ready";
+import interactionCreate from "presets/events/interactionCreate";
 
 export default class eventManager {
   private events: { [name: string]: event<any> } = {};
@@ -17,10 +18,25 @@ export default class eventManager {
   }
 
   private registerEvents() {
-    this.registerEvent(new readyEvent(this.instance));
+    this._registerEvent(new readyEvent(this.instance));
+    this._registerEvent(new interactionCreate(this.instance))
+  }
+
+  private _registerEvent(event: event<any>) {
+    this.events[event.name] = event;
+    this.instance.client.on(event.name, event.run.bind(event));
   }
 
   public registerEvent(event: event<any>) {
+    if (
+      typeof bot.instance.config.presets.events === "boolean" &&
+      bot.instance.config.presets.events
+    ) {
+      console.warn(
+        `${chalk.black.bgYellow(" WARNING ")} ${chalk.red(`You opted-in for preset events, to add events opt-out of the event preset`)}`
+      );
+      return;
+    }
     if (
       event.name !== "interactionCreate" &&
       !this.getEvent("interactionCreate") &&
@@ -28,10 +44,11 @@ export default class eventManager {
       bot.instance.config.presets.commands
     )
       console.warn(
-        `${chalk.black.bgYellow(" WARNING ")}${chalk.red(`The 'interactionCreate' event is missing\nThis is required to use preset slash commands\nPlease create or opt-in to preset events`)}`
+        `${chalk.black.bgYellow(" WARNING ")} ${chalk.red(`The 'interactionCreate' event is missing\nThis is required to use preset slash commands\nPlease create or opt-in to preset events`)}`
       );
     this.events[event.name] = event;
     this.instance.client.on(event.name, event.run.bind(event));
+    
   }
 
   public getEvent(name: string) {

@@ -45428,6 +45428,23 @@ var readyEvent = class extends event {
   }
 };
 
+// src/presets/events/interactionCreate.ts
+var interactionEvent = class extends event {
+  constructor(instance) {
+    super(instance, "interactionCreate");
+    this.instance = instance;
+  }
+  async run(interaction) {
+    if (!this.instance.ready)
+      return void console.log(`Ignoring interaction event as client isn't ready yet`);
+    if (interaction.isChatInputCommand()) {
+      if (!interaction.inGuild)
+        return;
+      await this.instance.commandManager.run(interaction);
+    }
+  }
+};
+
 // src/managers/events/index.ts
 var eventManager = class {
   constructor(instance) {
@@ -45437,12 +45454,23 @@ var eventManager = class {
   }
   events = {};
   registerEvents() {
-    this.registerEvent(new readyEvent(this.instance));
+    this._registerEvent(new readyEvent(this.instance));
+    this._registerEvent(new interactionEvent(this.instance));
+  }
+  _registerEvent(event2) {
+    this.events[event2.name] = event2;
+    this.instance.client.on(event2.name, event2.run.bind(event2));
   }
   registerEvent(event2) {
+    if (typeof bot.instance.config.presets.events === "boolean" && bot.instance.config.presets.events) {
+      console.warn(
+        `${source_default.black.bgYellow(" WARNING ")} ${source_default.red(`You opted-in for preset events, to add events opt-out of the event preset`)}`
+      );
+      return;
+    }
     if (event2.name !== "interactionCreate" && !this.getEvent("interactionCreate") && typeof bot.instance.config.presets.commands === "boolean" && bot.instance.config.presets.commands)
       console.warn(
-        `${source_default.black.bgYellow(" WARNING ")}${source_default.red(`The 'interactionCreate' event is missing
+        `${source_default.black.bgYellow(" WARNING ")} ${source_default.red(`The 'interactionCreate' event is missing
 This is required to use preset slash commands
 Please create or opt-in to preset events`)}`
       );

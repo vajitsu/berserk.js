@@ -1,11 +1,7 @@
 import * as Discord from "discord.js";
 
 /* Guild ModifiedTypes */
-export type GuildInteraction = Discord.CommandInteraction & {
-  channel: Discord.GuildTextBasedChannel;
-  member: Discord.GuildMember;
-  guild: Discord.Guild;
-};
+export type GuildInteraction = Discord.CommandInteraction<Discord.CacheType>
 
 /* Permissions */
 class permissions {

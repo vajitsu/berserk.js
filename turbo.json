@@ -9,8 +9,9 @@
       "outputs": []
     },
     "test": {
-      "dependsOn": ["build", "lint"],
-      "outputs": [],
+      "outputs": []
+    },
+    "test:watch": {
       "cache": false
     },
     "dev": {

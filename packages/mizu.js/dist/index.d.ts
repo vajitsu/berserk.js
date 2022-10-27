@@ -13,16 +13,13 @@ declare class eventManager {
     private events;
     constructor(instance: bot);
     private registerEvents;
+    private _registerEvent;
     registerEvent(event: event<any>): void;
     getEvent(name: string): event<any>;
     getEvents(): event<any>[];
 }
 
-declare type GuildInteraction = Discord.CommandInteraction & {
-    channel: Discord.GuildTextBasedChannel;
-    member: Discord.GuildMember;
-    guild: Discord.Guild;
-};
+declare type GuildInteraction = Discord.CommandInteraction<Discord.CacheType>;
 
 declare abstract class command {
     protected instance: bot;
