@@ -9,7 +9,13 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 /* Initialize Mizu Bot Instance */
-const bot = new mizu.bot(config.get("discord.client"));
+const bot = new mizu.bot({
+  ...config.get("discord.client"),
+  presets: {
+    events: true,
+    commands: true,
+  },
+});
 
 /* Load Custom Events */
 bot.eventManager.registerEvent(new readyEvent(bot));
