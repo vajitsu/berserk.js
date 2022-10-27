@@ -1,5 +1,3 @@
-# The Last Legend
+# Mizu.js
 
-The most modernized Discord bot you'll ever see.
-
-[ More coming soon... ]
+A powerful framework to build your Discord bot using `discord.js`
