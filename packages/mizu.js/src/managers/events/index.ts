@@ -1,6 +1,6 @@
-import chalk from "chalk"
-import event from "event"
-import { bot } from "index"
+import chalk from "chalk";
+import event from "event";
+import { bot } from "index";
 
 // Preset Events
 import readyEvent from "presets/events/ready";
@@ -19,7 +19,7 @@ export default class eventManager {
 
   private registerEvents() {
     this._registerEvent(new readyEvent(this.instance));
-    this._registerEvent(new interactionCreate(this.instance))
+    this._registerEvent(new interactionCreate(this.instance));
   }
 
   private _registerEvent(event: event<any>) {
@@ -33,7 +33,9 @@ export default class eventManager {
       bot.instance.config.presets.events
     ) {
       console.warn(
-        `${chalk.black.bgYellow(" WARNING ")} ${chalk.red(`You opted-in for preset events, to add events opt-out of the event preset`)}`
+        `${chalk.black.bgYellow(" WARNING ")} ${chalk.red(
+          `You opted-in for preset events, to add events opt-out of the event preset`
+        )}`
       );
       return;
     }
@@ -44,11 +46,12 @@ export default class eventManager {
       bot.instance.config.presets.commands
     )
       console.warn(
-        `${chalk.black.bgYellow(" WARNING ")} ${chalk.red(`The 'interactionCreate' event is missing\nThis is required to use preset slash commands\nPlease create or opt-in to preset events`)}`
+        `${chalk.black.bgYellow(" WARNING ")} ${chalk.red(
+          `The 'interactionCreate' event is missing\nThis is required to use preset slash commands\nPlease create or opt-in to preset events`
+        )}`
       );
     this.events[event.name] = event;
     this.instance.client.on(event.name, event.run.bind(event));
-    
   }
 
   public getEvent(name: string) {
