@@ -45442,9 +45442,9 @@ var eventManager = class {
   registerEvent(event2) {
     if (event2.name !== "interactionCreate" && !this.getEvent("interactionCreate") && typeof bot.instance.config.presets.commands === "boolean" && bot.instance.config.presets.commands)
       console.warn(
-        `${source_default.black.bgYellow(" WARNING ")} The 'interactionCreate' event is missing
+        `${source_default.black.bgYellow(" WARNING ")}${source_default.red(`The 'interactionCreate' event is missing
 This is required to use preset slash commands
-Please create or opt-in to preset events`
+Please create or opt-in to preset events`)}`
       );
     this.events[event2.name] = event2;
     this.instance.client.on(event2.name, event2.run.bind(event2));
