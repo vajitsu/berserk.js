@@ -1,4 +1,4 @@
-import * as mizu from "mizu.js";
+import * as mizu from "riku";
 import * as config from "config";
 
 /* Events */
@@ -13,5 +13,6 @@ const bot = new mizu.bot(config.get("discord.client"));
 
 /* Load Custom Events */
 bot.eventManager.registerEvent(new readyEvent(bot));
+/* Load Custom Commands */
 
 export default bot;

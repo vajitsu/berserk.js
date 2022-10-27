@@ -1,4 +1,4 @@
-import { event, bot } from "mizu.js";
+import { event, bot } from "riku";
 
 export default class readyEvent extends event<"ready"> {
   constructor(protected instance: bot) {
