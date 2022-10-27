@@ -1,5 +1,5 @@
 {
-  "include": [".", "internal"],
+  "include": ["."],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
     "target": "ESNext",

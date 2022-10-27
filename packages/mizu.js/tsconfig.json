@@ -11,6 +11,7 @@
       "command": ["src/managers/commands/command.ts"],
       "utils": ["src/utils/index.ts"],
       "event": ["src/managers/events/event.ts"],
+      "index": ["src/index.ts"],
       "presets/*": ["src/presets/*"]
     }
   }

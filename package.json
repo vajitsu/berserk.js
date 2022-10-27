@@ -10,7 +10,9 @@
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "test": "turbo run test --parallel",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "publish-packages": "turbo run build && changeset version && changeset publish"
   },
   "devDependencies": {
     "@types/config": "^3.3.0",
@@ -18,7 +20,8 @@
     "prettier": "latest",
     "tsconfig-paths": "^4.1.0",
     "tsup": "^6.3.0",
-    "turbo": "latest"
+    "turbo": "latest",
+    "vitest": "^0.24.3"
   },
   "engines": {
     "node": ">=14.0.0"

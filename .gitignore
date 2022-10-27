@@ -13,9 +13,6 @@ coverage
 out/
 build
 
-# mizu.js
-dist/
-
 # discord bot
 config/
 .env
