@@ -36,13 +36,13 @@ export default async function () {
           justifyContent: "center",
           backgroundColor: "#000",
           color: "#fff",
-          fontSize: 32,
+          fontSize: "42px",
           fontFamily: "Inter",
         }}
       >
         <div style={{ display: "flex", fontSize: "72px", fontWeight: 800 }}>
           Welcome to{" "}
-          <span style={{ color: "#942828", marginLeft: "17px" }}>Riku.js!</span>
+          <span style={{ color: "#456ef6", marginLeft: "17px" }}>Riku.js!</span>
         </div>
         <div
           style={{
@@ -51,7 +51,7 @@ export default async function () {
             margin: "2rem 0",
             lineHeight: "1.5",
             textAlign: "center",
-            fontSize: "28px"
+            fontSize: "30px"
           }}
         >
           Get started by editing
@@ -66,7 +66,7 @@ export default async function () {
               padding: "0.5rem",
               paddingTop: "1.1rem",
               paddingBottom: "1.1rem",
-              fontSize: "28px",
+              fontSize: "29px",
               marginTop: -16,
             }}
           >

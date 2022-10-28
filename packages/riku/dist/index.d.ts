@@ -61,6 +61,7 @@ declare type Config = {
         commands: boolean;
     };
     options: Discord.ClientOptions;
+    customStatus?: Discord.PresenceData;
 };
 
 declare class bot {

@@ -45422,6 +45422,8 @@ var readyEvent = class extends event {
   async run() {
     var _a, _b;
     console.log(`Logged in as ${(_b = (_a = this.instance) == null ? void 0 : _a.client.user) == null ? void 0 : _b.tag}`);
+    if (this.instance.config.customStatus)
+      this.instance.customStatusLoop();
     this.instance.ready = true;
     this.first = false;
   }
@@ -45719,9 +45721,9 @@ var _bot = class {
   }
   async customStatusLoop() {
     var _a;
-    (_a = this.client.user) == null ? void 0 : _a.setPresence({
-      status: "dnd"
-    });
+    if (!this.config.customStatus)
+      return;
+    (_a = this.client.user) == null ? void 0 : _a.setPresence(this.config.customStatus);
     setTimeout(this.customStatusLoop.bind(this), 1e3 * 60 * 15);
   }
 };
