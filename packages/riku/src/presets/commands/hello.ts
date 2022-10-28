@@ -12,12 +12,16 @@ export default class helloCommand extends command {
     interaction: Discord.ChatInputCommandInteraction & GuildInteraction
   ) {
     const embed: Discord.EmbedData = {
-      color: 0x6084ff,
-      title: "Welcome to Riku.js!",
-      description: "Get started by editing `commands/hello.ts`",
+      color: 0x456ef6,
+      image: {
+        url: "https://web-rikuu.vercel.app/api/og"
+      },
+      footer: {
+        text: "Welcome to Riku.js! Get started by editing *index.ts*"
+      }
     };
     return void (await interaction.reply({
-      embeds: [embed as any],
+      embeds: [embed as any]
     }));
   }
 }

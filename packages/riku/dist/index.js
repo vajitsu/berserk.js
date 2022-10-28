@@ -45545,9 +45545,13 @@ var helloCommand = class extends command {
   data = new Discord3.SlashCommandBuilder().setName("hello").setDescription("Hello World! Learn more about Riku.js");
   async run(interaction) {
     const embed = {
-      color: 6325503,
-      title: "Welcome to Riku.js!",
-      description: "Get started by editing `commands/hello.ts`"
+      color: 4550390,
+      image: {
+        url: "https://web-rikuu.vercel.app/api/og"
+      },
+      footer: {
+        text: "Welcome to Riku.js! Get started by editing commands/hello.ts"
+      }
     };
     return void await interaction.reply({
       embeds: [embed]

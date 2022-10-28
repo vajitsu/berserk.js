@@ -70,7 +70,7 @@ export default async function () {
               marginTop: -16,
             }}
           >
-            commands/hello.ts
+            index.ts
           </span>
         </div>
       </div>
