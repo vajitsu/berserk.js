@@ -16,6 +16,7 @@ export type Config = {
     commands: boolean;
   };
   options: Discord.ClientOptions;
+  customStatus?: Discord.PresenceData
 };
 
 export { command, event };
@@ -54,9 +55,9 @@ export class bot {
   }
 
   public async customStatusLoop() {
-    this.client.user?.setPresence({
-      status: "dnd",
-    });
+    if (!this.config.customStatus) return;
+    
+    this.client.user?.setPresence(this.config.customStatus);
 
     setTimeout(this.customStatusLoop.bind(this), 1000 * 60 * 15); // Update every 15 minutes
   }

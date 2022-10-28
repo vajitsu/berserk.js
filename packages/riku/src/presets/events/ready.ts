@@ -12,7 +12,7 @@ export default class readyEvent extends event<"ready"> {
   public async run() {
     console.log(`Logged in as ${this.instance?.client.user?.tag}`);
 
-    // this.instance.customStatusLoop();
+    if (this.instance.config.customStatus) this.instance.customStatusLoop();
 
     this.instance.ready = true;
     this.first = false;
