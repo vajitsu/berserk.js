@@ -10,6 +10,7 @@
     "lint": "TIMING=1 eslint \"**/*.ts*\"",
     "build": "tsup src/index.ts --format cjs --dts",
     "dev": "npm run build --watch",
+    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'packages/riku/*'",
     "release": "cliff-jumper"
   },
   "author": "Foup <fouptogo@gmail.com>",
@@ -28,6 +29,7 @@
     "chalk": "5.1.2"
   },
   "keywords": [
-    "Discord"
+    "Discord",
+    "riku"
   ]
 }

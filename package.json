@@ -16,6 +16,7 @@
     "deploy": "turbo run build --filter=mizu.js && changeset version && changeset publish"
   },
   "devDependencies": {
+    "@favware/cliff-jumper": "^1.8.8",
     "@types/config": "^3.3.0",
     "eslint-config-custom": "*",
     "prettier": "latest",
@@ -34,7 +35,7 @@
     "@next/font": "^13.0.0",
     "chalk": "^5.1.2",
     "config": "^3.3.8",
-    "create-riku-app": "*",
-    "next": "^13.0.0"
+    "next": "^13.0.0",
+    "riku": "*"
   }
 }
