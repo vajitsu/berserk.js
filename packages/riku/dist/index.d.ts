@@ -44,6 +44,7 @@ declare class commandManager {
     isRunning(id: string): boolean;
     run(interaction: Discord.ChatInputCommandInteraction & GuildInteraction): Promise<undefined>;
     private registerCommands;
+    private _registerCommand;
     registerCommand(command: command): void;
     getCommand(name: string): command;
     getCommands(): command[];

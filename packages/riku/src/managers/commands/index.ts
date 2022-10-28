@@ -6,6 +6,7 @@ import { bot } from "index";
 
 // Preset Commands
 import helloCommand from "presets/commands/hello";
+import chalk from "chalk";
 
 export default class commandManager {
   private interactive: {
@@ -16,7 +17,19 @@ export default class commandManager {
   private lastCommandUsage: { [key: string]: number } = {};
 
   constructor(private instance: bot) {
-    this.registerCommands();
+    if (
+      typeof this.instance.config.presets.commands === "boolean" &&
+      this.instance.config.presets.commands
+    ) {
+      this.registerCommands();
+    } else if (this.getCommands().length > 0) {
+      this.loadCommands();
+    } else
+      console.warn(
+        `${chalk.black.bgYellow(" WARNING ")} ${chalk.red(
+          `No slash commands added, shuting down command manager...`
+        )}`
+      );
   }
   public isRunning(id: string) {
     return this.running.includes(id);
@@ -108,13 +121,28 @@ export default class commandManager {
       typeof this.instance.config.presets.commands === "boolean" &&
       this.instance.config.presets.commands
     ) {
-      this.registerCommand(new helloCommand(this.instance));
+      this._registerCommand(new helloCommand(this.instance));
     }
 
     this.loadCommands();
   }
 
+  private _registerCommand(command: Command) {
+    this.commands[command.data.toJSON().name.toLowerCase()] = command;
+  }
+
   public registerCommand(command: Command) {
+    if (
+      typeof bot.instance.config.presets.commands === "boolean" &&
+      bot.instance.config.presets.commands
+    ) {
+      console.warn(
+        `${chalk.black.bgYellow(" WARNING ")} ${chalk.red(
+          `Add commands by opting-out of the comand preset`
+        )}`
+      );
+      return;
+    }
     this.commands[command.data.toJSON().name.toLowerCase()] = command;
   }
 

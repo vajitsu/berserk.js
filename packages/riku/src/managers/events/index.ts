@@ -34,7 +34,7 @@ export default class eventManager {
     ) {
       console.warn(
         `${chalk.black.bgYellow(" WARNING ")} ${chalk.red(
-          `You opted-in for preset events, to add events opt-out of the event preset`
+          `Add events by opting-out of the event preset`
         )}`
       );
       return;

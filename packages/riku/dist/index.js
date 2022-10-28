@@ -45422,7 +45422,6 @@ var readyEvent = class extends event {
   async run() {
     var _a, _b;
     console.log(`Logged in as ${(_b = (_a = this.instance) == null ? void 0 : _a.client.user) == null ? void 0 : _b.tag}`);
-    this.instance.customStatusLoop();
     this.instance.ready = true;
     this.first = false;
   }
@@ -45467,7 +45466,7 @@ var eventManager = class {
     if (typeof bot.instance.config.presets.events === "boolean" && bot.instance.config.presets.events) {
       console.warn(
         `${source_default.black.bgYellow(" WARNING ")} ${source_default.red(
-          `You opted-in for preset events, to add events opt-out of the event preset`
+          `Add events by opting-out of the event preset`
         )}`
       );
       return;
@@ -45541,11 +45540,11 @@ var command = class {
 // src/presets/commands/hello.ts
 var helloCommand = class extends command {
   name = "hello";
-  data = new Discord3.SlashCommandBuilder().setName("hello").setDescription("Hello World! Learn more about mizu.js");
+  data = new Discord3.SlashCommandBuilder().setName("hello").setDescription("Hello World! Learn more about Riku.js");
   async run(interaction) {
     const embed = {
-      color: 14961966,
-      title: "Welcome to Mizu.js!",
+      color: 6325503,
+      title: "Welcome to Riku.js!",
       description: "Get started by editing `commands/hello.ts`"
     };
     return void await interaction.reply({
@@ -45558,7 +45557,16 @@ var helloCommand = class extends command {
 var commandManager = class {
   constructor(instance) {
     this.instance = instance;
-    this.registerCommands();
+    if (typeof this.instance.config.presets.commands === "boolean" && this.instance.config.presets.commands) {
+      this.registerCommands();
+    } else if (this.getCommands().length > 0) {
+      this.loadCommands();
+    } else
+      console.warn(
+        `${source_default.black.bgYellow(" WARNING ")} ${source_default.red(
+          `No slash commands added, shuting down command manager...`
+        )}`
+      );
   }
   interactive = {};
   running = [];
@@ -45631,11 +45639,22 @@ ${JSON.stringify(error)}`
   }
   registerCommands() {
     if (typeof this.instance.config.presets.commands === "boolean" && this.instance.config.presets.commands) {
-      this.registerCommand(new helloCommand(this.instance));
+      this._registerCommand(new helloCommand(this.instance));
     }
     this.loadCommands();
   }
+  _registerCommand(command2) {
+    this.commands[command2.data.toJSON().name.toLowerCase()] = command2;
+  }
   registerCommand(command2) {
+    if (typeof bot.instance.config.presets.commands === "boolean" && bot.instance.config.presets.commands) {
+      console.warn(
+        `${source_default.black.bgYellow(" WARNING ")} ${source_default.red(
+          `Add commands by opting-out of the comand preset`
+        )}`
+      );
+      return;
+    }
     this.commands[command2.data.toJSON().name.toLowerCase()] = command2;
   }
   getCommand(name) {
