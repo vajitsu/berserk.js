@@ -1,0 +1,16 @@
+{
+  "name": "create-riku-app",
+  "version": "1.0.0",
+  "description": "Create boilerplate code for you Riku app",
+  "bin": {
+    "create-riku-app": "./createRikuApp.js"
+  },
+  "devDependencies": {
+    "chalk": "^4.1.2",
+    "config": "^3.3.8",
+    "discord.js": "^14.6.0",
+    "dotenv": "^16.0.3",
+    "riku": "latest",
+    "rimraf": "^3.0.2"
+  }
+}
