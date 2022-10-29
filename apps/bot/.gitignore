@@ -25,4 +25,6 @@ yarn-error.log*
 
 # riku
 .env
+.riku/
+default.ts
 config/

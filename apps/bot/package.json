@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "riku dev",
+    "dev:watch": "riku dev --watch",
     "build": "riku build"
   },
   "dependencies": {
     "config": "3.3.8",
     "discord.js": "latest",
     "dotenv": "16.0.3",
-    "riku": "latest"
+    "riku": "*"
   },
   "devDependencies": {
     "@types/config": "3.3.0",
