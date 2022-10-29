@@ -1,0 +1,20 @@
+{
+  "name": "bot",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "riku dev",
+    "build": "riku build"
+  },
+  "dependencies": {
+    "config": "3.3.8",
+    "discord.js": "latest",
+    "dotenv": "16.0.3",
+    "riku": "latest"
+  },
+  "devDependencies": {
+    "@types/config": "3.3.0",
+    "@types/node": "^17.0.12",
+    "typescript": "^4.5.3"
+  }
+}
