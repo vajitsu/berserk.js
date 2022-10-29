@@ -34,4 +34,6 @@ yarn-error.log*
 # hints
 .hintrc
 
+# bot app
 config/
+apps/bot/
