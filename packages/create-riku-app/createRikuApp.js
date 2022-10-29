@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
-const path = require('path');
-const util = require('util');
-const fs = require('fs');
-const exec = util.promisify(require('child_process').exec);
+const path = require("path");
+const util = require("util");
+const fs = require("fs");
+const exec = util.promisify(require("child_process").exec);
 const chalk = require("chalk");
 
 async function runCmd(command) {
   try {
     const { stdout, stderr } = await exec(command);
-    console.log(stdout);
-    console.log(stderr);
+    // console.log(stdout);
+    // console.log(stderr);
   } catch {
     (error) => {
       console.log("\x1b[31m", error, "\x1b[0m");
@@ -35,7 +35,7 @@ const appPath = path.join(ownPath, folderName);
 const repo = "https://github.com/rikujs/create-riku-app.git";
 
 try {
-  fs.mkdirSync(appPath)
+  fs.mkdirSync(appPath);
 } catch (err) {
   if (err.code === "EEXIST") {
     console.log(
@@ -56,7 +56,7 @@ async function setup() {
 
     process.chdir(appPath);
 
-    generateEnv()
+    generateEnv();
     generateConfig();
 
     console.log(chalk.blue("Installing dependencies..."));
@@ -82,7 +82,7 @@ function generateEnv() {
     `${process.cwd()}/.env`,
     `ALLOW_CONFIG_MUTATIONS="true"`,
     "utf-8"
-  )
+  );
 }
 
 function generateConfig() {
@@ -106,10 +106,6 @@ export default {
   },
 };
   `;
-  fs.mkdirSync(path.join(process.cwd(), 'config'), { recursive: true })
-  fs.writeFileSync(
-    `${process.cwd()}/config/default.ts`,
-    content,
-    "utf-8"
-  )
+  fs.mkdirSync(path.join(process.cwd(), "config"), { recursive: true });
+  fs.writeFileSync(`${process.cwd()}/config/default.ts`, content, "utf-8");
 }

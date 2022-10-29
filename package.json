@@ -1,5 +1,5 @@
 {
-  "name": "mizu.js",
+  "name": "riku",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
@@ -13,12 +13,12 @@
     "test": "turbo run test --parallel",
     "test:watch": "turbo run test:watch --parallel",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "deploy": "turbo run build --filter=mizu.js && changeset version && changeset publish"
+    "deploy": "turbo run build --filter=riku && changeset version && changeset publish"
   },
   "devDependencies": {
     "@types/config": "^3.3.0",
     "eslint-config-custom": "*",
-    "prettier": "latest",
+    "prettier": "^2.7.1",
     "sass": "^1.55.0",
     "tsconfig-paths": "^4.1.0",
     "tsup": "^6.3.0",
@@ -34,8 +34,8 @@
     "@next/font": "^13.0.0",
     "chalk": "^5.1.2",
     "config": "^3.3.8",
+    "create-riku-app": "*",
     "next": "^13.0.0",
-    "riku": "*",
-    "create-riku-app": "*"
+    "riku": "*"
   }
 }
