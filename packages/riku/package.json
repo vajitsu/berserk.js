@@ -1,6 +1,6 @@
 {
   "name": "riku",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
@@ -18,7 +18,7 @@
   },
   "author": "Foup <fouptogo@gmail.com>",
   "bugs": {
-    "url": "https://github.com/mizujs/mizu.js"
+    "url": "https://github.com/rikujs/riku"
   },
   "dependencies": {
     "discord.js": "latest"
