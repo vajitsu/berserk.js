@@ -39,8 +39,19 @@ function emptyBuildDir(Events: events.EventEmitter) {
   });
 }
 function tsup(Events: events.EventEmitter) {
+  let files = getFilesSync(process.cwd(), ["node_modules", ".riku"]).filter(
+    (t) => t.endsWith(".ts")
+  );
+
+  files = files.map((a) => {
+    const b = a.replace(process.cwd(), "");
+    return b.slice(1);
+  });
+
   const { stdout } = exec(
-    `tsup index.ts --outDir .riku/build --clean --minify --format cjs --sourcemap`
+    `tsup ${files.join(
+      " "
+    )} --outDir .riku/build --clean --minify --format cjs --sourcemap`
   );
   stdout?.once("end", () => {
     console.log();
