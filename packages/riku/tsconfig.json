@@ -6,6 +6,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
       "command": ["src/managers/commands/command.ts"],
