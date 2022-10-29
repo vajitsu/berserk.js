@@ -4,4 +4,8 @@ The easiest way to get started with Riku.js is by using `create-Riku-app`. This 
 
 ```ssh
 npx create-riku-app@latest
+# or
+yarn create-riku-app
+# or
+pnpm create-riku-app
 ```
