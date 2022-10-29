@@ -220,7 +220,7 @@ export async function createApp({
     /**
      * Default dependencies.
      */
-    const dependencies = ["config", "discord.js", "dotenv", "riku"];
+    const dependencies = ["config", "dotenv", "riku"];
     /**
      * Default devDependencies.
      */

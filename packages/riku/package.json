@@ -7,8 +7,9 @@
   "description": "A powerful framework interacting with Discord.js",
   "private": false,
   "scripts": {
-    "lint": "TIMING=1 eslint \"**/*.ts*\"",
-    "build": "tsup src/index.ts --format cjs --dts && npm run build:cli",
+    "lint": "eslint \"**/*.ts*\"",
+    "build": "npm run build:main && npm run build:cli",
+    "build:main": "tsup src/index.ts --format cjs --dts",
     "build:cli": "tsup src/cli.ts --minify --format cjs",
     "dev": "npm run build --watch",
     "riku": "riku"

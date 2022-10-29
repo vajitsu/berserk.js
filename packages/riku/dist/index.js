@@ -553,12 +553,13 @@ var require_dist = __commonJS({
 // src/index.ts
 var src_exports = {};
 __export(src_exports, {
+  Discord: () => Discord5,
   bot: () => bot,
   command: () => command,
   event: () => event
 });
 module.exports = __toCommonJS(src_exports);
-var Discord5 = __toESM(require("discord.js"));
+var _Discord = __toESM(require("discord.js"));
 
 // ../../node_modules/chalk/source/vendor/ansi-styles/index.js
 var ANSI_BACKGROUND_OFFSET = 10;
@@ -1421,8 +1422,12 @@ var _bot = class {
 };
 var bot = _bot;
 __publicField(bot, "instance");
+var Discord5 = {
+  ..._Discord
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  Discord,
   bot,
   command,
   event

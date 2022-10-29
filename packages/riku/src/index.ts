@@ -1,4 +1,4 @@
-import * as Discord from "discord.js";
+import * as _Discord from "discord.js";
 
 // Managers
 import eventManager from "./managers/events";
@@ -15,8 +15,8 @@ export type Config = {
     events: boolean;
     commands: boolean;
   };
-  options: Discord.ClientOptions;
-  customStatus?: Discord.PresenceData;
+  options: _Discord.ClientOptions;
+  customStatus?: _Discord.PresenceData;
 };
 
 export { command, event };
@@ -27,7 +27,7 @@ export class bot {
 
   public directory = __dirname;
 
-  public client: Discord.Client;
+  public client: _Discord.Client;
   public eventManager: eventManager;
   public commandManager: commandManager;
 
@@ -62,3 +62,7 @@ export class bot {
     setTimeout(this.customStatusLoop.bind(this), 1000 * 60 * 15); // Update every 15 minutes
   }
 }
+
+export const Discord = {
+  ..._Discord,
+};
