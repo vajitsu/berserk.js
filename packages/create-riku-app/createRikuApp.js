@@ -62,11 +62,7 @@ async function setup() {
 
     await runCmd("npx rimraf ./.git");
 
-    fs.rmSync(path.join(appPath, "createRikuApp.js"), { recursive: true });
-    fs.unlinkSync(path.join(appPath, "package.json"));
-
-    buildPackageJson(packageJson, folderName);
-    buildTsConfig();
+    generateEnv()
 
     console.log(chalk.green("Installation has finished."));
     console.log();
@@ -81,58 +77,10 @@ async function setup() {
 
 setup();
 
-function buildPackageJson(packageJson, folderName) {
-  const { ...newPackage } =
-    packageJson;
-
-  Object.assign(newPackage, {
-    name: folderName,
-    version: "1.0.0",
-    scripts: {
-      dev: "npx ts-node-dev -- ./index.ts",
-    },
-    dependencies: {
-      config: "3.3.8",
-      riku: "latest",
-      dotenv: "16.0.3",
-      "discord.js": "latest"
-    },
-    devDependencies: {
-      "@babel/core": "^7.0.0",
-      "@types/config": "3.3.0",
-      "@types/node": "^17.0.12",
-      eslint: "^7.32.0",
-      "eslint-config-custom": "*",
-      tsconfig: "*",
-      typescript: "^4.5.3",
-    },
-  });
-
-  delete newPackage.bin;
-  delete newPackage.description;
-
+function generateEnv() {
   fs.writeFileSync(
-    `${process.cwd()}/package.json`,
-    JSON.stringify(newPackage, null, 2),
-    "utf8"
-  );
-}
-
-function buildTsConfig() {
-  const tsConfig = {};
-  Object.assign(tsConfig, {
-    include: ["."],
-    exclude: ["node_modules"],
-    compilerOptions: {
-      target: "ESNext",
-      strict: true,
-      forceConsistentCasingInFileNames: true,
-      moduleResolution: "node",
-    },
-  });
-  fs.writeFileSync(
-    `${process.cwd()}/tsconfig.json`,
-    JSON.stringify(tsConfig, null, 2),
-    "utf8"
-  );
+    `${process.cwd()}/.env`,
+    `ALLOW_CONFIG_MUTATIONS="true"`,
+    "utf-8"
+  )
 }
