@@ -16,7 +16,6 @@
     "deploy": "turbo run build --filter=mizu.js && changeset version && changeset publish"
   },
   "devDependencies": {
-    "@favware/cliff-jumper": "^1.8.8",
     "@types/config": "^3.3.0",
     "eslint-config-custom": "*",
     "prettier": "latest",
