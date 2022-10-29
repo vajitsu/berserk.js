@@ -6,11 +6,13 @@ const fs = require("fs");
 const exec = util.promisify(require("child_process").exec);
 const chalk = require("chalk");
 
-async function runCmd(command) {
+function runCmd(command) {
   try {
-    const { stdout, stderr } = await exec(command);
-    // console.log(stdout);
-    // console.log(stderr);
+    const { stdout } = exec(command);
+    stdout.on("data", (data) => {
+      const str = data.toString();
+      console.log(str);
+    });
   } catch {
     (error) => {
       console.log("\x1b[31m", error, "\x1b[0m");
@@ -56,26 +58,43 @@ async function setup() {
 
     process.chdir(appPath);
 
-    generateEnv();
-    generateConfig();
-
     console.log(chalk.blue("Installing dependencies..."));
     await runCmd("npm install --silent");
 
     // await runCmd("npx rimraf ./.git");
 
-    console.log(chalk.green("Installation has finished."));
-    console.log();
+    setTimeout(() => {
+      generateEnv();
+      generateConfig();
+      buildPackageJson(folderName);
 
-    console.log(chalk.blue("You can start by typing:"));
-    console.log(`    cd ${folderName}`);
-    console.log("    npm run dev", "\x1b[0m");
+      console.log(chalk.green("Installation has finished."));
+      console.log();
+
+      console.log(chalk.blue("You can start by typing:"));
+      console.log(`    cd ${folderName}`);
+      console.log("    npm run dev", "\x1b[0m");
+    }, 800);
   } catch (error) {
     console.log(error);
   }
 }
 
 setup();
+
+function buildPackageJson(folderName) {
+  const pkg = fs.readFileSync(`${process.cwd()}/package.json`);
+  let newPackage = {
+    ...JSON.parse(pkg),
+    name: folderName,
+  };
+
+  fs.writeFileSync(
+    `${process.cwd()}/package.json`,
+    JSON.stringify(newPackage, null, 2),
+    "utf8"
+  );
+}
 
 function generateEnv() {
   fs.writeFileSync(

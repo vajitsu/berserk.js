@@ -51,7 +51,7 @@ export default async function () {
             margin: "2rem 0",
             lineHeight: "1.5",
             textAlign: "center",
-            fontSize: "30px"
+            fontSize: "30px",
           }}
         >
           Get started by editing

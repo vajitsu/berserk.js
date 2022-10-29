@@ -1,6 +1,6 @@
 {
   "name": "create-riku-app",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "license": "MIT",
   "description": "Create Riku.js-powered Discord bots with one command",
   "bin": {
