@@ -32,6 +32,7 @@
   "dependencies": {
     "@changesets/cli": "^2.25.0",
     "@next/font": "^13.0.0",
+    "assets": "*",
     "chalk": "^5.1.2",
     "config": "^3.3.8",
     "create-riku-app": "*",
