@@ -2,7 +2,6 @@
 
 const path = require('path');
 const util = require('util');
-const packageJson = require('./package.json');
 const fs = require('fs');
 const exec = util.promisify(require('child_process').exec);
 const chalk = require("chalk");
@@ -36,7 +35,7 @@ const appPath = path.join(ownPath, folderName);
 const repo = "https://github.com/rikujs/create-riku-app.git";
 
 try {
-  fs.mkdirSync(appPath);
+  fs.mkdirSync(appPath)
 } catch (err) {
   if (err.code === "EEXIST") {
     console.log(
@@ -57,12 +56,13 @@ async function setup() {
 
     process.chdir(appPath);
 
-    console.log(chalk.blue("Installing dependencies..."));
-    await runCmd("npm install");
-
-    await runCmd("npx rimraf ./.git");
-
     generateEnv()
+    generateConfig();
+
+    console.log(chalk.blue("Installing dependencies..."));
+    await runCmd("npm install --silent");
+
+    // await runCmd("npx rimraf ./.git");
 
     console.log(chalk.green("Installation has finished."));
     console.log();
@@ -81,6 +81,35 @@ function generateEnv() {
   fs.writeFileSync(
     `${process.cwd()}/.env`,
     `ALLOW_CONFIG_MUTATIONS="true"`,
+    "utf-8"
+  )
+}
+
+function generateConfig() {
+  const content = `
+import * as Discord from "discord.js";
+
+export default {
+  discord: {
+    client: {
+      token: "token",
+      application: {
+        id: "application_id",
+      },
+      options: {
+        intents: [
+          Discord.GatewayIntentBits.Guilds,
+          Discord.GatewayIntentBits.GuildMessages
+        ],
+      },
+    },
+  },
+};
+  `;
+  fs.mkdirSync(path.join(process.cwd(), 'config'), { recursive: true })
+  fs.writeFileSync(
+    `${process.cwd()}/config/default.ts`,
+    content,
     "utf-8"
   )
 }
