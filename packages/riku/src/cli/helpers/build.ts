@@ -70,12 +70,12 @@ export default async function build(e: events.EventEmitter) {
       chalk.msg.riku(chalk.colors.green("Successfully compilied your project!"))
     );
     console.log();
-    console.log();
     console.log(
       `${Chalk.bgBlack.yellowBright(" WARNING ")} Make sure to add ${Chalk.bold(
         "DISCORD_TOKEN"
       )} to your environemntal variables`
     );
+    console.log();
     e.emit("next");
   });
   e.once("emptied", () => {
