@@ -45,7 +45,7 @@ const program = new Commander.Command(packageJson.name)
     `
 
   An example to bootstrap the app with. You can use an example name
-  from the official Next.js repo or a GitHub URL. The URL can use
+  from the official Riku.js repo or a GitHub URL. The URL can use
   any branch and/or subdirectory
 `
   )
@@ -121,7 +121,7 @@ async function run(): Promise<void> {
     process.exit(1);
   }
 
-  if (!program.typescript) {
+  if (!program.typescript && !program.example) {
     await prompts({
       type: "toggle",
       name: "typescript",
@@ -134,9 +134,6 @@ async function run(): Promise<void> {
       },
     });
   }
-
-  //   if (_res.typescript === 0) ts = true;
-  //   else ts = false;
 
   if (program.example === true) {
     console.error(
