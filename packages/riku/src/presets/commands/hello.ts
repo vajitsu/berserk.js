@@ -1,7 +1,10 @@
+import helloActionRow from "presets/action-rows/hello";
+import command from "src/managers/commands/command";
 import { GuildInteraction } from "utils";
-import * as Discord from "discord.js";
+import Discord from "discord.js";
 import axios from "axios";
-import command from "command";
+import path from "path";
+import fs from "fs";
 
 export default class helloCommand extends command {
   name = "hello";
@@ -12,14 +15,24 @@ export default class helloCommand extends command {
   async run(
     interaction: Discord.ChatInputCommandInteraction & GuildInteraction
   ) {
-    const response = await axios.get("https://web-rikuu.vercel.app/api/og", {
-      responseType: "arraybuffer",
-    });
+    const response = await axios.get(
+      `https://web-rikuu.vercel.app/api/og${
+        fs.existsSync(path.join(this.instance.directory, "index.ts"))
+          ? "?typescript=yes"
+          : ""
+      }`,
+      {
+        responseType: "arraybuffer",
+      }
+    );
     const buffer = Buffer.from(response.data, "utf-8");
     const file = new Discord.AttachmentBuilder(buffer);
 
+    const row = new helloActionRow().build();
+
     return void (await interaction.reply({
       files: [file],
+      components: [row],
     }));
   }
 }

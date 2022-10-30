@@ -4,7 +4,7 @@ import { bot } from "index";
 
 // Preset Events
 import readyEvent from "presets/events/ready";
-import interactionCreate from "presets/events/interactionCreate";
+import interactionCreate from "presets/events/interaction-create";
 
 export default class eventManager {
   private events: { [name: string]: event<any> } = {};

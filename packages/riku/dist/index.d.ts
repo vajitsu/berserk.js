@@ -1,26 +1,19 @@
 import * as _sapphire_snowflake from '@sapphire/snowflake';
 import * as _Discord from 'discord.js';
-import { ClientEvents, SlashCommandBuilder } from 'discord.js';
-
-declare abstract class event<T extends keyof ClientEvents> {
-    protected instance: bot;
-    name: T;
-    constructor(instance: bot, name: T);
-    abstract run(...args: ClientEvents[T]): Promise<void>;
-}
-
-declare class eventManager {
-    private instance;
-    private events;
-    constructor(instance: bot);
-    private registerEvents;
-    private _registerEvent;
-    registerEvent(event: event<any>): void;
-    getEvent(name: string): event<any>;
-    getEvents(): event<any>[];
-}
+import _Discord__default, { SlashCommandBuilder, ClientEvents } from 'discord.js';
 
 declare type GuildInteraction = _Discord.CommandInteraction<_Discord.CacheType>;
+declare class permissions {
+    static names: {
+        [id in _Discord.PermissionsString]: string;
+    };
+    static translate(permission: keyof _Discord.PermissionFlags): string;
+    static getIdentifiers(permission: _Discord.PermissionResolvable): Array<keyof typeof this$1.names>;
+}
+declare class utilities {
+    static permissions: typeof permissions;
+    static events: typeof _Discord.Events;
+}
 
 declare abstract class command {
     protected instance: bot;
@@ -52,30 +45,144 @@ declare class commandManager {
     private loadCommands;
 }
 
+declare abstract class event<T extends keyof ClientEvents> {
+    protected instance: bot;
+    name: T;
+    constructor(instance: bot, name: T);
+    abstract run(...args: ClientEvents[T]): Promise<void>;
+}
+
+declare class eventManager {
+    private instance;
+    private events;
+    constructor(instance: bot);
+    private registerEvents;
+    private _registerEvent;
+    registerEvent(event: event<any>): void;
+    getEvent(name: string): event<any>;
+    getEvents(): event<any>[];
+}
+
+declare abstract class button {
+    /**
+     * Automatically generated id using UUID (v4) -
+     * [Discord API Type](https://discord-api-types.dev/api/discord-api-types-v10/interface/APIButtonComponentWithCustomId#custom_id)
+     */
+    readonly id: string;
+    /**
+     * The text display on your button -
+     * [Discord API Type](https://discord-api-types.dev/api/discord-api-types-v10/interface/APIButtonComponentWithCustomId#label)
+     */
+    abstract readonly label: string;
+    /**
+     * Esstentially the background color of your button -
+     * [Discord API Type](https://discord-api-types.dev/api/discord-api-types-v10/enum/ButtonStyle)
+     */
+    abstract readonly style: _Discord__default.ButtonStyle;
+    /** Whether or not users will be able to interact with the button -
+     * [Discord API Type](https://discord-api-types.dev/api/discord-api-types-v10/interface/APIButtonComponentWithCustomId#disabled)
+     */
+    readonly disabled?: boolean;
+    /**
+     * Attachs an emoji to the left side of your button -
+     * [Discord API Type](https://discord-api-types.dev/api/discord-api-types-v10/interface/APIButtonComponentWithCustomId#emoji)
+     */
+    readonly emoji?: _Discord__default.ComponentEmojiResolvable;
+    readonly url?: string;
+    private button;
+    /**
+     * Builds your button and returns the output -
+     * [Learn More](https://discord-api-types.dev/api/discord-api-types-v10/interface/APIButtonComponentWithCustomId)
+     */
+    build(): _Discord__default.ButtonBuilder;
+}
+
 declare type Config = {
+    /**
+     * Your Dicsord Bot's Token -
+     * [Learn more](https://vajitsu.com/riku/docs/configuration#discord_token)
+     */
     token: string;
     application: {
+        /**
+         * Your Discord Application's Id -
+         * [Learn more](https://vajitsu.com/riku/docs/configuration#application_id)
+         */
         id: string;
     };
+    /**
+     * Get the basic events and/or commands bootstrapped with your Riku.js app -
+     * [Learn more](https://vajitsu.com/riku/docs/configuration#presets)
+     */
     presets: {
+        /**
+         * Get a simple `ready` and `interactionCreate` event bootstrapped with your Riku.js app -
+         * [Learn more](https://vajitsu.com/riku/docs/configuration#presets_events)
+         */
         events: boolean;
+        /**
+         * Get a `/hello` slash command bootstrapped with your Riku.js app -
+         * [Learn more](https://vajitsu.com/riku/docs/configuration#presets_commands)
+         */
         commands: boolean;
     };
+    /**
+     * Options used when initializing Discord Client -
+     * [Learn more](https://vajitsu.com/riku/docs/configuration#options)
+     */
     options: _Discord.ClientOptions;
+    /**
+     * Set a custom status for your Discord bot -
+     * [Learn more](https://vajitsu.com/riku/docs/configuration#custom_status)
+     */
     customStatus?: _Discord.PresenceData;
 };
 
 declare class bot {
+    /**
+     * An instance of the bot class - Can be used **without** initializing `bot` class
+     */
     static instance: bot;
+    /**
+     * Your Discord Application's Id - Can be used **without** initializing `bot` class
+     */
     appId: string;
+    /**
+     * The directory your bot is being run in
+     */
     directory: string;
+    /**
+     * Instance of a Discord bot client
+     */
     client: _Discord.Client;
+    /**
+     * All-in-one event manager, without the hassle!
+     */
     eventManager: eventManager;
+    /**
+     * All-in-one s(slash) command manager, without the hassle!
+     */
     commandManager: commandManager;
+    /**
+     * If `ready` event has successfully executed
+     */
     ready: boolean;
+    /**
+     * Configuration of bot, defined when initiating `bot` class
+     */
     config: Config;
-    constructor(configuration: Config);
+    constructor(
+    /**
+     * Configuration of bot, accessible at `config` when initiating `bot` class
+     */
+    configuration: Config);
+    /**
+     * Login to your Discord bot
+     */
     private init;
+    /**
+     * Runs the custom status loop if it is defined at `config.customStatus`
+     */
     customStatusLoop(): Promise<void>;
 }
 declare const Discord: {
@@ -371,7 +478,10 @@ declare const Discord: {
         readonly ViewAuditLog: bigint;
         readonly PrioritySpeaker: bigint;
         readonly Stream: bigint;
-        readonly ViewChannel: bigint;
+        readonly ViewChannel: bigint; /**
+         * Get a simple `ready` and `interactionCreate` event bootstrapped with your Riku.js app -
+         * [Learn more](https://vajitsu.com/riku/docs/configuration#presets_events)
+         */
         readonly SendMessages: bigint;
         readonly SendTTSMessages: bigint;
         readonly ManageMessages: bigint;
@@ -679,4 +789,4 @@ declare const Discord: {
     parseResponse: typeof _Discord.parseResponse;
 };
 
-export { Config, Discord, bot, command, event };
+export { Config, Discord, bot, button, command, event, utilities as utils };
