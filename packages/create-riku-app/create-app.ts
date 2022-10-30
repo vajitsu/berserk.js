@@ -204,6 +204,7 @@ export async function createApp({
         dev: "riku dev",
         build: "riku build",
         start: "riku start",
+        format: 'prettier --write "**/*.{ts,tsx,md}"',
       },
     };
     /**
@@ -220,7 +221,7 @@ export async function createApp({
     /**
      * Default dependencies.
      */
-    const dependencies = ["config", "dotenv", "riku"];
+    const dependencies = ["dotenv", "riku", "prettier"];
     /**
      * Default devDependencies.
      */
@@ -229,7 +230,7 @@ export async function createApp({
      * TypeScript projects will have type definitions and other devDependencies.
      */
     if (template !== "default") {
-      devDependencies.push("typescript", "@types/config", "@types/node");
+      devDependencies.push("typescript", "@types/node");
     }
     /**
      * Install package.json dependencies if they exist.
