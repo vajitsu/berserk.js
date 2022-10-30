@@ -1,14 +1,20 @@
-import * as _Discord from "discord.js";
+import * as discord from "discord.js";
 
-import command from "src/managers/commands/command";
+/* Managers */
 import commandManager from "./managers/commands";
 import eventManager from "./managers/events";
+
+/* Components */
 import actionRow from "action-row";
 import utils from "utils";
 import button from "button";
 import event from "event";
+import command from "command";
 
-export type Config = {
+/**
+ * Configuration of bot, defined when initiating `bot` class
+ */
+export type config = {
   /**
    * Your Dicsord Bot's Token -
    * [Learn more](https://vajitsu.com/riku/docs/configuration#discord_token)
@@ -41,47 +47,12 @@ export type Config = {
    * Options used when initializing Discord Client -
    * [Learn more](https://vajitsu.com/riku/docs/configuration#options)
    */
-  options: _Discord.ClientOptions;
+  options: discord.ClientOptions;
   /**
    * Set a custom status for your Discord bot -
    * [Learn more](https://vajitsu.com/riku/docs/configuration#custom_status)
    */
-  customStatus?: _Discord.PresenceData;
-};
-
-export {
-  /**
-   * Create a `command` instance that can be used within the **Riku.js** command manager
-   *
-   * ```js
-   * class ping extends command {
-   *   name: "ping";
-   *   data: new riku.Discord.SlashCommandBuiler()
-   *     .setName("ping")
-   *     .setDescription("Recieve a 'pong'");
-   *   async run(i) {
-   *     i.reply("pong")
-   *   }
-   * }
-   * ```
-   */
-  command,
-  /**
-   * Create a `command` instance that can be used within the **Riku.js** command manager
-   *
-   * ```js
-   * class ready extends event<"ready"> {
-   *   constructor(instance: bot) { super(instance, riku.Discord.Events.ClientReady) }
-   *   public async run() {
-   *     console.log(`Logged in as ${this.instance?.client.user?.tag}`);
-   *   }
-   * }
-   * ```
-   */
-  event,
-  button,
-  actionRow,
-  utils,
+  customStatus?: discord.PresenceData;
 };
 
 export class bot {
@@ -103,7 +74,7 @@ export class bot {
   /**
    * Instance of a Discord bot client
    */
-  public client: _Discord.Client;
+  public client: discord.Client;
 
   /**
    * All-in-one event manager, without the hassle!
@@ -123,13 +94,13 @@ export class bot {
   /**
    * Configuration of bot, defined when initiating `bot` class
    */
-  public config: Config;
+  public config: config;
 
   constructor(
     /**
      * Configuration of bot, accessible at `config` when initiating `bot` class
      */
-    configuration: Config
+    configuration: config
   ) {
     if (typeof configuration.presets.events === "undefined")
       configuration.presets.events = true;
@@ -137,7 +108,7 @@ export class bot {
     this.config = configuration;
     bot.instance = this;
 
-    this.client = new Discord.Client(configuration.options);
+    this.client = new discord.Client(configuration.options);
     this.appId = this.client.application?.id as string;
     this.eventManager = new eventManager(this);
     this.commandManager = new commandManager(this);
@@ -165,6 +136,11 @@ export class bot {
   }
 }
 
-export const Discord = {
-  ..._Discord,
+export * as discord from "discord.js";
+export const components = {
+  actionRow,
+  utils,
+  button,
+  event,
+  command,
 };

@@ -2,6 +2,7 @@ import getFilesSync from "./get-file-sync";
 import { exec } from "child_process";
 import events from "events";
 import { chalk } from ".";
+import Chalk from "chalk";
 
 function emptyBuildDir(e: events.EventEmitter) {
   const { stdout } = exec("rm -rf .riku/build && mkdir -p .riku/build");
@@ -17,7 +18,7 @@ function copyConfig(e: events.EventEmitter) {
   stdout?.once("end", () => {
     console.log();
     console.log(
-      chalk.msg.riku(chalk.colors.blue(`Copied configuration file.`))
+      chalk.msg.riku(chalk.colors.blue(`Copied environmental file.`))
     );
     e.emit("copied");
   });
@@ -69,6 +70,12 @@ export default async function build(e: events.EventEmitter) {
       chalk.msg.riku(chalk.colors.green("Successfully compilied your project!"))
     );
     console.log();
+    console.log();
+    console.log(
+      `${Chalk.bgBlack.yellowBright(" WARNING ")} Make sure to add ${Chalk.bold(
+        "DISCORD_TOKEN"
+      )} to your environemntal variables`
+    );
     e.emit("next");
   });
   e.once("emptied", () => {

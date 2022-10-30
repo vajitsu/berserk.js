@@ -1,4 +1,4 @@
-import { CacheType, Interaction } from "discord.js";
+import Discord from "discord.js";
 import { bot } from "index";
 import event from "event";
 
@@ -7,7 +7,7 @@ export default class interactionEvent extends event<"interactionCreate"> {
     super(instance, "interactionCreate");
   }
 
-  async run(interaction: Interaction<CacheType>) {
+  async run(interaction: Discord.Interaction<Discord.CacheType>) {
     if (!this.instance.ready)
       return void console.log(
         `Ignoring interaction event as client isn't ready yet`

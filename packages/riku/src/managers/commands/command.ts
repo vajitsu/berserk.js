@@ -1,11 +1,25 @@
 import Utils, { GuildInteraction } from "utils";
-import { SlashCommandBuilder } from "discord.js";
 import * as Discord from "discord.js";
 import { bot } from "index";
 
+/**
+ * Create a `command` instance that can be used within the **Riku.js** command manager
+ *
+ * ```js
+ * class ping extends command {
+ *   name: "ping";
+ *   data: new riku.Discord.SlashCommandBuiler()
+ *     .setName("ping")
+ *     .setDescription("Recieve a 'pong'");
+ *   async run(i) {
+ *     i.reply("pong")
+ *   }
+ * }
+ * ```
+ */
 export default abstract class command {
   public abstract name: string;
-  public abstract data: SlashCommandBuilder;
+  public abstract data: Discord.SlashCommandBuilder;
 
   public vanished = false;
   public interactive: false | string = false;
