@@ -1,0 +1,10 @@
+{
+  "include": ["."],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "target": "ESNext",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node"
+  }
+}

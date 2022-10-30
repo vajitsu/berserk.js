@@ -1,0 +1,20 @@
+{
+  "name": "bot",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "riku dev",
+    "build": "riku build",
+    "start": "riku start",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "dependencies": {
+    "dotenv": "16.0.3",
+    "prettier": "2.7.1",
+    "riku": "0.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.7",
+    "typescript": "4.8.4"
+  }
+}
