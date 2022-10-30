@@ -1,7 +1,7 @@
 import Chalk from "chalk";
 import events from "events";
 import { exec } from "child_process";
-import { chalk } from ".";
+import { chalk } from "../helpers";
 
 export default function start() {
   const e = new events.EventEmitter();

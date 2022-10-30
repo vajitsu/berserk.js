@@ -11,7 +11,6 @@ coverage
 # next.js
 .next/
 out/
-build
 
 # misc
 .DS_Store
@@ -37,5 +36,4 @@ yarn-error.log*
 # bot app
 config/
 apps/bot/
-
 apps/f/

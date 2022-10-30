@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
-import { chalk, dev, build, start } from "./helpers";
+import { chalk } from "./helpers";
 import { Command } from "commander";
 import path from "path";
 import fs from "fs";
 import Chalk from "chalk";
 import events from "events";
 import packageJson from "../../package.json";
+import build from "./commands/build";
+import dev from "./commands/dev";
+import start from "./commands/start";
 
 const program = new Command();
 

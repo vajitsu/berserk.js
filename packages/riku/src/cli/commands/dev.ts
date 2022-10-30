@@ -1,5 +1,5 @@
 import { exec } from "child_process";
-import { colors, msg } from "./chalk";
+import { colors, msg } from "../helpers/chalk";
 
 export default async function dev() {
   try {

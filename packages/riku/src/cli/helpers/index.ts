@@ -1,7 +1,1 @@
-import dev from "./dev";
-import start from "./start";
-import compileDev from "./compile-dev";
-import build from "./build";
-import * as chalk from "./chalk";
-
-export { dev, compileDev, chalk, build, start };
+export * as chalk from "./chalk";
