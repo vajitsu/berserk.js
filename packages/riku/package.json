@@ -10,12 +10,12 @@
     "lint": "eslint \"**/*.ts*\"",
     "build": "npm run build:main && npm run build:cli",
     "build:main": "tsup src/index.ts --format cjs --dts --minify",
-    "build:cli": "tsup src/cli/index.ts --minify --format cjs --outDir dist/cli",
+    "build:cli": "tsup --entry.cli src/cli/index.ts --minify --format cjs --outDir dist",
     "dev": "npm run build --watch",
     "riku": "riku"
   },
   "bin": {
-    "riku": "./dist/cli/index.js"
+    "riku": "./dist/cli.js"
   },
   "author": "Foup <fouptogo@gmail.com>",
   "bugs": {
