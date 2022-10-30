@@ -40,10 +40,11 @@ export default abstract class button {
    * [Learn More](https://discord-api-types.dev/api/discord-api-types-v10/interface/APIButtonComponentWithCustomId)
    */
   public build() {
-    this.button.setCustomId(this.id).setLabel(this.label).setStyle(this.style);
+    this.button.setLabel(this.label).setStyle(this.style);
     if (this.disabled) this.button.setDisabled(this.disabled);
     if (this.emoji) this.button.setEmoji(this.emoji);
     if (this.url) this.button.setURL(this.url);
+    else this.button.setCustomId(this.id);
     return this.button;
   }
 }

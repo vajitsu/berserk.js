@@ -107,9 +107,7 @@ export default class commandManager {
 
       await command.run(interaction, id, unhookInteraction);
     } catch (error) {
-      await interaction.reply(
-        "> **Command Error!**\n" + `${JSON.stringify(error)}`
-      );
+      await interaction.reply("> **Command Error!**\n" + `${error}`);
       console.error(`Catched error while command execution!`, error);
     } finally {
       unhookInteraction();

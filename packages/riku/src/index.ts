@@ -3,6 +3,7 @@ import * as _Discord from "discord.js";
 import command from "src/managers/commands/command";
 import commandManager from "./managers/commands";
 import eventManager from "./managers/events";
+import actionRow from "action-row";
 import utils from "utils";
 import button from "button";
 import event from "event";
@@ -79,6 +80,7 @@ export {
    */
   event,
   button,
+  actionRow,
   utils,
 };
 
@@ -96,7 +98,7 @@ export class bot {
   /**
    * The directory your bot is being run in
    */
-  public directory = __dirname;
+  public directory = process.cwd();
 
   /**
    * Instance of a Discord bot client
@@ -134,8 +136,6 @@ export class bot {
 
     this.config = configuration;
     bot.instance = this;
-
-    console.log(this.config);
 
     this.client = new Discord.Client(configuration.options);
     this.appId = this.client.application?.id as string;

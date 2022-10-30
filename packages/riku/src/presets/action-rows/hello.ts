@@ -1,6 +1,6 @@
-import learnMore from "presets/buttons/learn-more";
+import readTheDocs from "presets/buttons/read-the-docs";
 import actionRow from "action-row";
 
 export default class helloActionRow extends actionRow {
-  components = [new learnMore().build()];
+  components = [new readTheDocs().build()];
 }

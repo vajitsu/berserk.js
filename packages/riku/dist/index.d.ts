@@ -553,7 +553,9 @@ declare const Discord: {
     MembershipScreeningFieldType: typeof _Discord.MembershipScreeningFieldType;
     GuildScheduledEventEntityType: typeof _Discord.GuildScheduledEventEntityType;
     GuildScheduledEventStatus: typeof _Discord.GuildScheduledEventStatus;
-    GuildScheduledEventPrivacyLevel: typeof _Discord.GuildScheduledEventPrivacyLevel;
+    GuildScheduledEventPrivacyLevel: typeof _Discord.GuildScheduledEventPrivacyLevel; /**
+     * Runs the custom status loop if it is defined at `config.customStatus`
+     */
     ApplicationCommandType: typeof _Discord.ApplicationCommandType;
     ApplicationCommandOptionType: typeof _Discord.ApplicationCommandOptionType;
     ApplicationCommandPermissionType: typeof _Discord.ApplicationCommandPermissionType;

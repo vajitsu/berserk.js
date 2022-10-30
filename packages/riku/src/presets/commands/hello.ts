@@ -17,7 +17,7 @@ export default class helloCommand extends command {
   ) {
     const response = await axios.get(
       `https://web-rikuu.vercel.app/api/og${
-        fs.existsSync(path.join(this.instance.directory, "index.ts"))
+        fs.existsSync(path.join(process.cwd(), "index.ts"))
           ? "?typescript=yes"
           : ""
       }`,
