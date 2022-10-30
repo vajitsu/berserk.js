@@ -2,8 +2,6 @@ import getFilesSync from "./get-file-sync";
 import { exec } from "child_process";
 import events from "events";
 import { chalk } from ".";
-import path from "path";
-import fs from "fs";
 
 function emptyBuildDir(e: events.EventEmitter) {
   const { stdout } = exec("rm -rf .riku/build && mkdir -p .riku/build");
@@ -62,20 +60,21 @@ function removeTypescriptFromBuildDir(e: events.EventEmitter) {
   });
 }
 
-export default async function build() {
+export default async function build(e: events.EventEmitter) {
   // const tsConfig = fs.existsSync(path.join(process.cwd(), "tsconfig.json"));
 
-  const e = new events.EventEmitter();
   e.once("done", () => {
     console.log();
     console.log(
       chalk.msg.riku(chalk.colors.green("Successfully compilied your project!"))
     );
+    console.log();
+    e.emit("next");
   });
   e.once("emptied", () => {
     tsup(e);
   });
-  //e.once("copied", () => removeTypescriptFromBuildDir(e));
+  e.once("copied", () => removeTypescriptFromBuildDir(e));
   e.once("compilied", () => copyConfig(e));
   emptyBuildDir(e);
 }

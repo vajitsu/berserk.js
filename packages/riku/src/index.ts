@@ -7,6 +7,9 @@ import commandManager from "./managers/commands";
 import command from "command";
 
 export type Config = {
+  /**
+   * Discord Token 
+   */
   token: string;
   application: {
     id: string;
