@@ -6,13 +6,14 @@ import path from "path";
 import fs from "fs";
 import Chalk from "chalk";
 import events from "events";
+import packageJson from "../../package.json";
 
 const program = new Command();
 
 program
-  .name("riku")
+  .name(packageJson.name)
   .description("Build, test and deploy your Riku.js app")
-  .version("0.0.1")
+  .version(packageJson.version)
   .addHelpCommand("help [command]", "Display help for [command]");
 
 program
