@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { chalk, dev, build } from "./helpers";
+import { chalk, dev, build, start } from "./helpers";
 
 import { Command } from "commander";
 
@@ -14,7 +14,6 @@ program
 
 program
   .command("dev")
-  .alias("start")
   .description("Run your Riku.js app")
   .action(() => {
     process.stdout.write(
@@ -28,6 +27,13 @@ program
   .description("Build your Riku.js app for production")
   .action(() => {
     build();
+  });
+
+program
+  .command("start")
+  .description("Run your production build of your Riku.js app")
+  .action(() => {
+    start();
   });
 
 program.parse();

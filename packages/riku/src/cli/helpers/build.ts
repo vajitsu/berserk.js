@@ -1,47 +1,35 @@
+import getFilesSync from "./get-file-sync";
 import { exec } from "child_process";
-import * as fs from "fs";
 import events from "events";
 import { chalk } from ".";
+import path from "path";
+import fs from "fs";
 
-function getFilesSync(fPath: any, ignore: any, response: string[] = []) {
-  if (!response) {
-    response = [];
-  }
-  if (!ignore) {
-    ignore = [];
-  }
-
-  var files = fs.readdirSync(fPath);
-  for (var i = 0; i < files.length; i++) {
-    if (fs.statSync(fPath + "/" + files[i]).isDirectory()) {
-      var ign = false;
-      for (var j = 0; j < ignore.length; j++) {
-        if (ignore[j] == files[i]) {
-          ign = true;
-          break;
-        }
-      }
-      if (!ign) {
-        response.concat(getFilesSync(fPath + "/" + files[i], ignore, response));
-      }
-    } else {
-      response.push(fPath + "/" + files[i]);
-    }
-  }
-  return response;
-}
-function emptyBuildDir(Events: events.EventEmitter) {
+function emptyBuildDir(e: events.EventEmitter) {
   const { stdout } = exec("rm -rf .riku/build && mkdir -p .riku/build");
   stdout?.once("end", () => {
-    console.log();
     console.log(chalk.msg.riku(chalk.colors.blue(`Emptied build directory.`)));
-    Events.emit("emptied");
+    e.emit("emptied");
   });
 }
-function tsup(Events: events.EventEmitter) {
-  let files = getFilesSync(process.cwd(), ["node_modules", ".riku"]).filter(
-    (t) => t.endsWith(".ts")
+function copyConfig(e: events.EventEmitter) {
+  const { stdout } = exec(
+    `tsup config/production.js config/production.ts --outDir .riku/build/config --clean --minify --sourcemap`
   );
+  stdout?.once("end", () => {
+    console.log();
+    console.log(
+      chalk.msg.riku(chalk.colors.blue(`Copied configuration file.`))
+    );
+    e.emit("copied");
+  });
+}
+function tsup(e: events.EventEmitter) {
+  let files = getFilesSync(process.cwd(), [
+    "node_modules",
+    ".riku",
+    "config",
+  ]).filter((t) => t.endsWith(".ts") || t.endsWith(".js"));
 
   files = files.map((a) => {
     const b = a.replace(process.cwd(), "");
@@ -58,10 +46,10 @@ function tsup(Events: events.EventEmitter) {
     console.log(
       chalk.msg.riku(chalk.colors.blue(`Compilied files successfully.`))
     );
-    Events.emit("compilied");
+    e.emit("compilied");
   });
 }
-function removeTypescriptFromBuildDir(Events: events.EventEmitter) {
+function removeTypescriptFromBuildDir(e: events.EventEmitter) {
   const { stdout } = exec(
     "rm -r .riku/build/*.ts && rm -r .riku/build/**/*.ts"
   );
@@ -70,21 +58,24 @@ function removeTypescriptFromBuildDir(Events: events.EventEmitter) {
     console.log(
       chalk.msg.riku(chalk.colors.yellow(`Removed unnecessary typescript.`))
     );
-    Events.emit("done");
+    e.emit("done");
   });
 }
 
 export default async function build() {
-  const Events = new events.EventEmitter();
-  Events.once("done", () => {
+  // const tsConfig = fs.existsSync(path.join(process.cwd(), "tsconfig.json"));
+
+  const e = new events.EventEmitter();
+  e.once("done", () => {
     console.log();
     console.log(
       chalk.msg.riku(chalk.colors.green("Successfully compilied your project!"))
     );
   });
-  Events.once("emptied", () => {
-    tsup(Events);
+  e.once("emptied", () => {
+    tsup(e);
   });
-  Events.once("compilied", () => removeTypescriptFromBuildDir(Events));
-  emptyBuildDir(Events);
+  //e.once("copied", () => removeTypescriptFromBuildDir(e));
+  e.once("compilied", () => copyConfig(e));
+  emptyBuildDir(e);
 }
