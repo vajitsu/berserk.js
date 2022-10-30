@@ -31,6 +31,7 @@
     "commander": "^9.4.1",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
+    "nodemon": "^2.0.20",
     "ts-node-dev": "^2.0.0",
     "tsconfig": "*",
     "tsconfig-paths": "4.1.0",

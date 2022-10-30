@@ -11,6 +11,10 @@ import build from "./commands/build";
 import dev from "./commands/dev";
 import start from "./commands/start";
 
+import dotenv from "dotenv";
+import { findConfig } from "./helpers/find-config";
+dotenv.config();
+
 const program = new Command();
 
 program
@@ -23,9 +27,10 @@ program
   .command("dev")
   .description("Run your Riku.js app")
   .action(() => {
-    process.stdout.write(
-      `${chalk.msg.riku(chalk.colors.blue("Starting development node..."))}\n\n`
+    console.log(
+      `${chalk.msg.riku(chalk.colors.blue("Starting development node..."))}`
     );
+    console.log();
     dev();
   });
 
@@ -33,15 +38,15 @@ program
   .command("build")
   .description("Build your Riku.js app for production")
   .action(() => {
-    build(new events.EventEmitter());
+    build(new events.EventEmitter(), findConfig(process.cwd(), "riku"));
   });
 
 program
   .command("start")
   .description("Run your production build of your Riku.js app")
   .option("-B, --build", "Builds your project simultaneously to starting it")
-  .action((_, options) => {
-    const Build = options.options.find((a: any) => a.long === "--build");
+  .action((options) => {
+    const Build = options.build;
 
     if (!fs.existsSync(path.join(process.cwd(), ".riku/build")) && !Build) {
       console.log(
@@ -66,7 +71,7 @@ program
     } else if (Build) {
       const e = new events.EventEmitter();
       e.once("next", () => start());
-      build(e);
+      build(e, findConfig(process.cwd(), "riku"));
     } else start();
   });
 

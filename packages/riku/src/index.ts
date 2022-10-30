@@ -144,3 +144,9 @@ export const components = {
   event,
   command,
 };
+
+type EnvConfig<T, U> = T extends true ? U : null;
+
+export type UserConfig = {
+  env: EnvConfig<boolean, string[]>;
+};
