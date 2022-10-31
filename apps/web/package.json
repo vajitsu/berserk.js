@@ -1,5 +1,5 @@
 {
-  "name": "f",
+  "name": "web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@vercel/og": "^0.0.20",
+    "@code-hike/mdx": "^0.7.4",
+    "@mdx-js/loader": "^2.1.5",
     "@next/font": "13.0.0",
+    "@next/mdx": "^13.0.0",
+    "@vercel/og": "^0.0.20",
     "next": "13.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
