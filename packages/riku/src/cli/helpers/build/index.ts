@@ -25,8 +25,6 @@ export default function buildIndex(e: events.EventEmitter, config: UserConfig) {
     vars = config.env.map((v) => `--env.${v} ${process.env[v]}`);
   }
 
-  console.log(config);
-
   const { stdout } = exec(
     `tsup ${
       indexTs ? "index.ts" : "index.js"

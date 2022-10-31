@@ -10,9 +10,10 @@ import packageJson from "../../package.json";
 import build from "./commands/build";
 import dev from "./commands/dev";
 import start from "./commands/start";
+import { findConfig } from "./helpers/find-config";
 
 import dotenv from "dotenv";
-import { findConfig } from "./helpers/find-config";
+
 dotenv.config();
 
 const program = new Command();
@@ -48,7 +49,7 @@ program
   .action((options) => {
     const Build = options.build;
 
-    if (!fs.existsSync(path.join(process.cwd(), ".riku/build")) && !Build) {
+    if (!fs.existsSync(path.join(process.cwd(), ".riku", "build")) && !Build) {
       console.log(
         chalk.msg.riku(
           chalk.msg.error(Chalk.red(`Your project has not been bundled yet.`))

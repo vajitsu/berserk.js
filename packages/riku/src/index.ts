@@ -148,5 +148,8 @@ export const components = {
 type EnvConfig<T, U> = T extends true ? U : null;
 
 export type UserConfig = {
+  /**
+   * Environmental variables used within the Riku.js app directories/files
+   */
   env: EnvConfig<boolean, string[]>;
 };

@@ -229,6 +229,9 @@ declare const components: {
 };
 declare type EnvConfig<T, U> = T extends true ? U : null;
 declare type UserConfig = {
+    /**
+     * Environmental variables used within the Riku.js app directories/files
+     */
     env: EnvConfig<boolean, string[]>;
 };
 
