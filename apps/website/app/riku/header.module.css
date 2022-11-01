@@ -1,0 +1,32 @@
+.wrapper {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  min-height: 54px;
+}
+
+.header {
+  padding-left: 24px;
+  padding-right: 24px;
+  width: calc(1200px) + calc(24px * 2);
+  margin: auto;
+}
+
+.nav_first {
+  flex: 1 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Jost";
+}
+
+@media (min-width: 951px) {
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+}
