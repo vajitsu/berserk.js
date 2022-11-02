@@ -39,7 +39,7 @@
   position: relative;
   z-index: 2;
   text-align: center;
-  margin-top: calc(var(--header-height) + 280px);
+  margin-top: calc(var(--header-height) + 144px);
   padding: 0 32px;
   text-align: center;
 }

@@ -1,5 +1,5 @@
 import styles from "@/styles/Riku/Hero.module.css";
-import classNames from "classnames";
+import classNames from "classnames"
 
 import localFont from "@next/font/local";
 const nevis = localFont({ src: "../../app/fonts/nevis/bold.ttf" });
@@ -11,7 +11,7 @@ export default function Hero() {
   return (
     <>
       <div className={styles.root}>
-        <img
+        {/* <img
           alt="A black and white theme featuring an image of light rays exiting a prism in 3 directions. The light rays are not vertical but leave the prism at various angles, creating a dynamic composition."
           srcSet="https://vercel.com/_next/image?url=%2Fstatic%2Fconf-22%2Fprism-dark.jpg&amp;w=1080&amp;q=100 1x, /_next/image?url=%2Fstatic%2Fconf-22%2Fprism-dark.jpg&amp;w=1920&amp;q=100 2x"
           src="https://vercel.com/_next/image?url=%2Fstatic%2Fconf-22%2Fprism-dark.jpg&amp;w=1920&amp;q=100"
@@ -22,9 +22,9 @@ export default function Hero() {
           style={{ color: "transparent" }}
           width="900"
           height="900"
-        ></img>
+        ></img> */}
         <div className={styles.meta}>
-          <div className={styles.conf_logo}>
+          {/* <div className={styles.conf_logo}>
             <svg
               aria-labelledby="conf-logo-title-post-conf-logo"
               fill="none"
@@ -97,8 +97,8 @@ export default function Hero() {
                 y2="0.65"
               ></line>
             </svg>
-          </div>
-          <h1>Dynamic without limits</h1>
+          </div> */}
+          <h1>Innovation without limits</h1>
           <p
             className={classNames(
               styles.text_wrapper,

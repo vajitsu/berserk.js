@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import Link from "next/link";
 import styles from "./page.module.css";
 
 import localFont from "@next/font/local";
@@ -18,9 +17,9 @@ export default function Home() {
       </div>
       <div className={styles.nav}>
         <div className={classNames(styles.navItem, notoSerif.className)}>
-          <Link href="/riku" className={styles.navItem_a}>
+          <a href="/riku" className={styles.navItem_a}>
             RIKU
-          </Link>
+          </a>
         </div>
       </div>
     </main>
