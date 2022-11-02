@@ -18,7 +18,7 @@ export default function Home() {
       </div>
       <div className={styles.nav}>
         <div className={classNames(styles.navItem, notoSerif.className)}>
-          <Link href="/riku" className={styles.navItem_a} prefetch={true}>
+          <Link href="/riku" className={styles.navItem_a}>
             RIKU
           </Link>
         </div>

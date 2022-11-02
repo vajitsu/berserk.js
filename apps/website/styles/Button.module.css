@@ -1,0 +1,46 @@
+.reset {
+  outline: none;
+  margin: 0;
+  margin-left: 0px;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+  font: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.base {
+  position: relative;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  background: none;
+}
+.button {
+  border-radius: var(--radius);
+  color: var(--themed-fg, var(--background));
+  background: var(--themed-bg, var(--foreground));
+  border: 1px solid var(--themed-border, var(--foreground));
+  font-weight: 500;
+  padding: 0 var(--gap-half);
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition-property: border-color, background, color, transform, box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+  font-size: var(--form-font);
+  line-height: var(--form-line-height);
+  height: var(--form-height);
+}
+.small {
+  font-size: var(--geist-form-small-font);
+  height: var(--geist-form-small-height);
+}

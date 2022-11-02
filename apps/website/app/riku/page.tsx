@@ -1,3 +1,5 @@
-export default function RikuHome() {
-  return <span>Welcome to Riku.</span>;
+import Hero from "@/ui/Riku/Hero";
+
+export default function Riku() {
+  return <Hero />;
 }
