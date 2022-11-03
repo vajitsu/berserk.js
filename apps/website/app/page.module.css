@@ -37,11 +37,19 @@
 }
 
 .navItem_a {
-  transition: color 0.1s ease;
+  background: rgba(0, 0, 0, 0.8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: background 0.3s ease;
+  color: var(--foreground);
 }
 
 .navItem_a:hover {
-  color: rgba(225, 23, 23, 0.8);
+  background: var(--foreground);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .footer {
@@ -66,5 +74,11 @@
   }
   .logo img {
     filter: invert(1);
+  }
+  .navItem_a {
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
