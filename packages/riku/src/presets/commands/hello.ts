@@ -1,6 +1,6 @@
 import helloActionRow from "@/presets/action-rows/hello";
 import command from "@/managers/commands/command";
-import { GuildInteraction } from "@/utils/index";
+import { GuildInteraction } from "src/utils";
 import * as Discord from "discord.js";
 import axios from "axios";
 import path from "path";

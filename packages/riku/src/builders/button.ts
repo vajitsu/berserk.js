@@ -1,4 +1,4 @@
-import * as Discord from "discord.js";
+import Discord from "discord.js";
 import { v4 as uuidv4 } from "uuid";
 
 export default abstract class button {

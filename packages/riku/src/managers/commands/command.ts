@@ -1,4 +1,4 @@
-import Utils, { GuildInteraction } from "utils";
+import Utils, { GuildInteraction } from "src/utils";
 import * as Discord from "discord.js";
 import { bot } from "index";
 

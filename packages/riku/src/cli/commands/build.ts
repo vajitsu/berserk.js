@@ -6,7 +6,7 @@ import Chalk from "chalk";
 import path from "path";
 import fs from "fs";
 import findEntries from "../helpers/find-entries";
-import { UserConfig } from "index";
+import { config } from "index";
 
 function emptyBuildDir(e: events.EventEmitter) {
   const { stdout } = exec("rm -rf .riku/build && mkdir -p .riku/build");
@@ -36,7 +36,7 @@ function removeTypescriptFromBuildDir(e: events.EventEmitter) {
   });
 }
 
-function bundle(e: events.EventEmitter, config: UserConfig) {
+function bundle(e: events.EventEmitter, config: config) {
   const entries = findEntries(process.cwd(), ["ui", "commands", "events"]);
 
   if (!entries) {
@@ -47,19 +47,44 @@ function bundle(e: events.EventEmitter, config: UserConfig) {
     return process.exit(0);
   }
 
-  const entry = entries?.join(" ");
-  const env = config.env?.map((v) => `--env.${v} ${process.env[v]}`);
+  const entry = entries.join(" ");
 
   const { stdout, stderr } = exec(
-    `tsup-node ${entry} --outDir .riku/build --minify --clean --format cjs --treeshake  ${env} `
+    `tsup-node ${entry} --outDir .riku/build --minify --clean --format cjs --treeshake ${
+      // config.env ? config.env.map((v) => `--env.${v} ${process.env[v]}`) : ""
+      ""
+    }`
   );
   stderr?.on("data", (d) => console.log(d.toString()));
   stdout?.on("data", (d) => console.log(d.toString()));
   stdout?.once("end", () => {
     console.log();
     console.log(chalk.msg.riku(`Bundled app successfully.`));
-    e.emit("done");
+    e.emit("spack");
   });
+}
+
+function spack(e: events.EventEmitter) {
+  const buildDir = path.join(process.cwd(), ".riku", "build");
+  if (!fs.existsSync(buildDir)) {
+    console.log();
+    console.log(
+      chalk.msg.error(`No files found to bundle... exiting build process`)
+    );
+    return process.exit(0);
+  }
+
+  const entries = fs.readdirSync(buildDir).filter((a) => a.endsWith(".ts"));
+
+  for (const entry of entries) {
+    console.log(entry);
+  }
+
+  /**
+   * const { stdout, stderr } = exec(
+        `spack --config ${path.join(__dirname, ".", "spack-config.js")}`
+      );
+   */
 }
 
 export default async function build(e: events.EventEmitter, config: any) {
@@ -91,6 +116,7 @@ export default async function build(e: events.EventEmitter, config: any) {
 
   // Compiliers
   e.on("bundle", () => bundle(e, config));
+  e.on("spack", () => spack(e));
 
   emptyBuildDir(e);
 }

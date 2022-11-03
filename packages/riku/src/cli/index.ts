@@ -43,12 +43,7 @@ program
   .command("build")
   .description("Build your Riku.js app for production")
   .action(() => {
-    //build(new events.EventEmitter(), findConfig(process.cwd(), "riku"));
-    const { stdout, stderr } = exec(
-      `npx spack --config ${path.join(__dirname, "..", "spack.config.js")}`
-    );
-    stderr?.on("data", (d) => console.log(d.toString()));
-    stdout?.on("data", (d) => console.log(d.toString()));
+    build(new events.EventEmitter(), findConfig(process.cwd(), "riku"));
   });
 
 program

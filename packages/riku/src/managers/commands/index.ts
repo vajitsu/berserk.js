@@ -1,5 +1,5 @@
 import * as Discord from "discord.js";
-import { GuildInteraction } from "utils";
+import { GuildInteraction } from "src/utils";
 import Command from "./command";
 import * as uuid from "uuid";
 import { bot } from "index";

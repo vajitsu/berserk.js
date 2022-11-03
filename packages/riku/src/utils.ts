@@ -1,4 +1,4 @@
-import * as Discord from "discord.js";
+import Discord from "discord.js";
 
 /* Guild ModifiedTypes */
 export type GuildInteraction = Discord.CommandInteraction<Discord.CacheType>;

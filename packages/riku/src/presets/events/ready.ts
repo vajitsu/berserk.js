@@ -1,5 +1,5 @@
 import { bot } from "index";
-import utils from "utils";
+import utils from "src/utils";
 import event from "event";
 
 export default class readyEvent extends event<"ready"> {

@@ -10,7 +10,7 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "utils": ["src/utils/index.ts"],
+      "utils": ["src/utils.ts"],
       "event": ["src/managers/events/event.ts"],
       "index": ["src/index.ts"],
       "@/presets/*": ["src/presets/*"],

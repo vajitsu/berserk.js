@@ -8,9 +8,14 @@
   "private": false,
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "npm run build:main && npm run build:cli",
-    "build:main": "tsup src/index.ts --format cjs --dts --minify",
-    "build:cli": "tsup --entry.cli src/cli/index.ts --minify --format cjs",
+    "build": "npm run build:main && npm run build:utils && npm run build:ui && npm run build:discordjs && npm run build:cli",
+    "build:main": "tsup src/index.ts --format cjs --dts --minify --treeshake",
+    "build:utils": "tsup src/utils.ts --format cjs --dts --minify --treeshake",
+    "build:ui": "tsup src/ui.ts --format cjs --dts --minify --treeshake",
+    "build:discordjs": "tsup src/discordjs.ts --format cjs --dts --minify --treeshake",
+    "build:cli": "tsup --entry.cli src/cli/index.ts --minify --format cjs && npm run build:spack",
+    "build:spack": "tsup --entry.spack-config src/cli/helpers/spack-config.ts --minify --format cjs",
+    "prepublishOnly": "npm run build",
     "dev": "npm run build --watch",
     "riku": "riku"
   },
