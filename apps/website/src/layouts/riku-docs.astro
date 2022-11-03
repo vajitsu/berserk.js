@@ -1,15 +1,29 @@
 ---
+import "../styles/globals.css";
 import "./riku-docs.css";
+
 import "@code-hike/mdx/styles.css";
 import "../styles/ch.css";
+
+const { frontmatter } = Astro.props;
+
+import Header from "../components/riku/header.astro";
 ---
 
 <html lang="en">
   <head>
-    <title>Riku | Docs</title>
+    <title>
+      {frontmatter.title ? frontmatter.title : "Riku- Documentation"}
+    </title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <slot />
+    <Header />
+    <div class="screen">
+      <div class="inner">
+        <span class="riku_docs_header roboto">{frontmatter.title}</span>
+        <div class="content"><slot /></div>
+      </div>
+    </div>
   </body>
 </html>

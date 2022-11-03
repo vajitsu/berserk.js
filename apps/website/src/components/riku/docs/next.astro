@@ -1,0 +1,39 @@
+---
+import styles from "./next.module.css";
+
+interface Props {
+  next?: string;
+}
+const { next } = Astro.props;
+---
+
+<div
+  class:list={[styles.container, "noto-sans-mono"]}
+  style={next ? "outline: unset; margin-top: 24px;" : "user-select:none;"}
+>
+  <div class={styles.inner}>
+    <div class={next ? null : styles.center}>
+      <slot />
+    </div>
+    <br />
+    {
+      next ? (
+        <div
+          style={
+            next
+              ? "background: var(--foreground);padding: 12px;border-radius:8px;color:var(--background);"
+              : null
+          }
+        >
+          <a
+            tabindex="-1"
+            href={`/riku/docs/${next.toLowerCase().replaceAll(" ", "-")}`}
+          >
+            <span style="user-select:none;">Next up &gt; </span>
+            <u>{next}</u>
+          </a>
+        </div>
+      ) : null
+    }
+  </div>
+</div>

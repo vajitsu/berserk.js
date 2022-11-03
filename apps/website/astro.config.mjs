@@ -5,7 +5,7 @@ import prefetch from "@astrojs/prefetch";
 import react from "@astrojs/react";
 import vercel from "@astrojs/vercel/edge";
 
-import theme from "shiki/themes/dark-plus.json" assert { type: "json" };
+import theme from "shiki/themes/slack-dark.json" assert { type: "json" };
 import { remarkCodeHike } from "@code-hike/mdx";
 
 // https://astro.build/config
@@ -13,7 +13,16 @@ export default defineConfig({
   output: "server",
   markdown: {
     remarkPlugins: [
-      [remarkCodeHike, { autoImport: false, theme, lineNumbers: true }],
+      [
+        remarkCodeHike,
+        {
+          autoImport: false,
+          theme,
+          lineNumbers: true,
+          showCopyButton: true,
+          staticMediaQuery: "(max-width: 951px)",
+        },
+      ],
     ],
     extendDefaultPlugins: true,
   },

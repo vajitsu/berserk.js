@@ -1,5 +1,6 @@
 @import url("https://rsms.me/inter/inter.css");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap");
 
 :root {
   --header-height: 64px;
@@ -142,6 +143,9 @@ input[type="reset"] {
 }
 .noto-sans-mono {
   font-family: "Noto Sans Mono", monospace;
+}
+.roboto {
+  font-family: "Roboto", sans-serif;
 }
 .sans {
   font-family: "Inter var", "Inter", sans-serif;

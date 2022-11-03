@@ -157,6 +157,7 @@
 }
 .clockbox {
   user-select: none;
+  color: var(--accents-6);
 }
 .link_padding {
   padding: 8px;

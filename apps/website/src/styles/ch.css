@@ -1,3 +1,8 @@
 .ch-frame-buttons {
   display: none;
 }
+.ch-codeblock,
+.ch-codegroup,
+.ch-preview {
+  box-shadow: none;
+}

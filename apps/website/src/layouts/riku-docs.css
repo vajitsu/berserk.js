@@ -16,3 +16,107 @@
       "Segoe UI Symbol", "Noto Color Emoji";
   }
 }
+
+.screen {
+  min-height: 80vh;
+  position: relative;
+  padding: 0 84px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.inner {
+  --full: var(--page-width-with-margin);
+  max-width: 1200px;
+  width: 80vw;
+  height: 67vh;
+  position: relative;
+}
+
+/* @media (max-width: 951px) {
+  .inner {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+  }
+} */
+
+.riku_docs_header {
+  font-size: 78px;
+  font-weight: 800;
+}
+
+.content {
+  margin-top: 40px;
+}
+.content h1,
+.content h2 {
+  font-weight: 700;
+}
+.content h2 {
+  margin-block-start: 40px;
+  margin-block-end: 0.73em;
+}
+.content code {
+  font-family: "Noto Sans Mono", monospace;
+  padding: 4px;
+  background: var(--accents-1);
+  border-radius: var(--radius);
+}
+.content code.ch-code-scroll-parent {
+  border-radius: unset;
+}
+.content .note {
+  width: 100%;
+  height: 58px;
+  padding: 8px;
+  border-radius: var(--radius);
+  outline: 1px solid var(--foreground);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.note .icon svg {
+  --radius: 9999px;
+  color: var(--foreground);
+  width: 42px;
+  height: 42px;
+  padding: 6px;
+  border-radius: var(--radius);
+  outline: 1px solid var(--foreground);
+}
+
+.note .text {
+  font-weight: 500;
+}
+
+@media (max-width: 1025px) {
+  .riku_docs_header {
+    font-size: 64px;
+    letter-spacing: -2px;
+  }
+  .content {
+    margin-top: 10px;
+  }
+  .content h2 {
+    margin-block-start: 24px;
+    margin-block-end: 0.73em;
+  }
+}
+@media (max-width: 768px) {
+  .riku_docs_header {
+    font-size: 48px;
+  }
+  .content {
+    margin-top: 8px;
+  }
+  .content h2 {
+    margin-block-start: 24px;
+    margin-block-end: 0.73em;
+  }
+}
