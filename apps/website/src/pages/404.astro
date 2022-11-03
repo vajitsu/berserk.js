@@ -1,0 +1,21 @@
+---
+import styles from "./404.module.css";
+import classNames from "classnames";
+import Button from "../components/Button.astro";
+import Layout from "../layouts/vajitsu.astro";
+---
+
+<Layout>
+  <div class={classNames(styles.screen)}>
+    <div class={styles.wrapper}>
+      <span class={styles.header}>Page not found.</span>
+      <Button to="/" small={true} invert={true}>Go Back</Button>
+    </div>
+  </div>
+  <div class={styles.attempted_page} style={{ userSelect: "none" }}>
+    Attempted to reach{" "}
+    <span style={{ fontFamily: "monospace", fontSize: "1.1rem" }}>
+      {Astro.url.pathname}
+    </span>
+  </div>
+</Layout>

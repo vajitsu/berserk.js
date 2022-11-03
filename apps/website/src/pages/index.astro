@@ -1,0 +1,16 @@
+---
+import classNames from "classnames";
+import Layout from "../layouts/vajitsu.astro";
+import styles from "./index.module.css";
+---
+
+<Layout>
+  <main class={styles.wrapper}>
+    <div class={classNames(styles.header, "oldlondon")}>vajitsu</div>
+    <div class={styles.nav}>
+      <div class={classNames(styles.navItem, "notoserif")}>
+        <a href="/riku" class={styles.navItem_a} rel="prefetch"> RIKU</a>
+      </div>
+    </div>
+  </main>
+</Layout>

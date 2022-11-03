@@ -1,31 +1,31 @@
 {
-  "name": "website",
-  "version": "0.1.0",
+  "name": "@vajitsu/website",
+  "type": "module",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/mdx": "^0.11.5",
+    "@astrojs/prefetch": "^0.1.1",
+    "@astrojs/react": "^1.2.2",
+    "@astrojs/vercel": "^2.3.3",
     "@code-hike/mdx": "^0.7.4",
-    "@mdx-js/loader": "^2.1.5",
     "@next/font": "^13.0.1",
-    "@next/mdx": "^13.0.1",
     "@vercel/og": "^0.0.20",
-    "bright": "^0.1.1",
+    "astro": "^1.6.0",
+    "autoprefixer": "^10.4.13",
     "classnames": "^2.3.2",
-    "next": "^13.0.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
-  },
-  "devDependencies": {
-    "@types/node": "18.11.7",
-    "@types/react": "18.0.23",
-    "@types/react-dom": "18.0.7",
-    "eslint": "8.26.0",
-    "eslint-config-next": "13.0.0",
-    "typescript": "4.8.4"
+    "cssnano": "^5.1.14",
+    "postcss": "^8.4.18",
+    "postcss-modules": "^5.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "shiki": "^0.11.1"
   }
 }

@@ -1,0 +1,17 @@
+---
+interface Props {
+  sub?: string;
+}
+const { sub } = Astro.props;
+
+import "../styles/globals.css";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Vajitsu{sub ? ` | ${sub}` : ""}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <slot />
+</html>
