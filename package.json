@@ -14,7 +14,8 @@
     "test:watch": "turbo run test:watch --parallel",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "release": "turbo run build --filter=riku --filter=create-riku-app && changeset version && changeset publish",
-    "release:riku": "turbo run build --filter=riku && changeset version && changeset publish",
+    "prerelease:riku": "turbo run build --filter=riku",
+    "release:riku": "changeset version && changeset publish",
     "release:cra": "turbo run build --filter=create-riku-app && changeset version && changeset publish"
   },
   "devDependencies": {

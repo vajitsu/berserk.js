@@ -1,5 +1,5 @@
 {
-  "include": ["src"],
+  "include": ["src", "config.ts"],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
     "target": "ES5",
