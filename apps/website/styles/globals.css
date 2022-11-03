@@ -3,6 +3,8 @@
   --header-border-bottom: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
   --header-background: hsla(0, 0%, 100%, 0.8);
 
+  --text-gradient: linear-gradient(180deg, rgba(0, 0, 0, 0.8), #000);
+
   --foreground: #000;
   --background: #fff;
   --accents-1: #fafafa;
@@ -14,12 +16,20 @@
   --accents-7: #333;
   --accents-8: #111;
 
+  --space-small: 32px;
   --space-gap: 24px;
+  --space-gap-half: 12px;
+  --gap-half: var(--space-gap-half);
   --page-margin: var(--space-gap);
   --page-width: 1200px;
   --page-width-with-margin: calc(
     var(--page-width) + calc(2 * var(--page-margin))
   );
+  --radius: 5px;
+
+  ---form-small-font: 0.875rem;
+  --form-small-height: var(--space-small);
+  --form-line-height: 1.25rem;
 }
 
 html,
@@ -122,6 +132,7 @@ input[type="reset"] {
     --accents-1: #111;
     --header-background: rgba(0, 0, 0, 0.5);
     --header-border-bottom: inset 0 -1px 0 0 hsla(0, 0%, 100%, 0.1);
+    --text-gradient: linear-gradient(180deg, #fff, hsla(0, 0%, 100%, 0.6));
   }
 }
 

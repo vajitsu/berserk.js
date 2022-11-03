@@ -1,8 +1,5 @@
 import styles from "@/styles/Riku/Hero.module.css";
-import classNames from "classnames"
-
-import localFont from "@next/font/local";
-const nevis = localFont({ src: "../../app/fonts/nevis/bold.ttf" });
+import classNames from "classnames";
 
 import { Noto_Sans_Mono } from "@next/font/google";
 const notoSansMono = Noto_Sans_Mono();
@@ -110,6 +107,24 @@ export default function Hero() {
           >
             Ship your Discord bots in <strong>seconds</strong>.
           </p>
+        </div>
+        <div className={styles.stack}>
+          <a href="/riku/docs" className={styles.button_link}>
+            <div className={styles.button_container}>
+              <span className={styles.button_wrapper}>
+                <span className={styles.button_wrapper_children}>
+                  <div
+                    className={classNames(
+                      styles.button_contents,
+                      notoSansMono.className
+                    )}
+                  >
+                    Read The Docs
+                  </div>
+                </span>
+              </span>
+            </div>
+          </a>
         </div>
       </div>
       <div aria-hidden="true" className={styles.fade}></div>

@@ -41,6 +41,13 @@
   height: var(--form-height);
 }
 .small {
-  font-size: var(--geist-form-small-font);
-  height: var(--geist-form-small-height);
+  font-size: var(--form-small-font);
+  height: var(--form-small-height);
+}
+.invert:active,
+.invert:hover {
+  box-shadow: none;
+  background: transparent;
+  color: var(--themed-bg);
+  --themed-border: var(--themed-bg);
 }
