@@ -121,13 +121,13 @@
   cursor: pointer;
 }
 .button_container {
+  --radius: 9999px;
   position: relative;
   pointer-events: none;
   border-radius: var(--radius);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .button_wrapper {
-  --radius: 9999px;
   border-radius: var(--radius);
   padding: 1px;
   margin: -1px;

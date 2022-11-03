@@ -27,6 +27,13 @@
       }
     ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "app/riku/docs/page.js",
+    "app/riku/docs/page.js"
+  ],
   "exclude": ["node_modules"]
 }

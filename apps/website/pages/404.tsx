@@ -10,9 +10,8 @@ import classNames from "classnames";
 
 import Button from "@/ui/Button";
 
-import { Inter, Noto_Sans_Mono } from "@next/font/google";
-const inter = Inter();
-const notoSansMono = Noto_Sans_Mono();
+import { Inter } from "@next/font/google";
+const inter = Inter({ subsets: ["latin"] });
 
 export default function notFound() {
   const router = useRouter();
@@ -30,9 +29,11 @@ export default function notFound() {
           </Button>
         </div>
       </div>
-      <div className={styles.attempted_page}>
+      <div className={styles.attempted_page} style={{ userSelect: "none" }}>
         Attempted to reach{" "}
-        <span className={notoSansMono.className}>{pathname}</span>
+        <span style={{ fontFamily: "monospace", fontSize: "1.1rem" }}>
+          {pathname}
+        </span>
       </div>
     </>
   );

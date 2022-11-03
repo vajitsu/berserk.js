@@ -33,7 +33,10 @@
   "packageManager": "npm@8.19.2",
   "dependencies": {
     "@changesets/cli": "^2.25.0",
+    "@code-hike/mdx": "^0.7.4",
+    "@mdx-js/loader": "^2.1.5",
     "@next/font": "^13.0.0",
+    "@next/mdx": "^13.0.1",
     "chalk": "^5.1.2",
     "config": "^3.3.8",
     "create-riku-app": "*",

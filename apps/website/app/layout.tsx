@@ -1,9 +1,10 @@
 "use client";
 
 import "@/styles/globals.css";
+import "@code-hike/mdx/dist/index.css";
 
 import { Inter } from "@next/font/google";
-const inter = Inter();
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,

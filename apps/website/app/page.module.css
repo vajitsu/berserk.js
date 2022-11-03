@@ -37,7 +37,7 @@
 }
 
 .navItem_a {
-  transition: 0.3s ease;
+  transition: color 0.1s ease;
 }
 
 .navItem_a:hover {
