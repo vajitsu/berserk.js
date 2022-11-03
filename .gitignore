@@ -37,3 +37,6 @@ yarn-error.log*
 config/
 apps/bot/
 apps/f/
+
+# hide
+examples/
