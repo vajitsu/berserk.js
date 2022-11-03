@@ -1,4 +1,4 @@
-import * as Discord from "discord.js";
+import Discord from "discord.js";
 
 export default abstract class actionRow {
   public abstract components: Array<Discord.AnyComponentBuilder>;

@@ -6,13 +6,6 @@ export default function start() {
   const { stdout, stderr } = exec(
     "cd .riku/build && nodemon index.js -q --exit-crash"
   );
-  console.log(
-    chalk.msg.riku(
-      Chalk.green(
-        `Node (${process.version}) instance has been started successfully!`
-      )
-    )
-  );
   console.log();
   stderr?.on("data", (data) => {
     let err = /Error\s\[.*\].*/g.exec(
@@ -27,25 +20,21 @@ export default function start() {
       .replace(": ", "")
       .trim();
 
-    console.log(
-      `${Chalk.bgBlack.cyan(" CONSOLE ")} ${Chalk.bgBlack.yellow(
-        " ERROR "
-      )} ${name} ${message}`
-    );
+    console.log(`${Chalk.bgBlack.yellow("error - ")} ${name} ${message}`);
     console.log();
     console.log(
-      `${Chalk.hidden(" CONSOLE  ERROR   ")}${Chalk.yellow(
+      `${Chalk.hidden("error - ")}${Chalk.yellow(
         "This may be an issue on your end."
       )}`
     );
     console.log();
     console.log(
-      `${Chalk.hidden(" CONSOLE  ERROR   ")}${Chalk.blue(
+      `${Chalk.hidden("error - ")}${Chalk.blue(
         "If you think its on our end: "
-      )}\n${Chalk.hidden(" CONSOLE  ERROR   ")}Create an issue on our github`
+      )}\n${Chalk.hidden("error - ")}Create an issue on our github`
     );
     console.log(
-      `${Chalk.hidden(" CONSOLE  ERROR   ")}${Chalk.green(
+      `${Chalk.hidden("error - ")}${Chalk.green(
         `https://github.com/vajitsu/riku/issues`
       )}`
     );
@@ -56,22 +45,12 @@ export default function start() {
       chalk.msg.error(`${Chalk.red(`${error.name}:`)} ${error.message}`)
     );
   });
-  stderr?.on("end", () => {
-    console.log(
-      chalk.msg.ended(`Node (${process.version}) instance has stopped running.`)
-    );
-  });
   stdout?.on("data", (data) => {
-    console.log(`${Chalk.bgBlack.cyan(" CONSOLE ")} ${data.toString()}`);
+    console.log(`${Chalk.bgBlack.cyan("event -")} ${data.toString()}`);
   });
   stdout?.on("error", (error) => {
     console.error(
       chalk.msg.error(`${Chalk.red(`${error.name}:`)} ${error.message}`)
-    );
-  });
-  stdout?.on("end", () => {
-    console.log(
-      chalk.msg.ended(`Node (${process.version}) instance has stopped running.`)
     );
   });
 }

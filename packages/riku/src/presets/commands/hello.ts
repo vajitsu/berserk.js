@@ -1,6 +1,6 @@
-import helloActionRow from "presets/action-rows/hello";
-import command from "src/managers/commands/command";
-import { GuildInteraction } from "utils";
+import helloActionRow from "@/presets/action-rows/hello";
+import command from "@/managers/commands/command";
+import { GuildInteraction } from "@/utils/index";
 import * as Discord from "discord.js";
 import axios from "axios";
 import path from "path";
@@ -16,7 +16,7 @@ export default class helloCommand extends command {
     interaction: Discord.ChatInputCommandInteraction & GuildInteraction
   ) {
     const response = await axios.get(
-      `https://web-rikuu.vercel.app/api/og${
+      `https://vajitsu.com/api/og${
         fs.existsSync(path.join(process.cwd(), "index.ts"))
           ? "?typescript=yes"
           : ""

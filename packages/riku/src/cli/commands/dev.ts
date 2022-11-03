@@ -6,8 +6,10 @@ export default async function dev() {
     const { stdout } = exec(
       "ts-node-dev --watch --respawn --transpile-only --ignore-watch .gitignore -- index.ts"
     );
+
     var first = 0;
     stdout?.on("data", (data) => {
+      if (!data) return;
       if (first === 0) {
         process.stdout.write(
           `${msg.riku(colors.green("Development node has started!"))}\n\n`
@@ -29,18 +31,13 @@ export default async function dev() {
       } else if (data.toString().includes("[ERROR]")) {
         var str = data.toString().replace(/\[ERROR\]\s\d\d:\d\d:\d\d\s/gim, "");
 
-        var err = (/\[[[aA-zZ].+\]/gim.exec(str) as string[])[0].replace(
-          /\[|\]/gim,
-          ""
-        );
-        err = colors.redBright(`${err}: `);
-
         var message = (/:.*/gim.exec(str) as string[])[0].replace(": ", "");
 
-        console.log(`${msg.error(`${err}${message}`)}`);
-      } else console.log(`${msg.dev(data.toString())}`);
+        console.log(msg.error(`${message}`));
+      } else console.log(msg.dev(data.toString()));
     });
     stdout?.on("error", (err) => {
+      if (!err) return;
       console.log(`${msg.error(err.toString())}`);
     });
     stdout?.on("pause", () => {

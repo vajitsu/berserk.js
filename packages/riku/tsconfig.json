@@ -10,13 +10,13 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "command": ["src/managers/commands/command.ts"],
-      "button": ["src/builders/button.ts"],
-      "action-row": ["src/builders/action-row.ts"],
       "utils": ["src/utils/index.ts"],
       "event": ["src/managers/events/event.ts"],
       "index": ["src/index.ts"],
-      "presets/*": ["src/presets/*"]
+      "@/presets/*": ["src/presets/*"],
+      "@/builders/*": ["src/builders/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/managers/*": ["src/managers/*"]
     }
   }
 }

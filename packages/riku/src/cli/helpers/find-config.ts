@@ -1,6 +1,12 @@
 import path from "path";
 import fs from "fs";
 
+import JoyCon from "joycon";
+import TypescriptLoader from "joycon-ts-loader";
+
+const joycon = new JoyCon();
+joycon.addLoader(TypescriptLoader);
+
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
@@ -14,6 +20,7 @@ export function findConfigPath(dir: string, key: string): string | undefined {
     `.${key}rc.js`,
     `${key}.config.js`,
     `${key}.config.cjs`,
+    `${key}.config.ts`,
   ];
 
   const found = [];
@@ -35,11 +42,11 @@ function findPackageJson(dir: string): string | undefined {
 // We'll allow configuration to be typed, but we force everything provided to
 // become optional. We do not perform any schema validation. We should maybe
 // force all the types to be `unknown` as well.
-export function findConfig<T>(
+export async function findConfig<T>(
   directory: string,
   key: string,
   _returnFile?: boolean
-): RecursivePartial<T> | null {
+): Promise<RecursivePartial<T> | null> {
   // `package.json` configuration always wins. Let's check that first.
   const packageJsonPath = findPackageJson(directory);
   if (packageJsonPath) {
@@ -50,8 +57,14 @@ export function findConfig<T>(
   }
 
   const filePath = findConfigPath(directory, key);
+  console.log(filePath);
 
   if (filePath) {
+    if (filePath.endsWith(".ts")) {
+      const result = await joycon.load([filePath]);
+      return result.data;
+    }
+
     if (filePath.endsWith(".js") || filePath.endsWith(".cjs")) {
       return require(filePath);
     }

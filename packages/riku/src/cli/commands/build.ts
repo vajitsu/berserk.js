@@ -5,17 +5,14 @@ import { chalk } from "../helpers";
 import Chalk from "chalk";
 import path from "path";
 import fs from "fs";
-
-import buildComponents from "../helpers/build/components";
-import buildCommands from "../helpers/build/commands";
-import buildEvents from "../helpers/build/events";
-import buildIndex from "../helpers/build";
+import findEntries from "../helpers/find-entries";
+import { UserConfig } from "index";
 
 function emptyBuildDir(e: events.EventEmitter) {
   const { stdout } = exec("rm -rf .riku/build && mkdir -p .riku/build");
   stdout?.once("end", () => {
     console.log(chalk.msg.riku(`Emptied build directory.`));
-    e.emit("components");
+    e.emit("bundle");
   });
 }
 
@@ -35,6 +32,32 @@ function removeTypescriptFromBuildDir(e: events.EventEmitter) {
     console.log(
       chalk.msg.riku(chalk.colors.yellow(`Removed unnecessary typescript.`))
     );
+    e.emit("done");
+  });
+}
+
+function bundle(e: events.EventEmitter, config: UserConfig) {
+  const entries = findEntries(process.cwd(), ["ui", "commands", "events"]);
+
+  if (!entries) {
+    console.log();
+    console.log(
+      chalk.msg.error(`No files found to bundle... exiting build process`)
+    );
+    return process.exit(0);
+  }
+
+  const entry = entries?.join(" ");
+  const env = config.env?.map((v) => `--env.${v} ${process.env[v]}`);
+
+  const { stdout, stderr } = exec(
+    `tsup-node ${entry} --outDir .riku/build --minify --clean --format cjs --treeshake  ${env} `
+  );
+  stderr?.on("data", (d) => console.log(d.toString()));
+  stdout?.on("data", (d) => console.log(d.toString()));
+  stdout?.once("end", () => {
+    console.log();
+    console.log(chalk.msg.riku(`Bundled app successfully.`));
     e.emit("done");
   });
 }
@@ -67,10 +90,7 @@ export default async function build(e: events.EventEmitter, config: any) {
   e.on("removeTypescript", () => removeTypescriptFromBuildDir(e));
 
   // Compiliers
-  e.on("components", () => buildComponents(e, config));
-  e.on("commands", () => buildCommands(e, config));
-  e.on("events", () => buildEvents(e, config));
-  e.on("index", () => buildIndex(e, config));
+  e.on("bundle", () => bundle(e, config));
 
   emptyBuildDir(e);
 }

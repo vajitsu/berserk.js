@@ -13,7 +13,6 @@ import start from "./commands/start";
 import { findConfig } from "./helpers/find-config";
 
 import dotenv from "dotenv";
-
 dotenv.config();
 
 const program = new Command();
@@ -32,7 +31,11 @@ program
       `${chalk.msg.riku(chalk.colors.blue("Starting development node..."))}`
     );
     console.log();
-    dev();
+    try {
+      dev();
+    } catch (e) {
+      console.log(e);
+    }
   });
 
 program
@@ -45,34 +48,17 @@ program
 program
   .command("start")
   .description("Run your production build of your Riku.js app")
-  .option("-B, --build", "Builds your project simultaneously to starting it")
-  .action((options) => {
-    const Build = options.build;
-
-    if (!fs.existsSync(path.join(process.cwd(), ".riku", "build")) && !Build) {
+  .action(() => {
+    if (!fs.existsSync(path.join(process.cwd(), ".riku", "build"))) {
       console.log(
-        chalk.msg.riku(
-          chalk.msg.error(Chalk.red(`Your project has not been bundled yet.`))
-        )
+        chalk.msg.error(Chalk.red(`Your project has not been bundled yet.`))
       );
       console.log();
       console.log(
-        `${Chalk.hidden(" RIKU  ")}Run ${chalk.colors.green(
-          "npm run dev"
-        )} before prior to this command`
+        `Run ${chalk.colors.green(
+          "npm run build"
+        )} prior to runnig this command`
       );
-      console.log();
-      console.log(
-        `${Chalk.hidden(" RIKU  ")}You could also add the ${Chalk.green(
-          "--build"
-        )} option:\n${Chalk.hidden(" RIKU  ")}${Chalk.blue(
-          "Builds your project simultaneously."
-        )}`
-      );
-    } else if (Build) {
-      const e = new events.EventEmitter();
-      e.once("next", () => start());
-      build(e, findConfig(process.cwd(), "riku"));
     } else start();
   });
 

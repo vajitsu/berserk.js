@@ -1,15 +1,15 @@
-import * as discord from "discord.js";
+import discord from "discord.js";
 
 /* Managers */
 import commandManager from "./managers/commands";
 import eventManager from "./managers/events";
 
 /* Components */
-import actionRow from "action-row";
-import utils from "utils";
-import button from "button";
-import event from "event";
-import command from "command";
+import actionRow from "@/builders/action-row";
+import utils from "@/utils/index";
+import button from "@/builders/button";
+import event from "@/managers/events/event";
+import command from "@/managers/commands/command";
 
 /**
  * Configuration of bot, defined when initiating `bot` class
@@ -54,7 +54,6 @@ export type config = {
    */
   customStatus?: discord.PresenceData;
 };
-
 export class bot {
   /**
    * An instance of the bot class - Can be used **without** initializing `bot` class
@@ -137,19 +136,24 @@ export class bot {
 }
 
 export * as discord from "discord.js";
-export const components = {
+
+export function defineConfig(options: UserConfig) {
+  return options;
+}
+export const ui = {
   actionRow,
   utils,
   button,
   event,
   command,
 };
-
-type EnvConfig<T, U> = T extends true ? U : null;
-
 export type UserConfig = {
   /**
    * Environmental variables used within the Riku.js app directories/files
    */
-  env: EnvConfig<boolean, string[]>;
+  env?: string[];
+  /**
+   * Discord Configurations
+   */
+  discord: config;
 };

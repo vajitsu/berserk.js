@@ -1,14 +1,14 @@
 import chalk from "chalk";
 
 export const blocks = {
-  riku: chalk.bgBlack.red(" RIKU "),
-  compiler: chalk.bgBlack.cyanBright(" COMPILER "),
-  restart: chalk.bgBlack.whiteBright(" RESTART "),
-  error: chalk.bgBlack.yellowBright(" ERROR "),
-  dev: chalk.bgBlack.magentaBright(" DEV "),
-  paused: chalk.bgBlack.yellowBright(" PAUSED "),
-  resumed: chalk.bgBlack.yellowBright(" RESUMED "),
-  ended: chalk.bgBlack.blackBright(" ENDED "),
+  riku: chalk.red("riku -"),
+  compiler: chalk.cyanBright("bundler -"),
+  restart: chalk.whiteBright("restart -"),
+  error: chalk.yellowBright("error -"),
+  dev: chalk.magentaBright("dev -"),
+  paused: chalk.yellowBright("paused -"),
+  resumed: chalk.yellowBright("resumed -"),
+  ended: chalk.blackBright("ended -"),
 };
 
 export const colors = {

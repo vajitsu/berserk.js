@@ -1,9 +1,6 @@
 import classNames from "classnames";
 import styles from "./page.module.css";
 
-import localFont from "@next/font/local";
-const oldlondon = localFont({ src: "./fonts/old_london/main.ttf" });
-
 import { Noto_Serif } from "@next/font/google";
 const notoSerif = Noto_Serif({
   weight: "700",
@@ -12,9 +9,7 @@ const notoSerif = Noto_Serif({
 export default function Home() {
   return (
     <main className={styles.wrapper}>
-      <div className={classNames(styles.header, oldlondon.className)}>
-        vajitsu
-      </div>
+      <div className={classNames(styles.header, "oldlondon")}>vajitsu</div>
       <div className={styles.nav}>
         <div className={classNames(styles.navItem, notoSerif.className)}>
           <a href="/riku" className={styles.navItem_a}>
@@ -22,7 +17,7 @@ export default function Home() {
           </a>
         </div>
       </div>
-    </main>
+    </main> 
     // {/* <footer className={styles.footer}>
     //   <a
     //     href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"

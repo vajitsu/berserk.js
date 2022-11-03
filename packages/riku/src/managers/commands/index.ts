@@ -5,7 +5,7 @@ import * as uuid from "uuid";
 import { bot } from "index";
 
 // Preset Commands
-import helloCommand from "presets/commands/hello";
+import helloCommand from "@/presets/commands/hello";
 import chalk from "chalk";
 
 export default class commandManager {

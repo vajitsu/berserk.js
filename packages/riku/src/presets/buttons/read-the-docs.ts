@@ -1,5 +1,5 @@
 import Discord from "discord.js";
-import button from "button";
+import button from "@/builders/button";
 
 export default class readTheDocs extends button {
   label = "Read The Docs";

@@ -1,4 +1,5 @@
 import * as Discord from 'discord.js';
+import Discord__default from 'discord.js';
 export { Discord as discord };
 
 declare type GuildInteraction = Discord.CommandInteraction<Discord.CacheType>;
@@ -90,7 +91,7 @@ declare class eventManager {
 }
 
 declare abstract class actionRow {
-    abstract components: Array<Discord.AnyComponentBuilder>;
+    abstract components: Array<Discord__default.AnyComponentBuilder>;
     private row;
     build(): any;
 }
@@ -165,12 +166,12 @@ declare type config = {
      * Options used when initializing Discord Client -
      * [Learn more](https://vajitsu.com/riku/docs/configuration#options)
      */
-    options: Discord.ClientOptions;
+    options: Discord__default.ClientOptions;
     /**
      * Set a custom status for your Discord bot -
      * [Learn more](https://vajitsu.com/riku/docs/configuration#custom_status)
      */
-    customStatus?: Discord.PresenceData;
+    customStatus?: Discord__default.PresenceData;
 };
 declare class bot {
     /**
@@ -188,7 +189,7 @@ declare class bot {
     /**
      * Instance of a Discord bot client
      */
-    client: Discord.Client;
+    client: Discord__default.Client;
     /**
      * All-in-one event manager, without the hassle!
      */
@@ -220,19 +221,23 @@ declare class bot {
     customStatusLoop(): Promise<void>;
 }
 
-declare const components: {
+declare function defineConfig(options: UserConfig): UserConfig;
+declare const ui: {
     actionRow: typeof actionRow;
     utils: typeof utilities;
     button: typeof button;
     event: typeof event;
     command: typeof command;
 };
-declare type EnvConfig<T, U> = T extends true ? U : null;
 declare type UserConfig = {
     /**
      * Environmental variables used within the Riku.js app directories/files
      */
-    env: EnvConfig<boolean, string[]>;
+    env?: string[];
+    /**
+     * Discord Configurations
+     */
+    discord: config;
 };
 
-export { UserConfig, bot, components, config };
+export { UserConfig, bot, config, defineConfig, ui };

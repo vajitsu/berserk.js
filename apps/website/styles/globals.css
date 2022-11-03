@@ -115,6 +115,14 @@ input[type="reset"] {
   position: relative;
 }
 
+@font-face {
+  font-family: "Old London";
+  src: url(/assets/old_london.ttf) format("truetype");
+}
+.oldlondon {
+  font-family: "Old London", "Times New Roman", Times, serif;
+}
+
 @media (prefers-color-scheme: dark) {
   root {
     color-scheme: dark;
