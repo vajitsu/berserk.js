@@ -1,5 +1,5 @@
 'use strict';
 
-function f(o){return o}
+function i(o){return o}
 
-module.exports = f;
+module.exports = i;

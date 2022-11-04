@@ -74,14 +74,29 @@
   margin-block-start: 40px;
   margin-block-end: 0.73em;
 }
+.content p {
+  margin-block-start: 0.33em;
+  margin-block-end: 0.33em;
+}
+.content ol,
+.content ul {
+  list-style: decimal;
+  padding-inline-start: 20px;
+}
 .content .tiny {
-  margin-top: -25px;
+  margin-top: 5px;
   font-size: 14px;
   color: var(--accents-6);
   font-weight: 300;
+  user-select: none;
 }
-.content code:not(.ch-code-scroll-content):not(.ch-code-scroll-parent) {
+.tiny strong {
+  font-weight: 700;
+}
+.content code:not(.ch-code-scroll-content):not(.ch-code-scroll-parent),
+.content p code {
   font-family: "Noto Sans Mono", monospace;
+  font-size: 14.6px;
   padding: 4px;
   background: var(--accents-1);
   border-radius: var(--radius);

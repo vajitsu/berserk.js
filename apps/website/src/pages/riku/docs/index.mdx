@@ -10,7 +10,7 @@ import Next from "../../../components/riku/docs/next.astro"
 
 Run a simple command to setup your first `Riku.js` app
 
-<span class="tiny">We recommended you use the Typescript version of this example</span>
+<span class="tiny">We recommended you use the Typescript version of this example.</span>
 
 <CH.Code client:load>
 ```powershell Terminal 
@@ -21,13 +21,49 @@ npx create-riku-app@latest
 
 ## Manual Installation
 
-First you need to install the latest version of `riku`
+Install the latest version of `riku`.
 
 <CH.Code client:load>
 ```powershell Terminal 
 npm install riku@latest
 
 ```
+</CH.Code>
+
+Create a `riku.config.js` and an `index.js` file.
+
+<span class="tiny">**Important:** You need a <u>Application ID</u> and <u>Token</u></span>
+
+<CH.Code client:load>
+```js riku.config.js 
+const discord = require("riku/discordjs");
+const config = require("riku/config");
+
+module.exports = config({
+  discord: {
+    token: "your-discord-token-goes-here",
+    application: {
+      id: "your-application-id-goes-here",
+    },
+    options: {
+      intents: [
+        discord.GatewayIntentBits.Guilds,
+        discord.GatewayIntentBits.GuildMessages,
+      ],
+    }
+  },
+});
+```
+
+---
+
+```js index.js
+const { bot } = require("riku");
+const config = require("./riku.config.js");
+
+module.exports = new bot(config.discord);
+```
+
 </CH.Code>
 
 <Next>We can learn the basics now that your project is setup!</Next>
