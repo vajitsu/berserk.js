@@ -1,8 +1,9 @@
 {
-  "include": ["src", "config.ts"],
+  "include": ["src"],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
-    "target": "ES5",
+    "module": "ESNext",
+    "target": "ESNext",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
