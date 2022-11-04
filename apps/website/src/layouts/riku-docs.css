@@ -65,7 +65,7 @@
   color: var(--accents-6);
   font-weight: 300;
 }
-.content code {
+.content code:not(.ch-code-scroll-content):not(.ch-code-scroll-parent) {
   font-family: "Noto Sans Mono", monospace;
   padding: 4px;
   background: var(--accents-1);
@@ -77,8 +77,10 @@
     padding: 0;
   }
 } */
-.content code.ch-code-scroll-parent {
+code.ch-code-scroll-parent,
+code.ch-code-scroll-content {
   border-radius: unset;
+  line-height: 1;
 }
 .content .note {
   width: 100%;

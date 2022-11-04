@@ -14,6 +14,14 @@
   row-gap: 100px;
 }
 
+.container.no_next {
+  user-select: none;
+}
+.container.next {
+  outline: unset;
+  margin-top: 24px;
+}
+
 .inner {
   padding: 14px;
   position: relative;
@@ -24,10 +32,9 @@
   margin-top: 16px 0;
 }
 
-.left {
-  float: inherit;
-}
-
-.right {
-  float: right;
+._next {
+  background: var(--foreground);
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--background);
 }

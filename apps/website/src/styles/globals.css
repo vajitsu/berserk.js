@@ -183,6 +183,12 @@ html {
   box-sizing: border-box;
 }
 
+.disable-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
 .visually-hidden {
   position: absolute;
   clip: rect(1px, 1px, 1px, 1px);
