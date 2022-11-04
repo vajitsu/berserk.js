@@ -32,15 +32,21 @@
   width: 80vw;
   height: 100%;
   position: relative;
-  margin-top: 2vw;
+  margin-top: 28px;
 }
 
+@media (max-width: 1025px) {
+  .inner {
+    margin-top: 8px;
+  }
+}
 @media (max-width: 768px) {
   .screen {
     padding: 0;
   }
   .inner {
     width: 92vw;
+    margin-top: 0px;
   }
 }
 

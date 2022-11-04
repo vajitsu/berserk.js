@@ -18,21 +18,20 @@ const { next, overwrite } = Astro.props;
   <div class={styles.inner}>
     {
       next ? (
-        <div class={styles._next}>
-          <a
-            tabindex="-1"
-            href={
-              overwrite
-                ? overwrite
-                : `/riku/docs/${next.toLowerCase().replaceAll(" ", "-")}`
-            }
-          >
-            <span class="disable-select">Next up &gt; </span>
-            <u>{next}</u>
-          </a>
-        </div>
+        <a
+          tabindex="-1"
+          href={
+            overwrite
+              ? overwrite
+              : `/riku/docs/${next.toLowerCase().replaceAll(" ", "-")}`
+          }
+          class={styles._next}
+        >
+          <span class="disable-select">Next up &gt; </span>
+          <u>{next}</u>
+        </a>
       ) : (
-        <div class={next ? null : styles.center}>
+        <div>
           <slot />
         </div>
       )
