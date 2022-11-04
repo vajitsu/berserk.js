@@ -28,11 +28,11 @@
 }
 
 .inner {
-  --full: var(--page-width-with-margin);
   max-width: 1200px;
   width: 80vw;
   height: 100%;
   position: relative;
+  margin-top: 2vw;
 }
 
 /* @media (max-width: 951px) {
@@ -59,12 +59,24 @@
   margin-block-start: 40px;
   margin-block-end: 0.73em;
 }
+.content .tiny {
+  margin-top: -25px;
+  font-size: 14px;
+  color: var(--accents-6);
+  font-weight: 300;
+}
 .content code {
   font-family: "Noto Sans Mono", monospace;
   padding: 4px;
   background: var(--accents-1);
   border-radius: var(--radius);
+  line-height: 2.4;
 }
+/* @media (max-width: 499px) {
+  .content code {
+    padding: 0;
+  }
+} */
 .content code.ch-code-scroll-parent {
   border-radius: unset;
 }
@@ -98,7 +110,6 @@
 @media (max-width: 1025px) {
   .riku_docs_header {
     font-size: 64px;
-    letter-spacing: -2px;
   }
   .content {
     margin-top: 10px;
