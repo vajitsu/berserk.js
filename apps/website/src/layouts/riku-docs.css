@@ -18,7 +18,7 @@
 }
 
 .screen {
-  min-height: 80vh;
+  min-height: unset;
   position: relative;
   padding: 0 84px;
   display: flex;
@@ -33,6 +33,15 @@
   height: 100%;
   position: relative;
   margin-top: 2vw;
+}
+
+@media (max-width: 768px) {
+  .screen {
+    padding: 0;
+  }
+  .inner {
+    width: 92vw;
+  }
 }
 
 /* @media (max-width: 951px) {
