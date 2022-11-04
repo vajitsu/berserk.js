@@ -3,8 +3,9 @@ import styles from "./next.module.css";
 
 interface Props {
   next?: string;
+  overwrite?: string;
 }
-const { next } = Astro.props;
+const { next, overwrite } = Astro.props;
 ---
 
 <div
@@ -27,7 +28,7 @@ const { next } = Astro.props;
         >
           <a
             tabindex="-1"
-            href={`/riku/docs/${next.toLowerCase().replaceAll(" ", "-")}`}
+            href={overwrite ? overwrite : `/riku/docs/${next.toLowerCase().replaceAll(" ", "-")}`}
           >
             <span style="user-select:none;">Next up &gt; </span>
             <u>{next}</u>

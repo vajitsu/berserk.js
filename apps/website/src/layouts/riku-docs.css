@@ -31,7 +31,7 @@
   --full: var(--page-width-with-margin);
   max-width: 1200px;
   width: 80vw;
-  height: 67vh;
+  height: 100%;
   position: relative;
 }
 
