@@ -1,7 +1,7 @@
 .screen {
   min-height: 100vh;
   position: relative;
-  animation: 4.6s ease-in-out fadeIn;
+  animation: 0.7s ease fadeIn;
 }
 
 .wrapper {
@@ -44,7 +44,7 @@
   top: 0;
   left: 0;
   padding: 27px;
-  animation: 4.6s ease fadeIn;
+  animation: 0.7s ease fadeIn;
 }
 
 @keyframes fadeIn {
