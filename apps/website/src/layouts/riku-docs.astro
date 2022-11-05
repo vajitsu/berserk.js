@@ -18,10 +18,12 @@ import Header from "../components/riku/header.astro";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <Header docs={true} />
+    <Header docs={frontmatter.section || null} />
     <div class="screen" style="min-height:unset;">
       <div class="inner">
-        <span class="riku_docs_header roboto">{frontmatter.title}</span>
+        <span class="riku_docs_header roboto"
+          >{frontmatter.header ? frontmatter.header : frontmatter.title}</span
+        >
         <div class="content"><slot /></div>
       </div>
     </div>

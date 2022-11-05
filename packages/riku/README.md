@@ -27,9 +27,3 @@ Visit [https://vajitsu.com/riku/learn](https://vajitsu.com/riku/learn) to get st
 ## Documentation
 
 Visit [https://vajitsu.com/riku/docs](https://vajitsu.com/riku/docs) to view the full documentation.
-
-## Security
-
-If you believe you have found a security vulnerability in Riku.js, we encourage you to responsibly disclose this and not open a public issue. We will investigate all legitimate reports. Email `security@vajitsu.com` to disclose any security vulnerabilities.
-
-https://vajitsu.com/security

@@ -1,0 +1,40 @@
+---
+import styles from "./previously.module.css";
+
+interface Props {
+  previous?: string;
+  overwrite?: string;
+}
+const { previous, overwrite } = Astro.props;
+---
+
+<div
+  class:list={[
+    styles.container,
+    "noto-sans-mono",
+    `${previous ? styles.previous : styles.no_previous}`,
+  ]}
+>
+  <div class:list={[styles.inner, previous ? styles.inner_previous : null]}>
+    {
+      previous ? (
+        <a
+          tabindex="-1"
+          href={
+            overwrite
+              ? overwrite
+              : `/riku/docs/${previous.toLowerCase().replaceAll(" ", "-")}`
+          }
+          class={styles._previous}
+        >
+          <u>{previous}</u>
+          <span class="disable-select">{"<"} Previously</span>
+        </a>
+      ) : (
+        <div>
+          <slot />
+        </div>
+      )
+    }
+  </div>
+</div>

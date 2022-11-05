@@ -15,7 +15,7 @@ const { next, overwrite } = Astro.props;
     `${next ? styles.next : styles.no_next}`,
   ]}
 >
-  <div class={styles.inner}>
+  <div class:list={[styles.inner, next ? styles.inner_next : null]}>
     {
       next ? (
         <a
