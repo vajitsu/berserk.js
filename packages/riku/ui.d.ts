@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+import Discord from "discord.js";
 
 declare abstract class actionRow {
   abstract components: Array<Discord.AnyComponentBuilder>;
