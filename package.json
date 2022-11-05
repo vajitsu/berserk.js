@@ -26,7 +26,7 @@
     "tsconfig-paths": "^4.1.0",
     "tsup": "^6.3.0",
     "turbo": "latest",
-    "vitest": "^0.24.3"
+    "vitest": "^0.24.5"
   },
   "engines": {
     "node": ">=14.0.0"
