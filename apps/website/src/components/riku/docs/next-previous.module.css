@@ -1,0 +1,50 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 36px;
+
+  margin-top: 56px;
+  margin-bottom: 24px;
+  row-gap: 100px;
+}
+
+.inner {
+    position: relative;
+    width: 100%;
+}
+
+.inner_next {
+  position: absolute;
+  right:0;
+  top:0;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.inner_prev {
+    position: relative;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.link {
+  background: var(--foreground);
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--background);
+  cursor: pointer;
+}
+
+.link:hover {
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--foreground);
+}

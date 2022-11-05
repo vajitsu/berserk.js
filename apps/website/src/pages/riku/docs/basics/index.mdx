@@ -5,8 +5,7 @@ section: Documentation
 ---
 
 import { CH } from "@code-hike/mdx/components";
-import Next from "../../../../components/riku/docs/next.astro";
-import Previous from "../../../../components/riku/docs/previously.astro";
+import NextPrevious from "../../../../components/riku/docs/next-previous.astro";
 
 ## Config File
 
@@ -50,4 +49,8 @@ This is used to generate any `environmental` variables used in production.
 
 </CH.Code>
 
-<Previous previous="Getting Started" overwrite="/riku/docs"></Previous>
+<NextPrevious
+  prev="Getting Started"
+  overwritePrev="/riku/docs"
+  next="Hello World"
+/>
