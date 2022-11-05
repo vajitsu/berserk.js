@@ -122,6 +122,7 @@
   position: relative;
   -webkit-tap-highlight-color: transparent;
   font-size: 34px;
+  user-select: none;
 }
 .button_content {
   text-overflow: ellipsis;

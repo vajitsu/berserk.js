@@ -31,6 +31,10 @@
   justify-content: center;
 }
 
+.inner:has(> ._next) {
+  justify-content: flex-end;
+}
+
 ._next {
   background: var(--foreground);
   padding: 12px;
