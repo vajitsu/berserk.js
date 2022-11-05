@@ -33,7 +33,7 @@
   },
   "packageManager": "npm@8.19.2",
   "dependencies": {
-    "@changesets/cli": "^2.25.0",
+    "@changesets/cli": "^2.25.2",
     "@code-hike/mdx": "^0.7.4",
     "@mdx-js/loader": "^2.1.5",
     "@next/font": "^13.0.2",
