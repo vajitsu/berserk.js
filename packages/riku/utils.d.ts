@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord from 'discord.js';
 
 declare type GuildInteraction = Discord.CommandInteraction<Discord.CacheType>;
 declare class permissions {

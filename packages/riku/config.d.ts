@@ -1,6 +1,6 @@
-import Discord from 'discord.js';
+import Discord from "./discordjs";
 
-declare type config$1 = {
+declare type Config = {
   /**
    * Environmental variables used within the Riku.js app directories/files
    */
@@ -54,6 +54,6 @@ declare type discordConfig = {
   customStatus?: Discord.PresenceData;
 };
 
-declare function config(options: config$1): config$1;
+declare function config(options: Config): Config;
 
 export { config as default };
