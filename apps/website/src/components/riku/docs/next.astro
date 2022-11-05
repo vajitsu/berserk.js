@@ -4,8 +4,9 @@ import styles from "./next.module.css";
 interface Props {
   next?: string;
   overwrite?: string;
+  style?: string;
 }
-const { next, overwrite } = Astro.props;
+const { next, overwrite, style } = Astro.props;
 ---
 
 <div
@@ -14,6 +15,7 @@ const { next, overwrite } = Astro.props;
     "noto-sans-mono",
     `${next ? styles.next : styles.no_next}`,
   ]}
+  style={style}
 >
   <div class:list={[styles.inner, next ? styles.inner_next : null]}>
     {
