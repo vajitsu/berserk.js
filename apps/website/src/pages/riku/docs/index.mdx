@@ -45,21 +45,19 @@ const discord = require("riku/discordjs");
 const config = require("riku/config");
 
 module.exports = config({
-discord: {
-token: "your-discord-token-goes-here",
-application: {
-id: "your-application-id-goes-here",
-},
-options: {
-intents: [
-discord.GatewayIntentBits.Guilds,
-discord.GatewayIntentBits.GuildMessages,
-],
-}
-},
+  discord: {
+    token: "your-discord-token-goes-here",
+    application: {
+      id: "your-application-id-goes-here",
+    },
+    options: {
+      intents: [
+      discord.GatewayIntentBits.Guilds,
+      discord.GatewayIntentBits.GuildMessages,
+      ],
+    }
+  },
 });
-
-```
 
 ```
 
