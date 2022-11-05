@@ -130,7 +130,7 @@
   overflow: hidden;
   display: inline-block;
   font-weight: 700;
-  color: rgb(187, 69, 69);
+  color: #bb4545;
 }
 .button_center {
   display: flex;

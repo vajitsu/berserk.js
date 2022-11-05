@@ -3,7 +3,7 @@ import styles from "./header.module.css";
 import classNames from "classnames";
 
 interface Props {
-  docs?: boolean;
+  docs?: string;
 }
 const { docs } = Astro.props;
 
@@ -49,7 +49,7 @@ const notRikuHome = pathname.split("/").length > 2;
         {
           docs && (
             <div style="float:right;" class={styles.docs}>
-              Documentation
+              {docs}
             </div>
           )
         }

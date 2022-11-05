@@ -1,6 +1,7 @@
 ---
 layout: ../../../layouts/riku-docs.astro
-title: Getting Started
+title: Riku.js Docs
+section: Documentation
 ---
 
 import { CH } from "@code-hike/mdx/components";
@@ -50,8 +51,8 @@ module.exports = config({
     },
     options: {
       intents: [
-      discord.GatewayIntentBits.Guilds,
-      discord.GatewayIntentBits.GuildMessages,
+        discord.GatewayIntentBits.Guilds,
+        discord.GatewayIntentBits.GuildMessages,
       ],
     }
   },
@@ -62,5 +63,5 @@ module.exports = config({
 </CH.Code>
 
 <Next>We can learn the basics now that your project is setup!</Next>
-<Next next="Basics" overwrite="/riku/docs/learn"></Next>
+<Next next="Basics"></Next>
 ```

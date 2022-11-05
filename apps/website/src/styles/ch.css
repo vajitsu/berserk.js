@@ -6,3 +6,6 @@
 .ch-preview {
   box-shadow: none;
 }
+.ch-code-wrapper {
+  line-height: 2;
+}

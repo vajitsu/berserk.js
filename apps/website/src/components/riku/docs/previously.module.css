@@ -14,10 +14,10 @@
   row-gap: 100px;
 }
 
-.container.no_next {
+.container.no_previous {
   user-select: none;
 }
-.container.next {
+.container.previous {
   border: unset;
   margin-top: 24px;
 }
@@ -31,20 +31,21 @@
   justify-content: center;
 }
 
-.inner_next {
-  justify-content: flex-end;
-  padding-right: 0;
+.inner_previous {
+  justify-content: flex-start;
+  padding-left: 0;
 }
 
-._next {
+._previous {
   background: var(--foreground);
   padding: 12px;
   border-radius: 8px;
   color: var(--background);
   cursor: pointer;
+  direction: rtl;
 }
 
-._next:hover {
+._previous:hover {
   background: var(--background);
   color: var(--foreground);
   border: 1px solid var(--foreground);

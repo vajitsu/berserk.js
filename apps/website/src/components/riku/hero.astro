@@ -108,18 +108,52 @@ import classNames from "classnames";
       Ship your Discord bot in <strong>seconds</strong>.
     </p>
   </div>
-  <div class={styles.stack}>
-    <a href="/riku/docs" class={styles.button_link} rel="prefetch">
-      <div class={styles.button_container}>
-        <span class={styles.button_wrapper}>
-          <span class={styles.button_wrapper_children}>
-            <div class={classNames(styles.button_contents, "noto-sans-mono")}>
+  <div aria-hidden="true" class={styles.fade}></div>
+  <div
+    class={styles.stack}
+    style="--flex:initial;--sm-direction:column;--md-direction:row;--lg-direction:row;--align:center;--justify:flex-start"
+  >
+    <a href="/riku/docs" class={styles.readthedocs_button_link} rel="prefetch">
+      <div class={styles.readthedocs_button_container}>
+        <span class={styles.readthedocs_button_wrapper}>
+          <span class={styles.readthedocs_button_wrapper_children}>
+            <div
+              class={classNames(
+                styles.readthedocs_button_contents,
+                "noto-sans-mono"
+              )}
+            >
               Read The Docs
             </div>
           </span>
         </span>
       </div>
     </a>
+    <a href="/riku/learn" class={styles.learnriku_button_link}>
+      <div
+        class={styles.learnriku_gradient_wrapper_container}
+        style="--radius:9999px"
+      >
+        <span class={styles.learnriku_gradient_wrapper_gradientWrapper}>
+          <span
+            class:list={[
+              styles.learnriku_gradient_wrapper_grayscaleBorder,
+              styles.learnriku_gradient_wrapper_gradient,
+            ]}
+            aria-hidden="true"
+          >
+          </span>
+          <span class={styles.learnriku_gradient_wrapper_active}></span>
+          <span class={styles.learnriku_gradient_wrapper_children}>
+            <div class={styles.learnriku_button_contents}>Learn Riku.js</div>
+          </span>
+        </span>
+        <span
+          class:list={[
+            styles.learnriku_gradient_wrapper_grayscaleGlow,
+            styles.learnriku_gradient_wrapper_glow,
+          ]}></span>
+      </div>
+    </a>
   </div>
 </div>
-<div aria-hidden="true" class={styles.fade}></div>
