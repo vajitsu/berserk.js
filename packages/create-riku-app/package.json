@@ -30,7 +30,7 @@
     "@types/cross-spawn": "6.0.0",
     "@types/node": "^18.11.9",
     "@types/prompts": "2.4.1",
-    "@types/rimraf": "3.0.0",
+    "@types/rimraf": "3.0.2",
     "@types/tar": "4.0.3",
     "@types/validate-npm-package-name": "3.0.0",
     "@vercel/ncc": "0.34.0",
