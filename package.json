@@ -22,7 +22,7 @@
     "@types/config": "^3.3.0",
     "eslint-config-custom": "*",
     "prettier": "^2.7.1",
-    "sass": "^1.55.0",
+    "sass": "^1.56.0",
     "tsconfig-paths": "^4.1.0",
     "tsup": "^6.3.0",
     "turbo": "latest",
