@@ -1,0 +1,41 @@
+---
+import styles from "./next-previous.module.css";
+
+interface Props {
+  next: string;
+  prev: string;
+  overwriteNext?: string;
+  overwritePrev?: string;
+  style?: string;
+}
+const { next, overwriteNext, prev, overwritePrev, style } = Astro.props;
+---
+
+<div class:list={[styles.container, "noto-sans-mono"]} style={style}>
+  <div class={styles.inner}>
+    <div class={styles.inner_prev}>
+      <a
+        tabindex="-1"
+        href={overwritePrev
+          ? overwritePrev
+          : `/riku/docs/${prev.toLowerCase().replaceAll(" ", "-")}`}
+        class={styles.link}
+      >
+        <u>{prev}</u>
+        <span class="disable-select">{"<"} Previously</span>
+      </a>
+    </div>
+    <div class={styles.inner_next}>
+      <a
+        tabindex="-1"
+        href={overwriteNext
+          ? overwriteNext
+          : `/riku/docs/${next.toLowerCase().replaceAll(" ", "-")}`}
+        class={styles.link}
+      >
+        <span class="disable-select">Next up &gt;</span>
+        <u>{next}</u>
+      </a>
+    </div>
+  </div>
+</div>

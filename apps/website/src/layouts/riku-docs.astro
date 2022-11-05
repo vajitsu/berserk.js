@@ -27,5 +27,14 @@ import Header from "../components/riku/header.astro";
         <div class="content"><slot /></div>
       </div>
     </div>
+    <style
+      define:vars={{
+        screenH: frontmatter.screen || "",
+      }}
+    >
+      .screen {
+        height: var(--screenH);
+      }
+    </style>
   </body>
 </html>

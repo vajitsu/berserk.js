@@ -191,6 +191,9 @@ cursor: pointer;
   transition: opacity .9s ease;
   background: var(--foreground);
 }
+.learnriku_button_link:hover .learnriku_gradient_wrapper_active {
+  opacity: 0.6;
+}
 .learnriku_gradient_wrapper_children {
   position: relative;
   z-index: 1000;
