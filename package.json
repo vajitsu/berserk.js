@@ -22,11 +22,11 @@
     "@types/config": "^3.3.0",
     "eslint-config-custom": "*",
     "prettier": "^2.7.1",
-    "sass": "^1.55.0",
+    "sass": "^1.56.0",
     "tsconfig-paths": "^4.1.0",
     "tsup": "^6.3.0",
     "turbo": "latest",
-    "vitest": "^0.24.3"
+    "vitest": "^0.24.5"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -36,7 +36,7 @@
     "@changesets/cli": "^2.25.0",
     "@code-hike/mdx": "^0.7.4",
     "@mdx-js/loader": "^2.1.5",
-    "@next/font": "^13.0.0",
+    "@next/font": "^13.0.2",
     "@next/mdx": "^13.0.2",
     "chalk": "^5.1.2",
     "config": "^3.3.8",
