@@ -20,7 +20,7 @@
     "@heroicons/react": "^2.0.13",
     "@next/font": "^13.0.2",
     "@vercel/og": "^0.0.20",
-    "astro": "^1.6.0",
+    "astro": "^1.6.3",
     "astro-icon": "^0.8.0",
     "autoprefixer": "^10.4.13",
     "classnames": "^2.3.2",
