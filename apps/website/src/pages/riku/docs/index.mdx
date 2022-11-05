@@ -4,19 +4,21 @@ title: Getting Started
 ---
 
 import { CH } from "@code-hike/mdx/components";
-import Next from "../../../components/riku/docs/next.astro"
+import Next from "../../../components/riku/docs/next.astro";
 
 ## Quick Installation
 
 Run a simple command to setup your first `Riku.js` app
 
-<span class="tiny">We recommended you use the Typescript version of this example.</span>
+<span class="tiny">
+  We recommended you use the Typescript version of this example.
+</span>
 
 <CH.Code client:load>
 ```powershell Terminal 
 npx create-riku-app@latest
 
-```
+````
 </CH.Code>
 
 ## Manual Installation
@@ -24,15 +26,18 @@ npx create-riku-app@latest
 Install the latest version of `riku`.
 
 <CH.Code client:load>
-```powershell Terminal 
+```powershell Terminal
 npm install riku@latest
 
-```
+````
+
 </CH.Code>
 
-Create a `riku.config.js` and an `index.js` file.
+Create a `riku.config.js` file.
 
-<span class="tiny">**Important:** You need a <u>Application ID</u> and <u>Token</u></span>
+<span class="tiny">
+  **Important:** You need a <u>Application ID</u> and <u>Token</u>
+</span>
 
 <CH.Code client:load>
 ```js riku.config.js 
@@ -40,28 +45,22 @@ const discord = require("riku/discordjs");
 const config = require("riku/config");
 
 module.exports = config({
-  discord: {
-    token: "your-discord-token-goes-here",
-    application: {
-      id: "your-application-id-goes-here",
-    },
-    options: {
-      intents: [
-        discord.GatewayIntentBits.Guilds,
-        discord.GatewayIntentBits.GuildMessages,
-      ],
-    }
-  },
+discord: {
+token: "your-discord-token-goes-here",
+application: {
+id: "your-application-id-goes-here",
+},
+options: {
+intents: [
+discord.GatewayIntentBits.Guilds,
+discord.GatewayIntentBits.GuildMessages,
+],
+}
+},
 });
+
 ```
 
----
-
-```js index.js
-const { bot } = require("riku");
-const config = require("./riku.config.js");
-
-module.exports = new bot(config.discord);
 ```
 
 </CH.Code>
