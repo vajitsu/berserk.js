@@ -102,6 +102,16 @@
   justify-content: space-between;
   width: 100%;
 }
+.docs {
+  display: none;
+  color: var(--accents-6);
+  user-select: none;
+}
+@media screen and (max-width: 950px) {
+  .docs {
+    display: unset;
+  }
+}
 .logo {
   background: none !important;
   border: none;

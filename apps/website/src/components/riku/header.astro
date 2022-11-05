@@ -1,21 +1,58 @@
 ---
 import styles from "./header.module.css";
 import classNames from "classnames";
+
+interface Props {
+  docs?: boolean;
+}
+const { docs } = Astro.props;
+
+const pathname = Astro.url.pathname;
+const notRikuHome = pathname.split("/").length > 2;
 ---
 
 <div class={classNames(styles.wrapper)}>
   <header class={classNames(styles.header)}>
     <div class={styles.nav_first}>
       <div>
-        <button class={classNames(styles.logo)}>
-          <span class={classNames(styles.button_content, styles.button_center)}>
-            riku
-            <span
-              style="font-weight: 500;transform: scale(0.6) scaleX(1.25);color:#fff;position:absolute;bottom:4px;right:-37.5px;"
-              >.JS</span
-            >
-          </span>
+        <button
+          class={classNames(styles.logo)}
+          style={notRikuHome ? "cursor:pointer" : "cursor:default"}
+        >
+          {
+            notRikuHome ? (
+              <a href="/riku" rel="prefetch">
+                <span
+                  class={classNames(
+                    styles.button_content,
+                    styles.button_center
+                  )}
+                >
+                  riku
+                  <span style="font-weight: 500;transform: scale(0.6) scaleX(1.25);color:#fff;position:absolute;bottom:4px;right:-37.5px;">
+                    .JS
+                  </span>
+                </span>
+              </a>
+            ) : (
+              <span
+                class={classNames(styles.button_content, styles.button_center)}
+              >
+                riku
+                <span style="font-weight: 500;transform: scale(0.6) scaleX(1.25);color:#fff;position:absolute;bottom:4px;right:-37.5px;">
+                  .JS
+                </span>
+              </span>
+            )
+          }
         </button>
+        {
+          docs && (
+            <div style="float:right;" class={styles.docs}>
+              Documentation
+            </div>
+          )
+        }
       </div>
     </div>
     <div class={classNames(styles.nav_second)}>
