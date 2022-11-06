@@ -8,7 +8,7 @@ declare class permissions {
   static translate(permission: keyof Discord.PermissionFlags): string;
   static getIdentifiers(
     permission: Discord.PermissionResolvable
-  ): Array<keyof typeof this$1.names>;
+  ): Array<keyof typeof this.names>;
 }
 declare class utilities {
   static permissions: typeof permissions;

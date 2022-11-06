@@ -1,5 +1,5 @@
 'use strict';
 
-function i(o){return o}
+function defineConfig(config){return config}
 
-module.exports = i;
+module.exports = defineConfig;

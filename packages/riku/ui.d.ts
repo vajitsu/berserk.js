@@ -40,9 +40,9 @@ declare abstract class button {
   build(): Discord.ButtonBuilder;
 }
 
-declare const _default: {
+declare const ui: {
   actionRow: typeof actionRow;
   button: typeof button;
 };
 
-export { _default as default };
+export { ui as default };

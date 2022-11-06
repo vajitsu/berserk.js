@@ -1,4 +1,4 @@
-import Discord from "./discordjs";
+import Discord from "discord.js";
 
 declare type Config = {
   /**
@@ -54,6 +54,6 @@ declare type discordConfig = {
   customStatus?: Discord.PresenceData;
 };
 
-declare function config(options: Config): Config;
+declare function defineConfig(options: Config): Config;
 
-export { config as default };
+export { defineConfig as default };
