@@ -10,5 +10,5 @@
   line-height: 2;
 }
 .ch-code-scroll-parent {
-  overscroll-behavior-y: none;
+  overscroll-behavior: none;
 }
