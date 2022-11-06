@@ -40,3 +40,4 @@ apps/f/
 
 # hide
 examples/
+.vscode/
