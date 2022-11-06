@@ -1,26 +1,7 @@
 {
   "name": "riku",
   "version": "0.0.5",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist",
-    "discordjs.ts",
-    "discordjs.js",
-    "discordjs.d.ts",
-    "utils.ts",
-    "utils.js",
-    "utils.d.ts",
-    "ui.ts",
-    "ui.js",
-    "ui.d.ts",
-    "config.ts",
-    "config.js",
-    "config.d.ts"
-  ],
-  "license": "MIT",
   "description": "A powerful framework interacting with Discord.js",
-  "private": false,
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "build": "npm run build:main && npm run build:utils && npm run build:ui && npm run build:cli",
@@ -35,13 +16,41 @@
     "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'packages/riku/*'",
     "release": "cliff-jumper --mono-repo --tag-template \"{{name}}@{{new-version}}\""
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "utils.ts",
+    "utils.js",
+    "utils.d.ts",
+    "ui.ts",
+    "ui.js",
+    "ui.d.ts",
+    "config.ts",
+    "config.js",
+    "config.d.ts"
+  ],
   "bin": {
     "riku": "./dist/cli.js"
   },
-  "author": "Foup <fouptogo@gmail.com>",
-  "bugs": {
-    "url": "https://github.com/rikujs/riku"
+  "contributors": [
+    "Foup <fouptogo@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "discord",
+    "discordapp",
+    "bot",
+    "node"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vajitsu/rikujs.git"
   },
+  "bugs": {
+    "url": "https://github.com/vajitsu/rikujs/issues"
+  },
+  "homepage": "https://vajitsu.com/riku",
   "peerDependencies": {
     "discord.js": "^14.6.0"
   },
@@ -63,11 +72,7 @@
     "util": "^0.12.5",
     "uuid": "^9.0.0"
   },
-  "keywords": [
-    "discord",
-    "riku"
-  ],
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.9.0"
   }
 }
