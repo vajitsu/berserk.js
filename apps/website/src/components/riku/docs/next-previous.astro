@@ -21,8 +21,8 @@ const { next, overwriteNext, prev, overwritePrev, style } = Astro.props;
           : `/riku/docs/${prev.toLowerCase().replaceAll(" ", "-")}`}
         class={styles.link}
       >
-        <u>{prev}</u>
-        <span class="disable-select">{"<"} Previously</span>
+        {"<"}
+        {prev}
       </a>
     </div>
     <div class={styles.inner_next}>
@@ -33,8 +33,7 @@ const { next, overwriteNext, prev, overwritePrev, style } = Astro.props;
           : `/riku/docs/${next.toLowerCase().replaceAll(" ", "-")}`}
         class={styles.link}
       >
-        <span class="disable-select">Next up &gt;</span>
-        <u>{next}</u>
+        {next} &gt;
       </a>
     </div>
   </div>

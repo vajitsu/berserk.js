@@ -13,8 +13,8 @@
 }
 
 .inner {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
 }
 
 .inner_next {
@@ -28,7 +28,7 @@
 }
 
 .inner_prev {
-    position: relative;
+  position: relative;
   width: 50%;
   display: flex;
   align-items: center;
@@ -47,4 +47,10 @@
   background: var(--background);
   color: var(--foreground);
   border: 1px solid var(--foreground);
+}
+
+@media screen and (max-width: 600px) {
+  .inner {
+    font-size: clamp(12px, 3vw, 2.33vw);
+  }
 }

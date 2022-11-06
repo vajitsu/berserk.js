@@ -19,7 +19,7 @@ export default defineConfig({
           autoImport: false,
           theme,
           lineNumbers: true,
-          showCopyButton: true,
+          showCopyButton: false,
           staticMediaQuery: "(max-width: 951px)",
         },
       ],
