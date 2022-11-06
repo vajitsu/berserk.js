@@ -9,8 +9,7 @@
     "build:utils": "tsup utils.ts --outDir . --target es5 --dts --minify --keep-names",
     "build:ui": "tsup ui.ts --outDir . --target es5 --dts --minify --keep-names",
     "build:config": "tsup config.ts --outDir . --target es5 --dts --minify --keep-names",
-    "build:cli": "tsup --entry.cli src/cli/index.ts --minify --format cjs && npm run build:spack ",
-    "build:spack": "tsup --entry.spack-config src/helpers/spack-config.ts --minify --target es5 --keep-names",
+    "build:cli": "tsup --entry.cli src/cli/index.ts --minify --format cjs",
     "prepublishOnly": "npm run build",
     "dev": "npm run build --watch",
     "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'packages/riku/*'",
@@ -28,7 +27,10 @@
     "ui.d.ts",
     "config.ts",
     "config.js",
-    "config.d.ts"
+    "config.d.ts",
+    "geist.ts",
+    "geist.js",
+    "geist.d.ts"
   ],
   "bin": {
     "riku": "./dist/cli.js"
@@ -45,10 +47,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/vajitsu/rikujs.git"
+    "url": "https://github.com/vajitsu/riku.js.git"
   },
   "bugs": {
-    "url": "https://github.com/vajitsu/rikujs/issues"
+    "url": "https://github.com/vajitsu/riku.js/issues"
   },
   "homepage": "https://vajitsu.com/riku",
   "peerDependencies": {
@@ -56,6 +58,7 @@
   },
   "devDependencies": {
     "@favware/cliff-jumper": "^1.8.8",
+    "@types/node": "^18.11.9",
     "@types/uuid": "^8.3.4",
     "axios": "^1.1.3",
     "chalk": "5.1.2",
@@ -68,7 +71,7 @@
     "tsconfig": "*",
     "tsconfig-paths": "4.1.0",
     "tsup": "^6.4.0",
-    "typescript": "^4.5.2",
+    "typescript": "latest",
     "util": "^0.12.5",
     "uuid": "^9.0.0"
   },
