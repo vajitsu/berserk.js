@@ -8,4 +8,5 @@
 }
 .ch-code-wrapper {
   line-height: 2;
+  overscroll-behavior-y: contain;
 }
