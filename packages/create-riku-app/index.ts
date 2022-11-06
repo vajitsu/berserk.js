@@ -3,6 +3,7 @@
 import chalk from "chalk";
 import Commander from "commander";
 import path from "path";
+import ciInfo from "ci-info";
 import prompts from "prompts";
 import checkForUpdate from "update-check";
 import { createApp, DownloadError } from "./create-app";
@@ -24,6 +25,12 @@ const program = new Commander.Command(packageJson.name)
     `
 
   Initialize as a TypeScript project.
+`
+  )
+  .option(
+    "--js, --javascript",
+    `
+  Initialize as a JavaScript project.
 `
   )
   .option(
@@ -121,20 +128,6 @@ async function run(): Promise<void> {
     process.exit(1);
   }
 
-  if (!program.typescript && !program.example) {
-    await prompts({
-      type: "toggle",
-      name: "typescript",
-      message: "Would you like to use Typescript (recommended)",
-      initial: true,
-      active: "Yes",
-      inactive: "No",
-      format(res) {
-        program.typescript = res;
-      },
-    });
-  }
-
   if (program.example === true) {
     console.error(
       "Please provide an example name or url, otherwise remove the example option."
@@ -143,6 +136,51 @@ async function run(): Promise<void> {
   }
 
   const example = typeof program.example === "string" && program.example.trim();
+
+  /**
+   * If the user does not provide the necessary flags, prompt them for whether
+   * to use TS or JS.
+   */
+  if (!example) {
+    if (ciInfo.isCI) {
+      // default to JavaScript in CI as we can't prompt to
+      // prevent breaking setup flows
+      program.javascript = true;
+      program.typescript = false;
+      program.eslint = true;
+    } else {
+      if (!program.typescript && !program.javascript) {
+        const styledTypeScript = chalk.hex("#007acc")("TypeScript");
+        const { typescript } = await prompts(
+          {
+            type: "toggle",
+            name: "typescript",
+            message: `Would you like to use ${styledTypeScript} with this project?`,
+            initial: true,
+            active: "Yes",
+            inactive: "No",
+          },
+          {
+            /**
+             * User inputs Ctrl+C or Ctrl+D to exit the prompt. We should close the
+             * process and not write to the file system.
+             */
+            onCancel: () => {
+              console.error("Exiting.");
+              process.exit(1);
+            },
+          }
+        );
+
+        /**
+         * Depending on the prompt response, set the appropriate program flags.
+         */
+        program.typescript = Boolean(typescript);
+        program.javascript = !Boolean(typescript);
+      }
+    }
+  }
+
   try {
     await createApp({
       appPath: resolvedProjectPath,

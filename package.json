@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "turbo run build --color",
-    "dev": "turbo run dev --parallel --color",
+    "dev": "turbo run dev --parallel --color --filter=bot --filter=website",
     "lint": "turbo run lint",
     "test": "turbo run test --parallel",
     "test:watch": "turbo run test:watch --parallel",
