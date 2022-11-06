@@ -58,7 +58,7 @@ export default async function (req: NextRequest) {
           </div>
           <div
             style={{
-              fontSize: 28,
+              fontSize: 35,
               fontStyle: "normal",
               letterSpacing: "-0.025em",
               color: "#EAEAEA",

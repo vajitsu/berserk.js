@@ -24,7 +24,7 @@
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "build": "npm run build:main && npm run build:utils && npm run build:ui && npm run build:cli",
-    "build:main": "tsup src/index.ts --target es5 --minify --keep-names --clean",
+    "build:main": "tsup src/index.ts --target es5 --minify --keep-names",
     "build:utils": "tsup utils.ts --outDir . --target es5 --dts --minify --keep-names",
     "build:ui": "tsup ui.ts --outDir . --target es5 --dts --minify --keep-names",
     "build:config": "tsup config.ts --outDir . --target es5 --dts --minify --keep-names",
