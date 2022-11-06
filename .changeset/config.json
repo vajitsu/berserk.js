@@ -7,12 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": [
-    "ui",
-    "tsconfig",
-    "eslint-config-custom",
-    "@vajitsu/website",
-    "bot",
-    "og"
-  ]
+  "ignore": ["website", "bot", "api"]
 }
