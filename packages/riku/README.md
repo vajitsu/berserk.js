@@ -1,8 +1,8 @@
 <p align="center">
   <a href="https://vajitsu.com/riku">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://web-rikuu.vercel.app/assets/logo/circle-dark.png">
-      <img src="https://web-rikuu.vercel.app/assets/logo/circle-light.png" height="128">
+      <source media="(prefers-color-scheme: dark)" srcset="https://vajitsu.com/assets/logo/circle-dark.png">
+      <img src="https://vajitsu.com/assets/logo/circle-light.png" height="128">
     </picture>
   </a>
   <h1 align="center">Riku.js</h1>
