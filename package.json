@@ -41,7 +41,6 @@
     "@next/mdx": "^13.0.2",
     "chalk": "^5.1.2",
     "config": "^3.3.8",
-    "create-riku-app": "*",
     "dotenv": "^16.0.3",
     "next": "^13.0.2",
     "riku": "*"
