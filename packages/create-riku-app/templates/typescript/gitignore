@@ -26,8 +26,6 @@ yarn-error.log*
 
 # riku
 .riku/
-config/
-.env
 
 # typescript
 \*.tsbuildinfo

@@ -1,6 +1,6 @@
 {
   "name": "create-riku-app",
-  "version": "0.10.0",
+  "version": "0.10.01",
   "keywords": [
     "discord",
     "riku",
@@ -23,7 +23,7 @@
   "scripts": {
     "dev": "ncc build ./index.ts -w -o dist/",
     "prebuild": "rimraf ./dist/",
-    "build": "tsup build ./index.ts --outDir ./dist/ --minify --target es5"
+    "build": "tsup build ./index.ts --outDir ./dist/ --minify --format cjs"
   },
   "devDependencies": {
     "@types/async-retry": "1.4.2",

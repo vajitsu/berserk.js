@@ -147,7 +147,6 @@ async function run(): Promise<void> {
       // prevent breaking setup flows
       program.javascript = true;
       program.typescript = false;
-      program.eslint = true;
     } else {
       if (!program.typescript && !program.javascript) {
         const styledTypeScript = chalk.hex("#007acc")("TypeScript");
