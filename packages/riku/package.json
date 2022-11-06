@@ -33,7 +33,7 @@
     "prepublishOnly": "npm run build",
     "dev": "npm run build --watch",
     "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'packages/riku/*'",
-    "release": "cliff-jumper --mono-repo"
+    "release": "cliff-jumper --mono-repo --tag-template \"{{name}}@{{new-version}}\""
   },
   "bin": {
     "riku": "./dist/cli.js"
