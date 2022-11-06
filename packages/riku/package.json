@@ -1,6 +1,6 @@
 {
   "name": "riku",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -32,7 +32,8 @@
     "build:spack": "tsup --entry.spack-config src/helpers/spack-config.ts --minify --target es5 --keep-names",
     "prepublishOnly": "npm run build",
     "dev": "npm run build --watch",
-    "riku": "riku"
+    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'packages/riku/*'",
+    "release": "cliff-jumper --mono-repo"
   },
   "bin": {
     "riku": "./dist/cli.js"
@@ -45,6 +46,7 @@
     "discord.js": "^14.6.0"
   },
   "devDependencies": {
+    "@favware/cliff-jumper": "^1.8.8",
     "@types/uuid": "^8.3.4",
     "axios": "^1.1.3",
     "chalk": "5.1.2",
