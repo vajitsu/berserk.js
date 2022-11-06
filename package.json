@@ -13,10 +13,11 @@
     "test": "turbo run test --parallel",
     "test:watch": "turbo run test:watch --parallel",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "release": "turbo run build --filter=riku --filter=create-riku-app && changeset version && changeset publish",
+    "release": "turbo run build --filter=riku --filter=create-riku-app && changeset version && changeset publish && git push --follow-tags",
     "prerelease:riku": "turbo run build --filter=riku",
     "release:riku": "changeset version && changeset publish",
-    "release:cra": "turbo run build --filter=create-riku-app && changeset version && changeset publish"
+    "prerelease:cra": "turbo run build --filter=create-riku-app",
+    "release:cra": "changeset version && changeset publish"
   },
   "devDependencies": {
     "@types/config": "^3.3.0",
