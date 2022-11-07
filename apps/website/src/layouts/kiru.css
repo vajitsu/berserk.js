@@ -5,3 +5,8 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+::selection {
+  background-color: var(--geist-cyan);
+  color: var(--foreground);
+}

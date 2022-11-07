@@ -38,7 +38,9 @@ import { stringify } from "postcss";
     <div class={styles.content}>
       {
         previous ? (
-          <div class={useClasses(styles.previous, "space-grotesk")}>
+          <div
+            class={useClasses(styles.item, styles.previous, "space-grotesk")}
+          >
             <a href={previous.path}>
               <ArrowLeft /> {previous.title}
             </a>
@@ -47,7 +49,7 @@ import { stringify } from "postcss";
       }
       {
         next ? (
-          <div class={useClasses(styles.next, "space-grotesk")}>
+          <div class={useClasses(styles.item, styles.next, "space-grotesk")}>
             <a href={next.path}>
               {next.title} <ArrowRight />
             </a>

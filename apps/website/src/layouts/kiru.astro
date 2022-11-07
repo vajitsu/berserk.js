@@ -12,11 +12,11 @@ import { GeistProvider, CssBaseline, Page } from "@geist-ui/core";
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Vajitsu{sub ? ` | ${sub}` : ""}</title>
+    <title>Kiru{sub ? ` | ${sub}` : ""}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <GeistProvider client:load>
+    <GeistProvider>
       <CssBaseline />
       <Page>
         <slot />
