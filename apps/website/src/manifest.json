@@ -1,0 +1,18 @@
+{
+  "routes": [
+    {
+      "title": "Documentation",
+      "heading": true,
+      "routes": [
+        {
+          "title": "Getting Started",
+          "path": "/docs/getting-started"
+        },
+        {
+          "title": "Basic Features",
+          "path": "/docs/basic-features"
+        }
+      ]
+    }
+  ]
+}

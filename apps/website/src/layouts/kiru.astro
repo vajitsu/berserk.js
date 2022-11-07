@@ -5,7 +5,8 @@ interface Props {
 const { sub } = Astro.props;
 
 import "../styles/globals.css";
-import "./riku.css";
+import "./kiru.css";
+import { GeistProvider, CssBaseline, Page } from "@geist-ui/core";
 ---
 
 <html lang="en">
@@ -14,5 +15,12 @@ import "./riku.css";
     <title>Vajitsu{sub ? ` | ${sub}` : ""}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
-  <slot />
+  <body>
+    <GeistProvider client:load>
+      <CssBaseline />
+      <Page>
+        <slot />
+      </Page>
+    </GeistProvider>
+  </body>
 </html>

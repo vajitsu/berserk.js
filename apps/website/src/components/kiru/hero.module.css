@@ -9,6 +9,11 @@
   padding-top: 2.5rem;
   padding-bottom: 4rem;
 }
+@media (prefers-color-scheme: light) {
+  .root {
+      background: linear-gradient(0deg,#fff,hsla(0,0%,100%,0)) #d0d3d4;
+  }
+}
 .prismDark,
 .prismLight {
   --width: 900px;

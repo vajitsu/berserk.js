@@ -1,6 +1,7 @@
 ---
 import styles from "./header.module.css";
 import classNames from "classnames";
+import { useClasses } from "@geist-ui/core";
 
 interface Props {
   docs?: string;
@@ -21,15 +22,15 @@ const notRikuHome = pathname.split("/").length > 2;
         >
           {
             notRikuHome ? (
-              <a href="/riku" rel="prefetch">
+              <a href="/kiru" rel="prefetch">
                 <span
                   class={classNames(
                     styles.button_content,
                     styles.button_center
                   )}
                 >
-                  riku
-                  <span style="font-weight: 500;transform: scale(0.6) scaleX(1.25);color:#fff;position:absolute;bottom:4px;right:-37.5px;">
+                  kiru
+                  <span style="font-weight: 500;transform: scale(0.6) scaleX(1.25);;position:absolute;bottom:4px;right:-37.5px;color:var(--accents-7);transition:color .3s ease;">
                     .JS
                   </span>
                 </span>
@@ -38,8 +39,8 @@ const notRikuHome = pathname.split("/").length > 2;
               <span
                 class={classNames(styles.button_content, styles.button_center)}
               >
-                riku
-                <span style="font-weight: 500;transform: scale(0.6) scaleX(1.25);color:#fff;position:absolute;bottom:4px;right:-37.5px;">
+                kiru
+                <span style="font-weight: 500;transform: scale(0.6) scaleX(1.25);position:absolute;bottom:4px;right:-37.5px;color:var(--accents-7);transition:color .3s ease;">
                   .JS
                 </span>
               </span>
@@ -48,7 +49,10 @@ const notRikuHome = pathname.split("/").length > 2;
         </button>
         {
           docs && (
-            <div style="float:right;" class={styles.docs}>
+            <div
+              style="float:right;"
+              class={useClasses(styles.docs, "space-grotesk")}
+            >
               {docs}
             </div>
           )

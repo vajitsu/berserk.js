@@ -1,0 +1,61 @@
+---
+import manifest from "../../../manifest.json";
+
+interface Props {
+  frontmatter: any;
+}
+const { frontmatter } = Astro.props;
+
+const Documentation = manifest.routes.find(
+  (r) => r.title === frontmatter.section
+);
+const current = Documentation?.routes.find(
+  (r) => r.title === frontmatter.title
+) as {
+  title: string;
+  path: string;
+};
+
+const currentIdx = Documentation?.routes.indexOf(current);
+const previousIdx = (currentIdx as number) - 1;
+const nextIdx = (currentIdx as number) + 1;
+
+const previous = Documentation?.routes[previousIdx];
+const next = Documentation?.routes[nextIdx];
+
+import { useClasses } from "@geist-ui/core";
+import { ArrowLeft, ArrowRight } from "@geist-ui/icons";
+
+import styles from "./navbar.module.css";
+import { stringify } from "postcss";
+---
+
+<!-- {
+  next || previous ? ( -->
+<div class={useClasses(styles.navbar, styles["css-sticky"])}>
+  <div class={styles.wrapper}>
+    <div class={styles.background}></div>
+    <div class={styles.content}>
+      {
+        previous ? (
+          <div class={useClasses(styles.previous, "space-grotesk")}>
+            <a href={previous.path}>
+              <ArrowLeft /> {previous.title}
+            </a>
+          </div>
+        ) : null
+      }
+      {
+        next ? (
+          <div class={useClasses(styles.next, "space-grotesk")}>
+            <a href={next.path}>
+              {next.title} <ArrowRight />
+            </a>
+          </div>
+        ) : null
+      }
+    </div>
+  </div>
+</div>
+<!-- ) : null
+} -->

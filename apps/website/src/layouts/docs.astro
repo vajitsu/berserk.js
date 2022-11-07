@@ -1,0 +1,47 @@
+---
+import "../styles/globals.css";
+
+import "@code-hike/mdx/styles.css";
+import "../styles/ch.css";
+
+import "./docs.css";
+import "../styles/code.css";
+
+const { frontmatter } = Astro.props;
+
+import Header from "../components/kiru/header.astro";
+import Navbar from "../components/kiru/docs/navbar.astro";
+
+import { GeistProvider, CssBaseline, Page } from "@geist-ui/core";
+---
+
+<html lang="en">
+  <head>
+    <title>
+      {
+        frontmatter.title
+          ? frontmatter.title.concat(" | Kiru.js")
+          : "Docs | Kiru.js"
+      }
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <GeistProvider client:load>
+      <CssBaseline />
+      <Page>
+        <Header docs={"Documentation"} />
+        <Navbar frontmatter={frontmatter} />
+        <div class="main">
+          <div class="main-content">
+            <div class="docs">
+              <div class="docs-content">
+                <slot />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Page>
+    </GeistProvider>
+  </body>
+</html>
