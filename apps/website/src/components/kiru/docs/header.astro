@@ -1,0 +1,37 @@
+---
+import Banner from "./banner.astro";
+---
+
+<header class="header sticky">
+  <Banner />
+  <div class="inner"></div>
+</header>
+
+<style>
+  .header {
+    background: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    z-index: 3000;
+    transition: background 0.6s ease;
+    border-bottom: 1px solid var(--accents-7);
+    transform: translateZ(0);
+    -webkit-backdrop-filter: saturate(180%) blur(5px);
+    backdrop-filter: saturate(180%) blur(5px);
+    background: var(--accents-8);
+  }
+  .sticky {
+    position: sticky;
+    top: 0;
+  }
+  .inner {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 2rem;
+    max-width: 1440px;
+    text-align: center;
+  }
+</style>

@@ -1,0 +1,113 @@
+<div class="banner">
+  <div class="inner">
+    <p>
+      You are viewing the <b>Kiru.js</b> documentation
+    </p>
+    <a href="/kiru"
+      ><p>
+        Go Back <b>Home</b> →
+      </p>
+    </a>
+  </div>
+  <div class="mobile-inner">
+    <p>
+      These are <b>docs</b>
+    </p>
+    <a href="/kiru"
+      ><p>
+        Go Back <b>Home</b> →
+      </p>
+    </a>
+  </div>
+</div>
+
+<style lang={"sass"}>
+  .banner {
+    width: 100%;
+    background: var(--background);
+    color: #fff;
+    height: 50px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+  }
+  .inner {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    -moz-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+  }
+  .mobile-inner {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    -moz-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    display: none;
+  }
+  .inner p,
+  .mobile-inner p {
+    color: #fff;
+    margin: 0;
+    -webkit-transition: color.15s ease;
+    -moz-transition: color.15s ease;
+    -o-transition: color.15s ease;
+    transition: color.15s ease;
+  }
+  .inner a,
+  .mobile-inner a {
+    display: -webkit-inline-box;
+    display: -webkit-inline-flex;
+    display: -moz-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+  }
+  @media (max-width: 640px) {
+    .inner {
+      padding: 0 1rem;
+      display: none;
+    }
+    .mobile-inner {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+    }
+  }
+</style>

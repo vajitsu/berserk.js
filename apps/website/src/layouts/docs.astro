@@ -1,18 +1,36 @@
 ---
+import manifest from "../manifest.json";
+
 import "../styles/globals.css";
-
-import "@code-hike/mdx/styles.css";
-import "../styles/ch.css";
-
 import "./docs.css";
 import "../styles/code.css";
 
 const { frontmatter } = Astro.props;
 
-import Header from "../components/kiru/header.astro";
-import Navbar from "../components/kiru/docs/navbar.astro";
+interface Route {
+  title: string;
+  path: string;
+  routes?: Array<Route>;
+}
 
-import { GeistProvider, CssBaseline, Page } from "@geist-ui/core";
+const Documentation = manifest.routes.find(
+  (r) => r.title === frontmatter.section
+);
+const current = Documentation?.routes.find(
+  (r) => r.title === frontmatter.title
+) as Route;
+
+const currentIdx = Documentation?.routes.indexOf(current);
+const previousIdx = (currentIdx as number) - 1;
+const nextIdx = (currentIdx as number) + 1;
+
+const previous = Documentation?.routes[previousIdx] as Route;
+const next = Documentation?.routes[nextIdx] as Route;
+
+import Header from "../components/kiru/header.astro";
+
+import { GeistProvider, Page } from "@geist-ui/core";
+import PageNav from "../components/kiru/docs/page-nav.astro";
 ---
 
 <html lang="en">
@@ -27,20 +45,31 @@ import { GeistProvider, CssBaseline, Page } from "@geist-ui/core";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <GeistProvider>
-      <CssBaseline />
+    <GeistProvider client:idle>
       <Page>
-        <Header docs={"Documentation"} />
-        <Navbar frontmatter={frontmatter} />
-        <div class="main">
-          <div class="main-content">
-            <div class="docs">
-              <div class="docs-content">
-                <slot />
+        <Page.Header>
+          <Header />
+        </Page.Header>
+        <Page.Body>
+          <div class="main">
+            <div class="main-content">
+              <div class="docs">
+                <div class="docs-content">
+                  <slot />
+                </div>
+                {
+                  next && (
+                    <PageNav to={next.path}>
+                      {next.title}
+                      {next.routes && ": " + next.routes[0].title}
+                    </PageNav>
+                  )
+                }
+                <hr />
               </div>
             </div>
           </div>
-        </div>
+        </Page.Body>
       </Page>
     </GeistProvider>
   </body>

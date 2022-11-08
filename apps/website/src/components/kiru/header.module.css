@@ -143,7 +143,7 @@
   overflow: hidden;
   display: inline-block;
   font-weight: 700;
-  color: var(--geist-cyan-dark);
+  color: #fff;
 }
 
 .button_center {
@@ -186,7 +186,7 @@
 
 .clockbox {
   user-select: none;
-  color: var(--accents-6);
+  color: #eaeaea
 }
 
 .link_padding {

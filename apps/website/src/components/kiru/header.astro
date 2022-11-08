@@ -12,7 +12,7 @@ const pathname = Astro.url.pathname;
 const notRikuHome = pathname.split("/").length > 2;
 ---
 
-<div class={classNames(styles.wrapper)}>
+<div id="globalnav" class={classNames(styles.wrapper)}>
   <header class={classNames(styles.header)}>
     <div class={styles.nav_first}>
       <div>
@@ -30,7 +30,7 @@ const notRikuHome = pathname.split("/").length > 2;
                   )}
                 >
                   kiru
-                  <span style="font-weight: 500;transform: scale(0.6) scaleX(1.25);;position:absolute;bottom:4px;right:-37.5px;color:var(--accents-7);transition:color .3s ease;">
+                  <span style="font-weight: 500;transform: scale(0.6) scaleX(1.25);;position:absolute;bottom:4px;right:-37.5px;color:#999;transition:color .3s ease;">
                     .JS
                   </span>
                 </span>
@@ -40,7 +40,7 @@ const notRikuHome = pathname.split("/").length > 2;
                 class={classNames(styles.button_content, styles.button_center)}
               >
                 kiru
-                <span style="font-weight: 500;transform: scale(0.6) scaleX(1.25);position:absolute;bottom:4px;right:-37.5px;color:var(--accents-7);transition:color .3s ease;">
+                <span style="font-weight: 500;transform: scale(0.6) scaleX(1.25);position:absolute;bottom:4px;right:-37.5px;color:#999;transition:color .3s ease;">
                   .JS
                 </span>
               </span>

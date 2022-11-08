@@ -60,8 +60,8 @@
 
 :root {
   --header-height: 64px;
-  --header-border-bottom: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
-  --header-background: hsla(0, 0%, 100%, 0.8);
+  --header-background: rgba(0, 0, 0, 0.75);
+  --header-border-bottom: inset 0 -1px 0 0 hsl(0, 0%, 0%);
 
   --text-gradient: linear-gradient(180deg, rgba(0, 0, 0, 0.8), #000);
 
@@ -305,6 +305,19 @@ html {
 ::selection {
   background-color: var(--geist-selection);
   color: var(--foreground);
+}
+
+.fw4 {
+  font-weight: 400;
+}
+
+.no-drag {
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .disable-select {

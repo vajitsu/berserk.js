@@ -10,7 +10,13 @@
         },
         {
           "title": "Basic Features",
-          "path": "/docs/basic-features"
+          "path": "/docs/basic-features",
+          "routes": [
+            {
+              "title": "Pages",
+              "path": "/docs/basic-features/pages.md"
+            }
+          ]
         }
       ]
     }

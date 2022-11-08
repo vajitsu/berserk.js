@@ -3,9 +3,10 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 52px;
+  height: 56px;
   min-width: 1024px;
   z-index: 9997;
+  background: #fff;
 }
 
 @media only screen and (max-width: 1044px) {
@@ -33,6 +34,7 @@
   height: auto;
   min-height: 100%;
   z-index: 1;
+  background: rgba(0, 0, 0, 0.92);
 }
 
 .background::after {
@@ -45,20 +47,20 @@
   width: 1010px;
   height: 1px;
   z-index: 1;
-  background-color: rgba(0, 0, 0, 0.16);
+  transition: all .3s ease;
 }
+
+.on-scroll {
+  box-shadow: var(--header-border-bottom);
+}
+
+.on-scroll {}
 
 @media only screen and (max-width: 1023px) {
   .background::after {
     margin-left: 0;
     left: 0;
     width: 100%;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .background::after {
-    background-color: rgba(255, 255, 255, 0.16);
   }
 }
 
@@ -113,4 +115,5 @@
 .previous svg,
 .next svg {
   margin: 5px 0 -5px;
+  transform: scaleY(0.84);
 }

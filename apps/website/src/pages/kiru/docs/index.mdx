@@ -5,9 +5,100 @@ section: Documentation
 ---
 
 import Link from "../../../components/Link.astro";
+import H4 from "../../../components/mdx/h4.astro";
+import H2 from "../../../components/mdx/h2.astro";
+import IC from "../../../components/mdx/inline-code.astro";
 
 # Getting Started
 
 Welcome to the Kiru.js documentation!
 
 If you have questions about anything related to Kiru.js, you're always welcome to ask our community on <Link to="https://github.com/vajitsu/kiru.js/discussions" newTab={true}>Github Discussions</Link>.
+
+<H4 id="system-requirements">System Requirements</H4>
+
+- <Link to="https://nodejs.org">Node.js 16.9.0</Link> or newer
+
+<H2 id="automatic-setup">Automatic Setup</H2>
+
+We recommend creating a new Kiru.js app using <IC>create-kiru-app</IC>, which sets up everything automatically for you. To create a project, run:
+
+```bash
+npx create-kiru-app@latest
+# or
+yarn create kiru-app
+# or
+pnpm create kiru-app
+```
+
+<H2 id="manual-setup">Manual Setup</H2>
+
+Install <IC>discord.js</IC> and <IC>kiru</IC> in your project:
+
+```bash
+npm install discord.js kiru
+# or
+yarn add discord.js kiru
+# or
+pnpm add discord.js kiru
+```
+
+Open <IC>package.json</IC> and add the following <IC>scripts</IC>:
+
+```json
+"scripts": {
+  "dev": "kiru dev",
+  "build": "kiru build",
+  "start": "kiru start"
+}
+```
+
+These scripts refer to the different stages of developing an application:
+
+- <IC>dev</IC> - Runs <IC>kiru dev</IC> to start Riku.js in development mode
+- <IC>build</IC> - Runs <IC>kiru build</IC> to build the application for production
+  usage
+- <IC>start</IC> - Runs <IC>kiru start</IC> to start a Riku.js production node
+
+Create two directories <IC>commands</IC> and <IC>events</IC> at the root of your application:
+
+- <IC>commands</IC> - Associated with slash commands executed by Discord users
+- <IC>events</IC> - Executes functions when a event from Discord is emitted
+
+Riku.js is built around the concept of simplicity. Both the <IC>commands</IC> and <IC>events</IC> share this concept. You build your commands or events with our pre-built classes while we focus on adding it to your Discord bot's mainframe. This allows you to focus on the content create, rather than pondering about how to implement it to the Discord bot's core.
+
+> To learn more about how this works, visit <Link to="/docs/basic-features#fundamentals"><IC>Basic Features</IC></Link>.
+
+Inside the <IC>commands</IC> directory add a <IC>hello</IC> directory with the <IC>command.js</IC> file to get started. This will be a slash command under the name "hello".
+
+Populate <IC>commands/hello/command.js</IC> with the following contents:
+
+```js
+const Discord = require("discord.js");
+const Kiru = require("kiru");
+
+class Hello extends Kiru.command {
+  data = new discord.SlashCommandBuilder()
+    .setName("hello")
+    .setDescription("Hello World!");
+
+  async run(interaction, client) {
+    interaction.reply(`Hello ${interaction.user.tag}.`);
+  }
+}
+
+export default Hello;
+```
+
+After the set up is complete:
+
+- Run <IC>npm run dev</IC> or <IC>yarn dev</IC> or <IC>pnpm dev</IC> to start the development node
+- Visit a Discord channel the bot has access to and run <IC>/hello</IC>
+- Edit <IC>commands/hello/command.js</IC> and see the updated result when exucting the command again
+
+So far, we get:
+
+- Automatic compilation and bundling
+- No index file
+
+In addition, any Riku.js application is ready for production from the start. Read more in our <Link to="/docs/deployment">Deployment documentation</Link>.

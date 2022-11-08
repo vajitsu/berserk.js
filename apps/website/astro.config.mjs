@@ -5,6 +5,8 @@ import prefetch from "@astrojs/prefetch";
 import react from "@astrojs/react";
 import vercel from "@astrojs/vercel/serverless";
 
+import rehypeRewrite from "rehype-rewrite";
+
 // https://astro.build/config
 export default defineConfig({
   output: "server",
@@ -13,7 +15,9 @@ export default defineConfig({
     syntaxHighlight: "prism",
   },
   integrations: [
-    mdx(),
+    mdx({
+      extendPlugins: "markdown",
+    }),
     react(),
     vercel(),
     prefetch({

@@ -27,12 +27,9 @@ import { useClasses } from "@geist-ui/core";
 import { ArrowLeft, ArrowRight } from "@geist-ui/icons";
 
 import styles from "./navbar.module.css";
-import { stringify } from "postcss";
 ---
 
-<!-- {
-  next || previous ? ( -->
-<div class={useClasses(styles.navbar, styles["css-sticky"])}>
+<div id="localnav" class={useClasses(styles.navbar, styles["css-sticky"])}>
   <div class={styles.wrapper}>
     <div class={styles.background}></div>
     <div class={styles.content}>
@@ -59,5 +56,3 @@ import { stringify } from "postcss";
     </div>
   </div>
 </div>
-<!-- ) : null
-} -->

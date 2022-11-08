@@ -9,11 +9,13 @@
   padding-top: 2.5rem;
   padding-bottom: 4rem;
 }
+
 @media (prefers-color-scheme: light) {
   .root {
-      background: linear-gradient(0deg,#fff,hsla(0,0%,100%,0)) #d0d3d4;
+    background: linear-gradient(0deg, #fff, hsla(0, 0%, 100%, 0)) #d0d3d4;
   }
 }
+
 .prismDark,
 .prismLight {
   --width: 900px;
@@ -32,7 +34,9 @@
   -webkit-animation: fadeIn 0.8s ease forwards;
   animation: fadeIn 0.8s ease forwards;
 }
+
 @media (max-width: 640px) {
+
   .prismDark,
   .prismLight {
     --width: 600px;
@@ -40,6 +44,7 @@
     transform: translateY(-20px);
   }
 }
+
 .meta {
   position: relative;
   z-index: 2;
@@ -48,9 +53,11 @@
   padding: 0 32px;
   text-align: center;
 }
+
 .meta svg {
   width: 200px;
 }
+
 .meta h1 {
   background: var(--text-gradient);
   -webkit-background-clip: text;
@@ -62,6 +69,11 @@
   margin: 32px 0 8px;
   line-height: 1.3;
 }
+
+.meta h1::selection {
+  -webkit-text-fill-color: var(--foreground);
+}
+
 @media (max-width: 1025px) {
   .meta h1 {
     font-size: 64px;
@@ -69,44 +81,54 @@
     line-height: 1.2;
   }
 }
+
 @media (max-width: 768px) {
   .meta h1 {
     font-size: 49px;
     line-height: 1.1;
   }
 }
+
 .meta p {
   margin-bottom: 38px;
 }
+
 .meta p strong {
   color: var(--accents-7);
   font-weight: 500;
 }
+
 .text_wrapper {
   margin: 0;
   margin-bottom: 0px;
   color: var(--accents-5);
 }
+
 .text_wrapper.text_s_20 {
   font-size: 1.25rem;
   letter-spacing: -0.020625rem;
   font-weight: 600;
   line-height: 1.5rem;
 }
+
 .text_w_400 {
   font-weight: 400;
 }
+
 .text_lh_32 {
   line-height: 2rem;
 }
+
 .conf_logo {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .conf_logo svg {
   height: 40px;
 }
+
 .fade {
   content: "";
   position: absolute;
@@ -116,18 +138,18 @@
   top: 180px;
   bottom: 0;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    hsla(0, 0%, 85%, 0) 0,
-    #d9d9d9 20%,
-    #d9d9d9 40%,
-    transparent 80%
-  );
+  background: linear-gradient(180deg,
+      hsla(0, 0%, 85%, 0) 0,
+      #d9d9d9 20%,
+      #d9d9d9 40%,
+      transparent 80%);
 }
+
 .readthedocs_button_link {
   text-decoration: none;
   cursor: pointer;
 }
+
 .readthedocs_button_container {
   --radius: 9999px;
   position: relative;
@@ -135,6 +157,7 @@
   border-radius: var(--radius);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .readthedocs_button_wrapper {
   border-radius: var(--radius);
   padding: 1px;
@@ -144,10 +167,12 @@
   display: block;
   isolation: isolate;
 }
+
 .readthedoc_sbutton_wrapper_children {
   position: relative;
   z-index: 1000;
 }
+
 .readthedocs_button_contents {
   grid-gap: 12px;
   gap: 12px;
@@ -162,16 +187,19 @@
   border-radius: 24px;
   white-space: nowrap;
 }
+
 .learnriku_button_link {
   text-decoration: none;
-cursor: pointer;
+  cursor: pointer;
 }
+
 .learnriku_gradient_wrapper_container {
   position: relative;
   pointer-events: none;
   border-radius: var(--radius);
-  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
 }
+
 .learnriku_gradient_wrapper_gradientWrapper {
   border-radius: var(--radius);
   padding: 1px;
@@ -181,7 +209,9 @@ cursor: pointer;
   display: block;
   isolation: isolate;
 }
-.learnriku_gradient_wrapper_gradient, .learnriku_gradient_wrapper_active {
+
+.learnriku_gradient_wrapper_gradient,
+.learnriku_gradient_wrapper_active {
   position: absolute;
   top: 0;
   left: 0;
@@ -191,44 +221,53 @@ cursor: pointer;
   display: block;
   transform-origin: center center;
 }
+
 .learnriku_gradient_wrapper_active {
   opacity: 0;
   transition: opacity .9s ease;
   background: var(--foreground);
 }
+
 .learnriku_button_link:hover .learnriku_gradient_wrapper_active {
   opacity: 0.6;
 }
+
 .learnriku_gradient_wrapper_children {
   position: relative;
   z-index: 1000;
 }
+
 .learnriku_gradient_wrapper_grayscaleBorder {
   -webkit-animation: gradient-wrapper_spinGradient 5s linear infinite;
   animation: gradient-wrapper_spinGradient 5s linear infinite;
   filter: blur(6px);
-  background: conic-gradient(transparent 135deg,var(--foreground) 180deg,transparent 255deg),conic-gradient(transparent -45deg,var(--foreground) 0deg,transparent 75deg);
+  background: conic-gradient(transparent 135deg, var(--foreground) 180deg, transparent 255deg), conic-gradient(transparent -45deg, var(--foreground) 0deg, transparent 75deg);
 }
+
 @-webkit-keyframes gradient-wrapper_spinGradient {
- 0% {
-  transform:scaleX(8) scaleY(1.5) rotate(0deg);
-  opacity:1
- }
- to {
-  transform:scaleX(8) scaleY(1.5) rotate(1turn);
-  opacity:1
- }
+  0% {
+    transform: scaleX(8) scaleY(1.5) rotate(0deg);
+    opacity: 1
+  }
+
+  to {
+    transform: scaleX(8) scaleY(1.5) rotate(1turn);
+    opacity: 1
+  }
 }
+
 @keyframes gradient-wrapper_spinGradient {
- 0% {
-  transform:scaleX(8) scaleY(1.5) rotate(0deg);
-  opacity:1
- }
- to {
-  transform:scaleX(8) scaleY(1.5) rotate(1turn);
-  opacity:1
- }
+  0% {
+    transform: scaleX(8) scaleY(1.5) rotate(0deg);
+    opacity: 1
+  }
+
+  to {
+    transform: scaleX(8) scaleY(1.5) rotate(1turn);
+    opacity: 1
+  }
 }
+
 .learnriku_gradient_wrapper_glow {
   position: absolute;
   inset: 0;
@@ -242,44 +281,56 @@ cursor: pointer;
   animation: gradient-wrapper_translateGlow 20s linear infinite;
   opacity: .25;
 }
+
 @-webkit-keyframes gradient-wrapper_translateGlow {
- 0% {
-  background-position:-20% -20%
- }
- 25% {
-  background-position:30% 80%
- }
- 50% {
-  background-position:110% 110%
- }
- 75% {
-  background-position:80% 30%
- }
- to {
-  background-position:-20% -20%
- }
+  0% {
+    background-position: -20% -20%
+  }
+
+  25% {
+    background-position: 30% 80%
+  }
+
+  50% {
+    background-position: 110% 110%
+  }
+
+  75% {
+    background-position: 80% 30%
+  }
+
+  to {
+    background-position: -20% -20%
+  }
 }
+
 @keyframes gradient-wrapper_translateGlow {
- 0% {
-  background-position:-20% -20%
- }
- 25% {
-  background-position:30% 80%
- }
- 50% {
-  background-position:110% 110%
- }
- 75% {
-  background-position:80% 30%
- }
- to {
-  background-position:-20% -20%
- }
+  0% {
+    background-position: -20% -20%
+  }
+
+  25% {
+    background-position: 30% 80%
+  }
+
+  50% {
+    background-position: 110% 110%
+  }
+
+  75% {
+    background-position: 80% 30%
+  }
+
+  to {
+    background-position: -20% -20%
+  }
 }
+
 .learnriku_gradient_wrapper_grayscaleGlow {
   isolation: isolate;
-  background: radial-gradient(transparent,transparent,var(--foreground),transparent,transparent);
+  background: radial-gradient(transparent, transparent, var(--foreground), transparent, transparent);
 }
+
 .learnriku_button_contents {
   grid-gap: 12px;
   gap: 12px;
@@ -295,6 +346,7 @@ cursor: pointer;
   white-space: nowrap;
   font-family: "Noto Sans Mono", monospace;
 }
+
 .stack {
   display: flex;
   flex-direction: var(--direction, column);
@@ -303,57 +355,68 @@ cursor: pointer;
   flex: var(--flex, initial);
   z-index: 2;
 }
- @media screen and (min-width: 961px) {
+
+@media screen and (min-width: 961px) {
   .stack {
     --direction: var(--lg-direction);
     --align: var(--lg-align);
     --justify: var(--lg-justify);
   }
 }
+
 @media screen and (min-width: 961px) {
-  .stack > * + * {
+  .stack>*+* {
     margin-left: 24px;
   }
 }
+
 @media screen and (min-width: 601px) and (max-width: 960px) {
   .stack {
     --direction: var(--md-direction);
     --align: var(--md-align);
     --justify: var(--md-justify);
   }
-  .stack > * + * {
+
+  .stack>*+* {
     margin-left: 24px;
   }
 }
+
 @media screen and (max-width: 600px) {
   .stack {
     --direction: var(--sm-direction);
     --align: var(--sm-align);
     --justify: var(--sm-justify);
   }
-  .stack > * + * {
-  margin-top: 24px;
+
+  .stack>*+* {
+    margin-top: 24px;
+  }
 }
-}
+
 @-webkit-keyframes fadeIn {
   to {
     filter: blur(0);
     opacity: 1;
   }
 }
+
 @keyframes fadeIn {
   to {
     filter: blur(0);
     opacity: 1;
   }
 }
+
 @media (prefers-color-scheme: dark) {
   .conf_logo svg {
     filter: drop-shadow(0 4px 20px black) drop-shadow(0 4px 20px black);
   }
+
   .fade {
     background: linear-gradient(180deg, transparent 0, #000 20%);
   }
+
   .button_glow {
     opacity: 0.4;
   }
