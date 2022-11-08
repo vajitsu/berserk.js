@@ -5,6 +5,7 @@ interface Props {
 const { sub } = Astro.props;
 
 import "../styles/globals.css";
+import { GeistProvider, CssBaseline, Page } from "@geist-ui/core";
 ---
 
 <html lang="en">
@@ -14,6 +15,10 @@ import "../styles/globals.css";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <slot />
+    <GeistProvider client:idle>
+      <Page>
+        <slot />
+      </Page>
+    </GeistProvider>
   </body>
 </html>
