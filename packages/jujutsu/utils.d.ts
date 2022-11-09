@@ -1,7 +1,7 @@
-import Discord from "discord.js";
+import Discord from 'discord.js';
 
 declare type GuildInteraction = Discord.CommandInteraction<Discord.CacheType>;
-declare class permissions {
+declare class Permissions {
   static names: {
     [id in Discord.PermissionsString]: string;
   };
@@ -10,9 +10,9 @@ declare class permissions {
     permission: Discord.PermissionResolvable
   ): Array<keyof typeof this.names>;
 }
-declare class utilities {
-  static permissions: typeof permissions;
-  static events: typeof Discord.Events;
+declare class Utilities {
+  static Permissions: typeof Permissions;
+  static Events: typeof Discord.Events;
 }
 
-export { GuildInteraction, utilities as default };
+export { GuildInteraction, Utilities as default };

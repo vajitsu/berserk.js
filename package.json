@@ -1,5 +1,5 @@
 {
-  "name": "riku",
+  "name": "jujutsu",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
@@ -8,15 +8,15 @@
   ],
   "scripts": {
     "build": "turbo run build --color",
-    "dev": "turbo run dev --parallel --color --filter=bot --filter=website",
+    "dev": "turbo run dev --parallel --color",
     "lint": "turbo run lint",
     "test": "turbo run test --parallel",
     "test:watch": "turbo run test:watch --parallel",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "release": "turbo run build --filter=riku --filter=create-riku-app && changeset version && changeset publish && git push --follow-tags",
-    "prerelease:riku": "turbo run build --filter=riku",
-    "release:riku": "changeset version && changeset publish",
-    "prerelease:cra": "turbo run build --filter=create-riku-app",
+    "release": "turbo run build --filter=jujutsu --filter=create-jujutsu-app && changeset version && changeset publish && git push --follow-tags",
+    "prerelease:jujutsu": "turbo run build --filter=jujutsu",
+    "release:jujutsu": "changeset version && changeset publish",
+    "prerelease:cra": "turbo run build --filter=create-jujutsu-app",
     "release:cra": "changeset version && changeset publish"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { discordConfig } from "./src/index";
+import { DiscordConfig } from "./src/index";
 export default function defineConfig(options: {
   /**
    * Environmental variables used within the Riku.js app directories/files
@@ -7,7 +7,7 @@ export default function defineConfig(options: {
   /**
    * Discord Configurations
    */
-  discord: discordConfig;
+  discord: DiscordConfig;
 }) {
   return options;
 }

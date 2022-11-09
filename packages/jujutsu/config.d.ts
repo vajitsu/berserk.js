@@ -8,12 +8,12 @@ declare type Config = {
   /**
    * Discord Configurations
    */
-  discord: discordConfig;
+  discord: DiscordConfig;
 };
 /**
  * Configuration of bot, defined when initiating `bot` class
  */
-declare type discordConfig = {
+declare type DiscordConfig = {
   /**
    * Your Dicsord Bot's Token -
    * [Learn more](https://vajitsu.com/riku/docs/configuration#discord_token)

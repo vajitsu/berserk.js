@@ -4,7 +4,7 @@ import Discord from "discord.js";
 export type GuildInteraction = Discord.CommandInteraction<Discord.CacheType>;
 
 /* Permissions */
-class permissions {
+class Permissions {
   public static names: {
     [id in Discord.PermissionsString]: string;
   } = {
@@ -65,7 +65,7 @@ class permissions {
   }
 }
 
-export default class utilities {
-  public static permissions = permissions;
-  public static events = Discord.Events;
+export default class Utilities {
+  public static Permissions =Permissions;
+  public static Events = Discord.Events;
 }

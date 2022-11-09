@@ -1,12 +1,12 @@
-import Discord from 'discord.js';
+import Discord from "discord.js";
 
-declare abstract class actionRow {
+declare abstract class ActionRow {
   abstract components: Array<Discord.AnyComponentBuilder>;
   private row;
   build(): any;
 }
 
-declare abstract class button {
+declare abstract class Button {
   /**
    * Automatically generated id using UUID (v4) -
    * [Discord API Type](https://discord-api-types.dev/api/discord-api-types-v10/interface/APIButtonComponentWithCustomId#custom_id)
@@ -41,8 +41,8 @@ declare abstract class button {
 }
 
 declare const ui: {
-  actionRow: typeof actionRow;
-  button: typeof button;
+  ActionRow: typeof ActionRow;
+  Button: typeof Button;
 };
 
 export { ui as default };
