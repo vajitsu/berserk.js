@@ -1,1 +1,1 @@
-../packages/riku/README.md
+packages/jujutsu/README.md
