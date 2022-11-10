@@ -56,7 +56,6 @@
     "discord.js": "^14.6.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.188",
     "@types/node": "^18.11.9",
     "@types/uuid": "^8.3.4",
     "axios": "^1.1.3",
