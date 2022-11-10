@@ -1,21 +1,21 @@
 {
-  "name": "create-riku-app",
+  "name": "create-jujutsu-app",
   "version": "0.0.0",
   "keywords": [
     "discord",
-    "riku",
-    "riku.js"
+    "jujutsu",
+    "jujutsu.js"
   ],
-  "description": "Create Riku.js-powered Discord bots with one command",
+  "description": "Create Jujutsu.js-powered Discord bots with one command",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vajitsu/riku",
-    "directory": "packages/create-riku-app"
+    "url": "https://github.com/vajitsu/jujutsu.js",
+    "directory": "packages/create-jujutsu-app"
   },
   "author": "Foup <fouptogo@gmail.com>",
   "license": "MIT",
   "bin": {
-    "create-riku-app": "./dist/index.js"
+    "create-jujutsu-app": "./dist/index.js"
   },
   "files": [
     "dist"

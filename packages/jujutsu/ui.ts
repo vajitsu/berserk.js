@@ -1,7 +1,7 @@
 import ActionRow from "./src/builders/action-row";
 import Button from "./src/builders/button";
-const ui = {
+
+export default {
   ActionRow,
   Button,
 };
-export default ui;

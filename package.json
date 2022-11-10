@@ -41,11 +41,13 @@
     "@mdx-js/loader": "^2.1.5",
     "@next/font": "^13.0.2",
     "@next/mdx": "^13.0.2",
+    "@sapphire/shapeshift": "^3.7.0",
     "chalk": "^5.1.2",
     "config": "^3.3.8",
     "dotenv": "^16.0.3",
     "next": "^13.0.2",
     "node-watch": "^0.7.3",
-    "riku": "*"
+    "create-jujutsu-app": "*",
+    "jujutsu": "*"
   }
 }
