@@ -52,7 +52,7 @@ const program = new Commander.Command(packageJson.name)
     `
 
   An example to bootstrap the app with. You can use an example name
-  from the official Riku.js repo or a GitHub URL. The URL can use
+  from the official Jujutsu.js repo or a GitHub URL. The URL can use
   any branch and/or subdirectory
 `
   )
@@ -107,7 +107,7 @@ async function run(): Promise<void> {
           "<project-directory>"
         )}\n` +
         "For example:\n" +
-        `  ${chalk.cyan(program.name())} ${chalk.green("my-riku-app")}\n\n` +
+        `  ${chalk.cyan(program.name())} ${chalk.green("my-jujutsu-app")}\n\n` +
         `Run ${chalk.cyan(`${program.name()} --help`)} to see all options.`
     );
     process.exit(1);
@@ -221,13 +221,13 @@ async function notifyUpdate(): Promise<void> {
     if (res?.latest) {
       const updateMessage =
         packageManager === "yarn"
-          ? "yarn global add create-riku-app"
+          ? "yarn global add create-jujutsu-app"
           : packageManager === "pnpm"
-          ? "pnpm add -g create-riku-app"
-          : "npm i -g create-riku-app";
+          ? "pnpm add -g create-jujutsu-app"
+          : "npm i -g create-jujutsu-app";
 
       console.log(
-        chalk.yellow.bold("A new version of `create-riku-app` is available!") +
+        chalk.yellow.bold("A new version of `create-jujutsu-app` is available!") +
           "\n" +
           "You can update by running: " +
           chalk.cyan(updateMessage) +

@@ -123,7 +123,7 @@ export async function createApp({
   const isOnline = !useYarn || (await getOnline());
   const originalDirectory = process.cwd();
 
-  console.log(`Creating a new Riku.js app in ${chalk.green(root)}.`);
+  console.log(`Creating a new Jujutsu.js app in ${chalk.green(root)}.`);
   console.log();
 
   process.chdir(root);
@@ -201,10 +201,9 @@ export async function createApp({
       version: "0.1.0",
       private: true,
       scripts: {
-        dev: "riku dev",
-        build: "riku build",
-        start: "riku start",
-        format: 'prettier --write "**/*.{ts,tsx,md}"',
+        dev: "jujutsu dev",
+        build: "jujutsu build",
+        start: "jujutsu start"
       },
     };
     /**
@@ -221,7 +220,7 @@ export async function createApp({
     /**
      * Default dependencies.
      */
-    const dependencies = ["riku", "discord.js"];
+    const dependencies = ["jujutsu", "discord.js"];
     /**
      * Default devDependencies.
      */
