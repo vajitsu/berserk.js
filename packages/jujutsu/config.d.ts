@@ -1,59 +1,54 @@
-import Discord from "discord.js";
+import Discord from 'discord.js';
 
-declare type Config = {
-  /**
-   * Environmental variables used within the Riku.js app directories/files
-   */
-  env?: string[];
-  /**
-   * Discord Configurations
-   */
-  discord: DiscordConfig;
+declare type SlashCommandError = {
+    permission: number;
+    other: Error;
+};
+declare type JujutsuConfig = {
+    /**
+     * Environmental variables used within the Jujutsu.js app directories/files
+     */
+    env?: string[];
+    /**
+     * Discord Configurations
+     */
+    discord: DiscordConfig;
 };
 /**
- * Configuration of bot, defined when initiating `bot` class
+ * Configuration of bot, defined when initiating `Bot` instance
  */
 declare type DiscordConfig = {
-  /**
-   * Your Dicsord Bot's Token -
-   * [Learn more](https://vajitsu.com/riku/docs/configuration#discord_token)
-   */
-  token: string;
-  application: {
     /**
-     * Your Discord Application's Id -
-     * [Learn more](https://vajitsu.com/riku/docs/configuration#application_id)
+     * Your Dicsord Bot's Token -
+     * [Learn more](https://vajitsu.com/riku/docs/configuration#discord_token)
      */
-    id: string;
-  };
-  /**
-   * Get the basic events and/or commands bootstrapped with your Riku.js app -
-   * [Learn more](https://vajitsu.com/riku/docs/configuration#presets)
-   */
-  presets: {
+    token: string;
+    application: {
+        /**
+         * Your Discord Application's Id -
+         * [Learn more](https://vajitsu.com/riku/docs/configuration#application_id)
+         */
+        id: string;
+    };
     /**
-     * Get a simple `ready` and `interactionCreate` event bootstrapped with your Riku.js app -
-     * [Learn more](https://vajitsu.com/riku/docs/configuration#presets_events)
+     * Options used when initializing Discord Client -
+     * [Learn more](https://vajitsu.com/riku/docs/configuration#options)
      */
-    events: boolean;
+    options: Discord.ClientOptions;
     /**
-     * Get a `/hello` slash command bootstrapped with your Riku.js app -
-     * [Learn more](https://vajitsu.com/riku/docs/configuration#presets_commands)
+     * Set a custom status for your Discord bot -
+     * [Learn more](https://vajitsu.com/riku/docs/basics#custom_status)
      */
-    commands: boolean;
-  };
-  /**
-   * Options used when initializing Discord Client -
-   * [Learn more](https://vajitsu.com/riku/docs/configuration#options)
-   */
-  options: Discord.ClientOptions;
-  /**
-   * Set a custom status for your Discord bot -
-   * [Learn more](https://vajitsu.com/riku/docs/configuration#custom_status)
-   */
-  customStatus?: Discord.PresenceData;
+    customStatus?: Discord.PresenceData;
+    /**
+     * Run a function when command errors occur
+     * - Catches permission errors (sends missing permssions)
+     * - Catches errors with your code
+     * - May catch issues with `Riku.js` itself → create an issue on our [Github](https://github.com/vajitsu/riku.js/issues) <3
+     */
+    onSlashCommandError?: <K extends keyof SlashCommandError>(type: K, err: SlashCommandError[K]) => Promise<void>;
 };
 
-declare function defineConfig(options: Config): Config;
+declare function defineConfig(options: JujutsuConfig): JujutsuConfig;
 
 export { defineConfig as default };
