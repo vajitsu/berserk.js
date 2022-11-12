@@ -13,9 +13,5 @@ module.exports = config({
         discord.GatewayIntentBits.GuildMessages,
       ],
     },
-    presets: {
-      events: true,
-      commands: true,
-    },
   },
 });
