@@ -1,9 +1,8 @@
 {
-  "include": ["src"],
+  "include": ["src", "builders"],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
     "module": "ESNext",
-    "target": "ESNext",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
@@ -15,7 +14,7 @@
       "event": ["src/managers/events/event.ts"],
       "index": ["src/index.ts"],
       "@/presets/*": ["src/presets/*"],
-      "@/builders/*": ["src/builders/*"],
+      "@/builders/*": ["builders/*"],
       "@/utils/*": ["src/utils/*"],
       "@/managers/*": ["src/managers/*"]
     }
