@@ -4,7 +4,7 @@
   "description": "The Discord.js Framework",
   "scripts": {
     "build": "npm run build:main && npm run build:utils && npm run build:ui && npm run build:cli",
-    "build:main": "tsup src/index.ts --minify --keep-names",
+    "build:main": "npx spack && node helpers/fix-require-default.js",
     "build:utils": "tsup utils.ts --outDir . --dts --minify --keep-names",
     "build:ui": "npm run build:slashcommand && npm run build:event && npm run build:selectmenu && npm run build:button && npm run build:actionrow",
     "build:config": "tsup config.ts --outDir . --dts --minify --keep-names",
