@@ -48,6 +48,7 @@
     "config": "^3.3.8",
     "create-jujutsu-app": "*",
     "dotenv": "^16.0.3",
+    "geist": "^0.1.2",
     "jujutsu": "*",
     "next": "^13.0.2",
     "node-watch": "^0.7.3"

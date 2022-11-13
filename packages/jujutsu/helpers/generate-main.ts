@@ -50,9 +50,11 @@ export default function generateMain(
         c.outDir,
         "data.js"
       ));
-      return (
-        Object.values(exec).length === 0 || Object.values(data).length === 0
-      );
+      return exec.default
+        ? Object.values(exec).length === 0
+        : !exec && data.default
+        ? Object.values(data).length === 0
+        : !data;
     });
 
     for (let _ of OF) {
@@ -79,7 +81,11 @@ export default function generateMain(
         c.outDir,
         "data.js"
       ));
-      return Object.values(exec).length > 0 || Object.values(data).length > 0;
+      return exec.default
+        ? Object.values(exec).length > 0
+        : !!exec && data.default
+        ? Object.values(data).length > 0
+        : !!data;
     });
 
     const pre = filtered
@@ -109,9 +115,11 @@ export default function generateMain(
         b.outDir,
         "data.js"
       ));
-      return (
-        Object.values(exec).length === 0 || Object.values(data).length === 0
-      );
+      return exec.default
+        ? Object.values(exec).length === 0
+        : !exec && data.default
+        ? Object.values(data).length === 0
+        : !data;
     });
 
     for (let _ of OF) {
@@ -127,7 +135,7 @@ export default function generateMain(
         ".jujutsu",
         outDir,
         "buttons",
-       b.outDir,
+        b.outDir,
         "execute.js"
       ));
       const data = require(path.join(
@@ -138,7 +146,11 @@ export default function generateMain(
         b.outDir,
         "data.js"
       ));
-      return Object.values(exec).length > 0 || Object.values(data).length > 0;
+      return exec.default
+        ? Object.values(exec).length > 0
+        : !!exec && data.default
+        ? Object.values(data).length > 0
+        : !!data;
     });
 
     const pre = filtered
@@ -159,7 +171,7 @@ export default function generateMain(
         c.outDir,
         "execute.js"
       ));
-      return Object.values(exec).length === 0;
+      return exec.default ? Object.values(exec).length === 0 : !exec;
     });
 
     for (let _ of OF) {
@@ -178,7 +190,7 @@ export default function generateMain(
         c.outDir,
         "execute.js"
       ));
-      return Object.values(exec).length > 0;
+      return exec.default ? Object.values(exec).length > 0 : !!exec;
     });
     const pre = filtered
       .map(
