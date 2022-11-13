@@ -20,10 +20,6 @@
   </a>
 </p>
 
-## Getting Started
-
-Visit [https://vajitsu.com/jujutsu/learn](https://vajitsu.com/riku/learn) to get started with Riku.js.
-
 ## Documentation
 
-Visit [https://vajitsu.com/jujutsu/docs](https://vajitsu.com/riku/docs) to view the full documentation.
+Visit [https://vajitsu.com/jujutsu/docs](https://vajitsu.com/jujutsu/docs) to view the full documentation.
