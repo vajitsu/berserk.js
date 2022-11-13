@@ -26,6 +26,12 @@ export default async function (req: NextRequest) {
       ? searchParams.get("message")?.slice(0, 100)
       : "No message found.";
 
+    // ?title=<title>
+    const hasTitle = searchParams.has("title");
+    const title = hasTitle
+      ? searchParams.get("title")?.slice(0, 100)
+      : "Unknown Error";
+
     return new ImageResponse(
       (
         <div
@@ -54,11 +60,11 @@ export default async function (req: NextRequest) {
               whiteSpace: "pre-wrap",
             }}
           >
-            Command Error
+            {title}
           </div>
           <div
             style={{
-              fontSize: 35,
+              fontSize: message && message.split(" ").length > 12 ? 24 : 35,
               fontStyle: "normal",
               letterSpacing: "-0.025em",
               color: "#EAEAEA",

@@ -230,8 +230,20 @@ async function compileEntries(
   }
 
   for (const button of entries.buttons) {
-    const data_path = path.join(cwd, "buttons", button.name, button.data);
-    const execute_path = path.join(cwd, "buttons", button.name, button.execute);
+    const data_path = path.join(
+      cwd,
+      "interactions",
+      "buttons",
+      button.name,
+      button.data
+    );
+    const execute_path = path.join(
+      cwd,
+      "interactions",
+      "buttons",
+      button.name,
+      button.execute
+    );
 
     const transformed_data = transformFileCode(data_path);
     const transformed_execute = transformFileCode(execute_path);
@@ -242,6 +254,7 @@ async function compileEntries(
       cwd,
       ".jujutsu",
       outDir,
+      "interactions",
       "buttons",
       button.name,
       "data.js"
@@ -251,6 +264,7 @@ async function compileEntries(
       cwd,
       ".jujutsu",
       outDir,
+      "interactions",
       "buttons",
       button.name,
       "execute.js"
@@ -260,6 +274,7 @@ async function compileEntries(
       cwd,
       ".jujutsu",
       outDir,
+      "interactions",
       "buttons",
       button.name,
       "index.js"
@@ -292,7 +307,7 @@ async function compileEntries(
     buttons.push({
       key: `${camel}_${_}`,
       outDir: button.name,
-      value: `const ${camel}_${_} = require("./buttons/${button.name}/index");`,
+      value: `const ${camel}_${_} = require("./interactions/buttons/${button.name}/index");`,
       path: new_path,
     });
   }

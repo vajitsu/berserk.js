@@ -103,6 +103,7 @@ export default function generateMain(
         cwd,
         ".jujutsu",
         outDir,
+        "interactions",
         "buttons",
         b.outDir,
         "execute.js"
@@ -111,6 +112,7 @@ export default function generateMain(
         cwd,
         ".jujutsu",
         outDir,
+        "interactions",
         "buttons",
         b.outDir,
         "data.js"
@@ -134,6 +136,7 @@ export default function generateMain(
         cwd,
         ".jujutsu",
         outDir,
+        "interactions",
         "buttons",
         b.outDir,
         "execute.js"
@@ -142,6 +145,7 @@ export default function generateMain(
         cwd,
         ".jujutsu",
         outDir,
+        "interactions",
         "buttons",
         b.outDir,
         "data.js"

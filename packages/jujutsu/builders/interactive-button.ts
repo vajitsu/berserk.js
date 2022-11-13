@@ -1,4 +1,5 @@
 import Discord from "discord.js";
+import { Bot } from "src";
 
 export type URLButton = {
   label: string;
@@ -54,6 +55,6 @@ export default abstract class InteractiveButton {
 
   abstract run(
     interaction: Discord.ButtonInteraction,
-    client: Discord.Client
+    bot: Bot
   ): Promise<void>;
 }

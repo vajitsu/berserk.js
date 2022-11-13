@@ -9,8 +9,8 @@ export type Entries = {
   };
 };
 
-function find(cwd: string, dir: string) {
-  const _dir = path.join(cwd, dir);
+function find(cwd: string, ..._path: string[]) {
+  const _dir = path.join(cwd, ..._path);
   const out = fs.sync.read(_dir);
 
   return out;
@@ -61,7 +61,7 @@ function findEvents(cwd: string) {
 }
 
 function findButtons(cwd: string) {
-  const dir = path.join(cwd, "buttons");
+  const dir = path.join(cwd, "interactions", "buttons");
 
   if (!pathExists(dir))
     return {
@@ -69,7 +69,7 @@ function findButtons(cwd: string) {
       files: [],
     };
 
-  const out = find(cwd, "buttons");
+  const out = find(cwd, "interactions", "buttons");
 
   out.dirs = out.dirs
     .filter((d: string) => d !== dir)

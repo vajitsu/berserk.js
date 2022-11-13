@@ -62,7 +62,7 @@ export default abstract class SlashCommand {
 
   public abstract run(
     interaction: Discord.ChatInputCommandInteraction,
-    bot: Discord.Client<true>,
+    bot: Bot,
     id?: string,
     unhookInteraction?: () => void
   ): Promise<void>;
