@@ -1,6 +1,6 @@
 {
   "name": "jujutsu",
-  "version": "0.0.0-canary.0",
+  "version": "0.0.0-canary.1",
   "description": "The Discord.js Framework",
   "scripts": {
     "build": "npm run build:main && npm run build:utils && npm run build:ui && npm run build:cli",
