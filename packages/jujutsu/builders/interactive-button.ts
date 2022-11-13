@@ -9,7 +9,6 @@ export type URLButton = {
 };
 
 export type ButtonData = {
-  customId: string;
   label: string;
   style: "primary" | "secondary" | "success" | "danger";
   disabled?: boolean;
@@ -46,7 +45,6 @@ export function ButtonData(
 
   //if (data.style === "link") button.setURL(data.url);
   /*else*/
-  button.setCustomId(data.customId);
 
   return button.data as Partial<Discord.APIButtonComponentWithCustomId>;
 }

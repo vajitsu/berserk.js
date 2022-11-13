@@ -60,10 +60,33 @@ function findEvents(cwd: string) {
   return out;
 }
 
+function findButtons(cwd: string) {
+  const dir = path.join(cwd, "buttons");
+
+  if (!pathExists(dir))
+    return {
+      dirs: [],
+      files: [],
+    };
+
+  const out = find(cwd, "buttons");
+
+  out.dirs = out.dirs
+    .filter((d: string) => d !== dir)
+    .map((d: string) => d.replace(dir, "").replace("/", ""));
+
+  out.files = out.files
+    .filter((f: string) => f.endsWith(".ts") || f.endsWith(".js"))
+    .map((f: string) => f.replace(dir, "").replace("/", ""));
+
+  return out;
+}
+
 export default function findEntries(cwd: string): Entries {
   const entries = {
     commands: findCommands(cwd),
     events: findEvents(cwd),
+    buttons: findButtons(cwd),
   };
 
   return entries;

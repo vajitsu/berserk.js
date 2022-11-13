@@ -9,11 +9,19 @@ export default function generateMain(
   entries: {
     commands: {
       key: string;
+      outDir: string;
+      value: `const ${string} = require(${string});`;
+      path: string;
+    }[];
+    buttons: {
+      key: string;
+      outDir: string;
       value: `const ${string} = require(${string});`;
       path: string;
     }[];
     events: {
       key: string;
+      outDir: string;
       value: `const ${string} = require(${string});`;
       path: string;
     }[];
@@ -31,7 +39,7 @@ export default function generateMain(
         ".jujutsu",
         outDir,
         "commands",
-        c.key.split(/_/g)[0],
+        c.outDir,
         "execute.js"
       ));
       const data = require(path.join(
@@ -39,7 +47,7 @@ export default function generateMain(
         ".jujutsu",
         outDir,
         "commands",
-        c.key.split(/_/g)[0],
+        c.outDir,
         "data.js"
       ));
       return (
@@ -60,7 +68,7 @@ export default function generateMain(
         ".jujutsu",
         outDir,
         "commands",
-        c.key.split(/_/g)[0],
+        c.outDir,
         "execute.js"
       ));
       const data = require(path.join(
@@ -68,7 +76,7 @@ export default function generateMain(
         ".jujutsu",
         outDir,
         "commands",
-        c.key.split(/_/g)[0],
+        c.outDir,
         "data.js"
       ));
       return Object.values(exec).length > 0 || Object.values(data).length > 0;
@@ -83,6 +91,64 @@ export default function generateMain(
     extra.push(`${pre}bot.slashCommandManager.loadCommands();`);
   }
 
+  if (entries.buttons.length > 0) {
+    const OF = entries.buttons.filter((b) => {
+      const exec = require(path.join(
+        cwd,
+        ".jujutsu",
+        outDir,
+        "buttons",
+        b.outDir,
+        "execute.js"
+      ));
+      const data = require(path.join(
+        cwd,
+        ".jujutsu",
+        outDir,
+        "buttons",
+        b.outDir,
+        "data.js"
+      ));
+      return (
+        Object.values(exec).length === 0 || Object.values(data).length === 0
+      );
+    });
+
+    for (let _ of OF) {
+      if (_)
+        fs.rm(path.dirname(_.path), {
+          recursive: true,
+        });
+    }
+
+    const filtered = entries.buttons.filter((b) => {
+      const exec = require(path.join(
+        cwd,
+        ".jujutsu",
+        outDir,
+        "buttons",
+       b.outDir,
+        "execute.js"
+      ));
+      const data = require(path.join(
+        cwd,
+        ".jujutsu",
+        outDir,
+        "buttons",
+        b.outDir,
+        "data.js"
+      ));
+      return Object.values(exec).length > 0 || Object.values(data).length > 0;
+    });
+
+    const pre = filtered
+      .map(
+        (b) => `${b.value}bot.buttonManager.registerButton(new ${b.key}(bot));`
+      )
+      .join();
+    extra.push(pre);
+  }
+
   if (entries.events.length > 0) {
     const OF = entries.events.filter((c) => {
       const exec = require(path.join(
@@ -90,7 +156,7 @@ export default function generateMain(
         ".jujutsu",
         outDir,
         "events",
-        c.key.split(/_/g)[0],
+        c.outDir,
         "execute.js"
       ));
       return Object.values(exec).length === 0;
@@ -109,7 +175,7 @@ export default function generateMain(
         ".jujutsu",
         outDir,
         "events",
-        c.key.split(/_/g)[0],
+        c.outDir,
         "execute.js"
       ));
       return Object.values(exec).length > 0;

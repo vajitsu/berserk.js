@@ -2,9 +2,15 @@ import chalk from "chalk";
 import _ from "lodash";
 import Discord from "discord.js";
 import { msg } from "../src/helpers/chalk";
+import c from "config";
 
 export default function processEntries(unfiltered: {
   commands: {
+    name: string;
+    data?: string | undefined;
+    execute?: string | undefined;
+  }[];
+  buttons: {
     name: string;
     data?: string | undefined;
     execute?: string | undefined;
@@ -20,21 +26,21 @@ export default function processEntries(unfiltered: {
     if (!entry.data && !entry.execute) {
       console.log(
         msg.warn(
-          `Skipping command ${chalk.bold(
+          `Skipping command "${chalk.bold(
             entry.name
-          )}, missing *data.js* or *command.js*`
+          )}", missing *data.js* or *command.js*`
         )
       );
     } else if (!entry.data) {
       console.log(
         msg.warn(
-          `Skipping command ${chalk.bold(entry.name)}, missing *data.js*`
+          `Skipping command "${chalk.bold(entry.name)}", missing *data.js*`
         )
       );
     } else if (!entry.execute) {
       console.log(
         msg.warn(
-          `Skipping command ${chalk.bold(entry.name)}, missing *command.js*`
+          `Skipping command "${chalk.bold(entry.name)}", missing *command.js*`
         )
       );
     }
@@ -56,6 +62,30 @@ export default function processEntries(unfiltered: {
     }
   }
 
+  for (const entry of unfiltered.buttons) {
+    if (!entry.data && !entry.execute) {
+      console.log(
+        msg.warn(
+          `Skipping command ${chalk.bold(
+            entry.name
+          )}, missing *data.js* or *command.js*`
+        )
+      );
+    } else if (!entry.data) {
+      console.log(
+        msg.warn(
+          `Skipping button "${chalk.bold(entry.name)}", missing *data.js*`
+        )
+      );
+    } else if (!entry.execute) {
+      console.log(
+        msg.warn(
+          `Skipping button "${chalk.bold(entry.name)}", missing *button.js*`
+        )
+      );
+    }
+  }
+
   const filtered_commands = unfiltered.commands.filter(
     (c) => c.data && c.execute
   ) as {
@@ -72,8 +102,17 @@ export default function processEntries(unfiltered: {
     execute: string;
   }[];
 
+  const filtered_buttons = unfiltered.buttons.filter(
+    (b) => b.data && b.execute
+  ) as {
+    name: string;
+    data: string;
+    execute: string;
+  }[];
+
   return {
     commands: filtered_commands,
     events: filtered_events,
+    buttons: filtered_buttons,
   };
 }

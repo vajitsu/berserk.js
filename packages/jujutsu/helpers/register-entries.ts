@@ -18,12 +18,22 @@ type EV_Data = {
   };
 };
 
+type BTN_Data = {
+  [key: string]: {
+    name: string;
+    data?: string;
+    execute?: string;
+  };
+};
+
 export default function registerEntries(entries: Entries) {
   const entry_commands = entries["commands"];
   const entry_events = entries["events"];
+  const entry_buttons = entries["buttons"];
 
   var commands: CMD_Data = {};
   var events: EV_Data = {};
+  var buttons: BTN_Data = {};
 
   if (!!entry_commands) {
     for (let dir of entry_commands.dirs) {
@@ -69,8 +79,35 @@ export default function registerEntries(entries: Entries) {
     }
   }
 
-  return {
+  if (!!entry_buttons) {
+    for (let dir of entry_buttons.dirs) {
+      buttons[dir] = {
+        name: dir,
+      };
+    }
+
+    for (let file of entry_buttons.files) {
+      const fileName = file.split("/").at(1);
+
+      const removedEnding = fileName?.substring(0, fileName.length - 3);
+
+      if (removedEnding) {
+        const parentDir = file.split("/").at(0);
+
+        if (parentDir) {
+          if (removedEnding === "data") buttons[parentDir].data = fileName;
+          else if (removedEnding === "button")
+            buttons[parentDir].execute = fileName;
+        }
+      }
+    }
+  }
+
+  const json = {
     commands: Object.values(commands),
     events: Object.values(events),
+    buttons: Object.values(buttons),
   };
+
+  return json;
 }
