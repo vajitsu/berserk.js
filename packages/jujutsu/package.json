@@ -5,6 +5,7 @@
   "scripts": {
     "build": "npm run build:main && npm run build:utils && npm run build:ui && npm run build:cli",
     "build:main": "npx spack && node helpers/fix-require-default.js",
+    "build:main-types": "tsup src/index.ts --outDir dist --dts-only",
     "build:utils": "tsup utils.ts --outDir . --dts --minify --keep-names",
     "build:ui": "npm run build:slashcommand && npm run build:event && npm run build:selectmenu && npm run build:button && npm run build:actionrow",
     "build:config": "tsup config.ts --outDir . --dts --minify --keep-names",
