@@ -2,7 +2,7 @@ import fs from "fs";
 import json5 from "json5";
 import path from "path";
 import mkdirp from "mkdirp";
-import { transformCode, transformFileCode } from "./swc";
+import { transformFileCode } from "./swc";
 
 function slashCommandTemplate(
   name: string,
@@ -10,7 +10,7 @@ function slashCommandTemplate(
   dataKey: `${string}_data_${string}`
 ) {
   const random = Math.random().toString(36).slice(2).replace(/[0-9]/g, "");
-  const template = `const SlashCommand = require("jujutsu/builders/slash-command");
+  const template = `const SlashCommand = require("jujutsu/builders/slash-command").default;
 const ${executeKey} = require("./execute");
 const ${dataKey} = require("./data");
 
@@ -23,7 +23,7 @@ class ${name}_${random} extends SlashCommand {
 
 module.exports = ${name}_${random};`;
 
-  return transformCode(template);
+  return template;
 }
 
 function eventTemplate(
@@ -44,7 +44,7 @@ class ${name}_${random} extends Event {
 
 module.exports = ${name}_${random};`;
 
-  return transformCode(template);
+  return template;
 }
 
 async function compileEntries(
@@ -65,10 +65,12 @@ async function compileEntries(
   const commands: {
     key: string;
     value: `const ${string} = require(${string});`;
+    path: string;
   }[] = [];
   const events: {
     key: string;
     value: `const ${string} = require(${string});`;
+    path: string;
   }[] = [];
 
   for (const command of entries.commands) {
@@ -137,6 +139,7 @@ async function compileEntries(
     commands.push({
       key: `${command.name}_${_}`,
       value: `const ${command.name}_${_} = require("./commands/${command.name}/index");`,
+      path: new_path,
     });
   }
 
@@ -184,6 +187,7 @@ async function compileEntries(
     events.push({
       key: `${event.name}_${_}`,
       value: `const ${event.name}_${_} = require("./events/${event.name}/index");`,
+      path: new_path,
     });
   }
 

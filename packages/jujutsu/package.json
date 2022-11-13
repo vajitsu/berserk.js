@@ -6,14 +6,13 @@
     "build": "npm run build:main && npm run build:utils && npm run build:ui && npm run build:cli",
     "build:main": "tsup src/index.ts --minify --keep-names",
     "build:utils": "tsup utils.ts --outDir . --dts --minify --keep-names",
-    "build:ui": "npm run build:slashcommand && npm run build:event && npm run build:selectmenu && npm run build:button && npm run build:interactivebutton && npm run build:actionrow",
+    "build:ui": "npm run build:slashcommand && npm run build:event && npm run build:selectmenu && npm run build:button && npm run build:actionrow",
     "build:config": "tsup config.ts --outDir . --dts --minify --keep-names",
     "build:cli": "tsup --entry.cli src/cli/index.ts --minify --format cjs",
     "build:slashcommand": "tsup --entry.slash-command builders/slash-command.ts --outDir builders --dts-resolve",
     "build:event": "tsup --entry.event builders/event.ts --outDir builders --dts-resolve",
     "build:selectmenu": "tsup --entry.select-menu builders/select-menu.ts --outDir builders --dts-resolve",
     "build:button": "tsup --entry.button builders/button.ts --outDir builders --dts-resolve",
-    "build:interactivebutton": "tsup --entry.interactive-button builders/interactive-button.ts --outDir builders --dts-resolve",
     "build:actionrow": "tsup --entry.action-row builders/action-row.ts --outDir builders --dts-resolve",
     "prepublishOnly": "npm run build",
     "dev": "npm run build --watch",
@@ -60,6 +59,7 @@
     "discord.js": "^14.6.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
     "@types/gradient-string": "^1.1.2",
     "@types/lodash": "^4.14.188",
     "@types/mkdirp": "^1.0.2",
@@ -74,6 +74,7 @@
     "discord-api-types": "^0.37.17",
     "events": "^3.3.0",
     "find-up": "^6.3.0",
+    "fs-extra": "^10.1.0",
     "gradient-string": "^2.0.2",
     "json5": "^2.2.1",
     "lodash": "^4.17.21",
@@ -97,7 +98,7 @@
     "node": ">=16.9.0"
   },
   "dependencies": {
-    "@swc/core": "^1.3.14",
+    "@swc/core": "^1.3.15",
     "tsup": "^6.4.0"
   }
 }
