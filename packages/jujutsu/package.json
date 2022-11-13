@@ -16,7 +16,7 @@
     "build:actionrow": "tsup --entry.action-row builders/action-row.ts --outDir builders --dts-resolve",
     "prepublishOnly": "npm run build",
     "dev": "npm run build --watch",
-    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'packages/jujutsu/*'",
+    "changelog": "git cliff --prepend ./changelog.md -u -c ./cliff.toml -r ../../ --include-path 'packages/jujutsu/*'",
     "release": "cliff-jumper --mono-repo --tag-template \"{{name}}@{{new-version}}\""
   },
   "main": "./dist/index.js",
