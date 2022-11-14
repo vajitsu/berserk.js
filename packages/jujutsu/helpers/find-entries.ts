@@ -82,11 +82,80 @@ function findButtons(cwd: string) {
   return out;
 }
 
+function findModals(cwd: string) {
+  const dir = path.join(cwd, "modals");
+
+  if (!pathExists(dir))
+    return {
+      dirs: [],
+      files: [],
+    };
+
+  const out = find(cwd, "modals");
+
+  out.dirs = out.dirs
+    .filter((d: string) => d !== dir)
+    .map((d: string) => d.replace(dir, "").replace("/", ""));
+
+  out.files = out.files
+    .filter((f: string) => f.endsWith(".ts") || f.endsWith(".js"))
+    .map((f: string) => f.replace(dir, "").replace("/", ""));
+
+  return out;
+}
+
+function findContextMenus(cwd: string) {
+  const dir = path.join(cwd, "interactions", "context-menus");
+
+  if (!pathExists(dir))
+    return {
+      dirs: [],
+      files: [],
+    };
+
+  const out = find(cwd, "interactions", "context-menus");
+
+  out.dirs = out.dirs
+    .filter((d: string) => d !== dir)
+    .map((d: string) => d.replace(dir, "").replace("/", ""));
+
+  out.files = out.files
+    .filter((f: string) => f.endsWith(".ts") || f.endsWith(".js"))
+    .map((f: string) => f.replace(dir, "").replace("/", ""));
+
+  return out;
+}
+
+function findSelectMenus(cwd: string) {
+  const dir = path.join(cwd, "interactions", "select-menus");
+
+  if (!pathExists(dir))
+    return {
+      dirs: [],
+      files: [],
+    };
+
+  const out = find(cwd, "interactions", "select-menus");
+
+  out.dirs = out.dirs
+    .filter((d: string) => d !== dir)
+    .map((d: string) => d.replace(dir, "").replace("/", ""));
+
+  out.files = out.files
+    .filter((f: string) => f.endsWith(".ts") || f.endsWith(".js"))
+    .map((f: string) => f.replace(dir, "").replace("/", ""));
+
+  return out;
+}
+
 export default function findEntries(cwd: string): Entries {
   const entries = {
     commands: findCommands(cwd),
     events: findEvents(cwd),
     buttons: findButtons(cwd),
+    modals: findModals(cwd),
+    contextMenus: findContextMenus(cwd),
+    selectMenus: findSelectMenus(cwd),
   };
 
   return entries;

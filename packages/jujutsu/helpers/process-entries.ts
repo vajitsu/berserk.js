@@ -2,7 +2,6 @@ import chalk from "chalk";
 import _ from "lodash";
 import Discord from "discord.js";
 import { msg } from "../src/helpers/chalk";
-import c from "config";
 
 export default function processEntries(unfiltered: {
   commands: {
@@ -17,6 +16,21 @@ export default function processEntries(unfiltered: {
   }[];
   events: {
     name: string;
+    execute?: string | undefined;
+  }[];
+  modals: {
+    name: string;
+    data?: string | undefined;
+    execute?: string | undefined;
+  }[];
+  selectMenus: {
+    name: string;
+    data?: string | undefined;
+    execute?: string | undefined;
+  }[];
+  contextMenus: {
+    name: string;
+    data?: string | undefined;
     execute?: string | undefined;
   }[];
 }) {
@@ -86,6 +100,76 @@ export default function processEntries(unfiltered: {
     }
   }
 
+  for (const entry of unfiltered.modals) {
+    if (!entry.data && !entry.execute) {
+      console.log(
+        msg.warn(
+          `Skipping modal "${chalk.bold(
+            entry.name
+          )}", missing *data.js* or *modal.js*`
+        )
+      );
+    } else if (!entry.data) {
+      console.log(
+        msg.warn(
+          `Skipping modal "${chalk.bold(entry.name)}", missing *data.js*`
+        )
+      );
+    } else if (!entry.execute) {
+      console.log(
+        msg.warn(
+          `Skipping modal "${chalk.bold(entry.name)}", missing *modal.js*`
+        )
+      );
+    }
+  }
+  for (const entry of unfiltered.selectMenus) {
+    if (!entry.data && !entry.execute) {
+      console.log(
+        msg.warn(
+          `Skipping select menu "${chalk.bold(
+            entry.name
+          )}", missing *data.js* or *menu.js*`
+        )
+      );
+    } else if (!entry.data) {
+      console.log(
+        msg.warn(
+          `Skipping select menu "${chalk.bold(entry.name)}", missing *data.js*`
+        )
+      );
+    } else if (!entry.execute) {
+      console.log(
+        msg.warn(
+          `Skipping select menu "${chalk.bold(entry.name)}", missing *menu.js*`
+        )
+      );
+    }
+  }
+  for (const entry of unfiltered.contextMenus) {
+    if (!entry.data && !entry.execute) {
+      console.log(
+        msg.warn(
+          `Skipping context menu "${chalk.bold(
+            entry.name
+          )}", missing *data.js* or *menu.js*`
+        )
+      );
+    } else if (!entry.data) {
+      console.log(
+        msg.warn(
+          `Skipping context menu "${chalk.bold(entry.name)}", missing *data.js*`
+        )
+      );
+    } else if (!entry.execute) {
+      console.log(
+        msg.warn(
+          `Skipping context menu "${chalk.bold(entry.name)}", missing *menu.js*`
+        )
+      );
+    }
+  }
+
   const filtered_commands = unfiltered.commands.filter(
     (c) => c.data && c.execute
   ) as {
@@ -110,9 +194,36 @@ export default function processEntries(unfiltered: {
     execute: string;
   }[];
 
+  const filtered_modals = unfiltered.modals.filter(
+    (b) => b.data && b.execute
+  ) as {
+    name: string;
+    data: string;
+    execute: string;
+  }[];
+
+  const filtered_contextMenus = unfiltered.contextMenus.filter(
+    (b) => b.data && b.execute
+  ) as {
+    name: string;
+    data: string;
+    execute: string;
+  }[];
+
+  const filtered_selectMenus = unfiltered.selectMenus.filter(
+    (b) => b.data && b.execute
+  ) as {
+    name: string;
+    data: string;
+    execute: string;
+  }[];
+
   return {
     commands: filtered_commands,
     events: filtered_events,
     buttons: filtered_buttons,
+    modals: filtered_modals,
+    context_menus: filtered_contextMenus,
+    select_menus: filtered_selectMenus,
   };
 }

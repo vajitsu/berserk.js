@@ -1,5 +1,5 @@
 import Discord from "discord.js";
-import { Bot } from "src";
+import { Bot } from "../src/index";
 
 export type URLButton = {
   label: string;

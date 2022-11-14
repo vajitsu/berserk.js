@@ -51,6 +51,7 @@
     "geist": "^0.1.2",
     "jujutsu": "*",
     "next": "^13.0.2",
-    "node-watch": "^0.7.3"
+    "node-watch": "^0.7.3",
+    "watchpack": "^2.4.0"
   }
 }
