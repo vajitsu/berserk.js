@@ -1,6 +1,0 @@
-{
-  "plugins": ["stylelint-prettier"],
-  "rules": {
-    "indentation": 2
-  }
-}
