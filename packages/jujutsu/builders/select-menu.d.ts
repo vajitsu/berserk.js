@@ -1,14 +1,22 @@
-import Discord from 'discord.js';
+import Discord from "discord.js";
+import { Bot } from "../dist";
 
+declare type SelectMenuData = {
+  placeholder: string;
+  disabled?: boolean;
+  maxValues?: number;
+  minValues?: number;
+  options?: Discord.SelectMenuComponentOptionData[];
+};
+declare function SelectMenuData(
+  data: SelectMenuData
+): Partial<Discord.APISelectMenuComponent>;
 declare abstract class SelectMenu {
-    abstract id: string;
-    abstract placeholder: string;
-    disabled?: boolean;
-    maxValues?: number;
-    minValues?: number;
-    abstract options: Discord.RestOrArray<Discord.SelectMenuComponentOptionData | Discord.APISelectMenuOption | Discord.SelectMenuOptionBuilder>;
-    private selectMenu;
-    build(): Discord.SelectMenuBuilder;
+  abstract data: Partial<Discord.APISelectMenuComponent>;
+  abstract run(
+    interaction: Discord.SelectMenuInteraction,
+    bot: Bot
+  ): Promise<void>;
 }
 
-export { SelectMenu as default };
+export { SelectMenuData, SelectMenu as default };

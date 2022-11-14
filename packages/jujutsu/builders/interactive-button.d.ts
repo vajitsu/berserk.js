@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+import { Bot } from "../dist";
 
 declare type URLButton = {
     label: string;
@@ -17,7 +18,7 @@ declare type ButtonData = {
 declare function ButtonData(data: ButtonData): Partial<Discord.APIButtonComponentWithCustomId>;
 declare abstract class InteractiveButton {
     abstract data: Partial<Discord.APIButtonComponentWithCustomId>;
-    abstract run(interaction: Discord.ButtonInteraction, client: Discord.Client): Promise<void>;
+    abstract run(interaction: Discord.ButtonInteraction, bot: Bot): Promise<void>;
 }
 
 export { ButtonData, URLButton, InteractiveButton as default };

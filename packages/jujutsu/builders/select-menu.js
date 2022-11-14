@@ -1,25 +1,19 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 var Discord = require('discord.js');
 
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+function SelectMenuData(data) {
+  const _ = new Discord.SelectMenuBuilder(data);
+  return _.data;
+}
+__name(SelectMenuData, "SelectMenuData");
 var SelectMenu = class {
-  constructor() {
-    this.selectMenu = new Discord.SelectMenuBuilder();
-  }
-  build() {
-    this.selectMenu.setCustomId(this.id);
-    this.selectMenu.setPlaceholder(this.placeholder);
-    this.selectMenu.setDisabled(this.disabled || false);
-    this.selectMenu.setOptions(...this.options);
-    if (typeof this.maxValues === "number")
-      this.selectMenu.setMaxValues(this.maxValues);
-    if (typeof this.minValues === "number")
-      this.selectMenu.setMinValues(this.minValues);
-    return this.selectMenu;
-  }
 };
 __name(SelectMenu, "SelectMenu");
 
-module.exports = SelectMenu;
+exports.SelectMenuData = SelectMenuData;
+exports.default = SelectMenu;

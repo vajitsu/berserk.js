@@ -7,8 +7,8 @@ var Discord = require('discord.js');
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 function ModalData(data) {
-  const select_menu = new Discord.SelectMenuBuilder(data);
-  return select_menu.data;
+  const modal = new Discord.ModalBuilder(data);
+  return modal.data;
 }
 __name(ModalData, "ModalData");
 var Modal = class {

@@ -2,24 +2,22 @@ import Discord from "discord.js";
 import { Bot } from "../src/index";
 
 type ModalData = {
-  placeholder?: string;
-  options?: Array<{
-    label: string;
-    description?: string;
-    value: string;
-  }>;
-  disabled?: boolean;
-  maxValues?: number;
-  minValues?: number;
+  title: string;
+  components: (
+    | Discord.JSONEncodable<
+        Discord.APIActionRowComponent<Discord.APIModalActionRowComponent>
+      >
+    | Discord.ActionRowData<Discord.ModalActionRowComponentData>
+  )[];
 };
 
 export function ModalData(data: ModalData) {
-  const select_menu = new Discord.SelectMenuBuilder(data);
-  return select_menu.data;
+  const modal = new Discord.ModalBuilder(data);
+  return modal.data;
 }
 
 export default abstract class Modal {
-  abstract data: Partial<Discord.APISelectMenuComponent>;
+  abstract data: Partial<Discord.APIModalInteractionResponseCallbackData>;
 
   abstract run(
     interaction: Discord.SelectMenuInteraction,

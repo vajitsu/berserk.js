@@ -1,1 +1,0 @@
-"use strict";var e=Object.defineProperty;var n=function(n,r){return e(n,"name",{value:r,configurable:!0})};function r(e){return e}n(r,"defineConfig");module.exports=r;

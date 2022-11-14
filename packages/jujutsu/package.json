@@ -8,7 +8,6 @@
     "build:main-types": "tsup src/index.ts --outDir dist --dts-only --dts-resolve",
     "build:utils": "tsup utils.ts --outDir . --dts --minify --keep-names",
     "build:ui": "npm run build:slashcommand && npm run build:event && npm run build:selectmenu && npm run build:button && npm run build:actionrow && npm run build:interactive-button && npm run build:modal",
-    "build:config": "tsup config.ts --outDir . --dts --minify --keep-names",
     "build:cli": "tsup --entry.cli src/cli/index.ts --minify --format cjs",
     "build:slashcommand": "tsup --entry.slash-command builders/slash-command.ts --outDir builders --dts-resolve",
     "build:event": "tsup --entry.event builders/event.ts --outDir builders --dts-resolve",
@@ -30,9 +29,6 @@
     "utils.ts",
     "utils.js",
     "utils.d.ts",
-    "config.ts",
-    "config.js",
-    "config.d.ts",
     "geist.ts",
     "geist.js",
     "geist.d.ts"
