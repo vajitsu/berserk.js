@@ -16,6 +16,7 @@
     "build:interactive-button": "tsup --entry.interactive-button builders/interactive-button.ts --outDir builders --dts-resolve",
     "build:actionrow": "tsup --entry.action-row builders/action-row.ts --outDir builders --dts-resolve",
     "build:modal": "tsup --entry.modal builders/modal.ts --outDir builders --dts-resolve",
+    "build:context-menu": "tsup --entry.context-menu builders/context-menu.ts --outDir builders --dts-resolve",
     "prepublishOnly": "npm run build",
     "dev": "npm run build --watch",
     "changelog": "git cliff --prepend ./changelog.md -u -c ./cliff.toml -r ../../ --include-path 'packages/jujutsu/*'",
