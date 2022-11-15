@@ -66,6 +66,6 @@ class Permissions {
 }
 
 export default class Utilities {
-  public static Permissions =Permissions;
+  public static Permissions = Permissions;
   public static Events = Discord.Events;
 }

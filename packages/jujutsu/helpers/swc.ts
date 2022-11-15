@@ -15,6 +15,11 @@ const swcrc: Config = {
   },
   module: {
     type: "commonjs",
+    strict: true,
+    strictMode: true,
+    noInterop: true,
+    lazy: true,
+    allowTopLevelThis: true,
   },
   minify: true,
   sourceMaps: false,

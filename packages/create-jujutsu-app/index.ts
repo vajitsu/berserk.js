@@ -227,7 +227,9 @@ async function notifyUpdate(): Promise<void> {
           : "npm i -g create-jujutsu-app";
 
       console.log(
-        chalk.yellow.bold("A new version of `create-jujutsu-app` is available!") +
+        chalk.yellow.bold(
+          "A new version of `create-jujutsu-app` is available!"
+        ) +
           "\n" +
           "You can update by running: " +
           chalk.cyan(updateMessage) +

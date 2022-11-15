@@ -53,8 +53,5 @@ export function ButtonData(
 export default abstract class InteractiveButton {
   abstract data: Partial<Discord.APIButtonComponentWithCustomId>;
 
-  abstract run(
-    interaction: Discord.ButtonInteraction,
-    bot: Bot
-  ): Promise<void>;
+  abstract run(interaction: Discord.ButtonInteraction, bot: Bot): Promise<void>;
 }

@@ -203,7 +203,7 @@ export async function createApp({
       scripts: {
         dev: "jujutsu dev",
         build: "jujutsu build",
-        start: "jujutsu start"
+        start: "jujutsu start",
       },
     };
     /**
