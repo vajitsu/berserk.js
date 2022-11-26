@@ -4,19 +4,57 @@ import { findAppDir, findDir } from '../lib/find-app-dir'
 import * as Log from '../build/output/log'
 import { loadEnvConfig } from '../lib/env'
 import { join as pathJoin } from 'path'
-import BaseServer from './base-server'
 import { UnwrapPromise } from '../lib/coalesced-function'
 import loadJsConfig from '../build/load-jsconfig'
 import { PHASE_DEVELOPMENT_SERVER } from '../lib/constants'
 import { setGlobal } from '../trace'
+import bot from '../discord/bot'
+import startServer from './lib/start-server'
+import { JujutsuConfigComplete } from './config-shared'
+import { recursiveReadDirSync } from './lib/recursive-readdir-sync'
+import build from '../build'
+import { recursiveReadDir } from '../lib/recursive-readdir'
 
-export type JujutsuServerOptions = Partial<DevServerOptions>
+// export type JujutsuServerOptions = Partial<DevServerOptions>
 
-export class JujutsuServer extends BaseServer {
-  constructor(options: ServerOptions) {
-    // Initialize super class
-    super(options)
-  }
+// export class JujutsuServer extends BaseServer {
+//   constructor(protected options: ServerOptions, protected bot: bot) {
+//     // Initialize super class
+//     super(options, bot)
+//   }
+
+//   protected loadEnvConfig({
+//     dev,
+//     forceReload,
+//   }: {
+//     dev: boolean
+//     forceReload?: boolean
+//   }) {
+//     loadEnvConfig(this.dir, dev, Log, forceReload)
+//   }
+
+//   protected getHasAppDir(): boolean {
+//     return Boolean(findDir(this.dir, 'app'))
+//   }
+
+//   async start() {
+//     startServer(this.options, this.bot)
+//   }
+// }
+
+export class JujutsuDevServer {
+  private watcher?: Watchpack | null
+  private usingTypeScript?: boolean
+
+  private devReady: Promise<void>
+  private setDevReady?: Function
+
+  private appDir?: string
+
+  protected distDir: string
+  protected dir: string
+  protected quiet: boolean
+  protected jujutsuConfig: JujutsuConfigComplete
 
   protected loadEnvConfig({
     dev,
@@ -28,30 +66,23 @@ export class JujutsuServer extends BaseServer {
     loadEnvConfig(this.dir, dev, Log, forceReload)
   }
 
-  protected getHasAppDir(): boolean {
-    return Boolean(findDir(this.dir, 'app'))
-  }
+  constructor(protected options: DevServerOptions, protected bot: bot) {
+    const { dir = '.', quiet = false, conf, dev = false } = options
 
-  async start() {}
-}
+    this.quiet = quiet
+    this.dir = dir
+    this.jujutsuConfig = conf as JujutsuConfigComplete
+    this.distDir = require('path').join(this.dir, this.jujutsuConfig.distDir)
+    this.appDir = require('path').join(this.dir, 'app')
 
-export class JujutsuDevServer extends JujutsuServer {
-  private watcher?: Watchpack | null
-  private usingTypeScript?: boolean
-
-  private devReady: Promise<void>
-  private setDevReady?: Function
-
-  private appDir?: string
-
-  constructor(options: DevServerOptions) {
-    super({ ...options, dev: true })
     this.devReady = new Promise((resolve) => {
       this.setDevReady = resolve
     })
+  }
 
-    const { appDir } = findAppDir(this.dir, true)
-    this.appDir = appDir
+  public logError(err: Error): void {
+    if (this.quiet) return
+    console.error(err)
   }
 
   async startWatcher(): Promise<void> {
@@ -73,6 +104,27 @@ export class JujutsuDevServer extends JujutsuServer {
         '.env',
       ].map((file) => pathJoin(this.dir, file))
       files.push(...envFiles)
+
+      const regex_commands = new RegExp(
+        `^command\\.(?:${this.jujutsuConfig.commandExtensions.join('|')})$`,
+        ''
+      )
+      const regex_events = new RegExp(
+        `^event\\.(?:${this.jujutsuConfig.eventExtensions.join('|')})$`,
+        ''
+      )
+
+      const appFiles = this.appDir
+        ? [
+            ...(await recursiveReadDir(this.appDir, regex_commands)).map(
+              (file) => pathJoin(this.dir, 'app', file)
+            ),
+            ...(await recursiveReadDir(this.appDir, regex_events)).map((file) =>
+              pathJoin(this.dir, 'app', file)
+            ),
+          ]
+        : []
+      files.push(...appFiles)
 
       // tsconfig/jsonfig paths hot-reloading
       const tsconfigPaths = [
@@ -102,6 +154,7 @@ export class JujutsuDevServer extends JujutsuServer {
 
         let envChange = false
         let tsconfigChange = false
+        let appChange = false
 
         for (const [fileName, meta] of knownFiles) {
           if (
@@ -132,6 +185,13 @@ export class JujutsuDevServer extends JujutsuServer {
             continue
           }
 
+          if (appFiles.includes(fileName)) {
+            if (watchTimeChange) {
+              appChange = true
+            }
+            continue
+          }
+
           if (fileName.endsWith('.ts')) {
             enabledTypeScript = true
           }
@@ -153,6 +213,14 @@ export class JujutsuDevServer extends JujutsuServer {
             }
           }
         }
+
+        if (appChange) {
+          Log.wait('Project modified... building new changes')
+          this.bot.client.destroy()
+          this.stopWatcher()
+          build(this.dir, null, true)
+          startServer(this.options)
+        }
       })
     })
   }
@@ -170,9 +238,29 @@ export class JujutsuDevServer extends JujutsuServer {
     setGlobal('distDir', this.distDir)
     setGlobal('phase', PHASE_DEVELOPMENT_SERVER)
 
-    await super.prepare()
     await this.startWatcher()
     await this.startWatcher()
     this.setDevReady!()
   }
 }
+
+// export class JujutsuDevServer extends JujutsuServer {
+//   private watcher?: Watchpack | null
+//   private usingTypeScript?: boolean
+
+//   private devReady: Promise<void>
+//   private setDevReady?: Function
+
+//   private appDir?: string
+
+//   constructor(options: DevServerOptions, bot: bot) {
+//     super({ ...options, dev: true }, bot)
+//     this.devReady = new Promise((resolve) => {
+//       this.setDevReady = resolve
+//     })
+
+//     const { appDir } = findAppDir(this.dir, true)
+//     this.appDir = appDir
+//   }
+
+// }

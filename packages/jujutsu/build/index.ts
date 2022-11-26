@@ -4,17 +4,16 @@ import { AppManifest, createAppManifest } from './entries'
 import { recursiveDelete } from '../lib/recursive-delete'
 import { PHASE_PRODUCTION_BUILD, SWC_CONFIG } from '../lib/constants'
 import compileCommands from './compiler/commands'
-import { findAppDir } from '../lib/find-app-dir'
+import { findAppDir, findCommandsDir, findEventsDir } from '../lib/find-app-dir'
 import { fileExists } from '../lib/file-exists'
 import * as ciEnvironment from '../lib/ci-info'
 import title from 'jujutsu/dist/compiled/title'
 import { isWriteable } from './is-writeable'
-import { loadEnvConfig, processEnv } from '../lib/env'
+import { loadEnvConfig } from '../lib/env'
 import loadConfig from '../client/config'
 import isError from '../lib/is-error'
-import createSpinner from './spinner'
 import * as Log from './output/log'
-import { promises, existsSync } from 'fs'
+import { promises } from 'fs'
 import path, { join as pathJoin } from 'path'
 import esm from 'esm'
 import ms from 'ms'
@@ -24,7 +23,6 @@ import {
   teardownTraceSubscriber,
   teardownCrashReporter,
   loadBindings,
-  transformSync,
   transform,
 } from './swc'
 import { isBoolean, isFunction } from 'jujutsu/dist/compiled/lodash'
@@ -34,13 +32,16 @@ import {
   ClientEvents,
   Locale,
   LocalizationMap,
-  SlashCommandBuilder,
+  ChannelType,
+  Events,
 } from 'jujutsu/dist/compiled/discord.js'
 import { printAndExit } from '../lib/utils'
 import compileEvents from './compiler/events'
 import { mkdirp } from 'fs-extra'
 import uuid from 'jujutsu/dist/compiled/uid-promise'
-import { recursiveReadDir } from '../lib/recursive-readdir'
+import chalk from 'jujutsu/dist/compiled/chalk'
+import { exists } from 'jujutsu/dist/compiled/find-up'
+import { rm } from 'fs/promises'
 
 interface AppManifestComplete extends AppManifest {
   commands: {
@@ -55,6 +56,56 @@ interface AppManifestComplete extends AppManifest {
   }[]
 }
 
+interface CommandOption_Integer extends CommandOption_Bland<'Integer'> {
+  autoComplete?: boolean
+  minValue?: number
+  maxValue?: number
+}
+interface CommandOption_Number extends CommandOption_Bland<NumberConstructor> {
+  autoComplete?: boolean
+  minValue?: number
+  maxValue?: number
+}
+interface CommandOption_String extends CommandOption_Bland<StringConstructor> {
+  autoComplete?: boolean
+  minLength?: number
+  maxLength?: number
+}
+interface CommandOption_Channel extends CommandOption_Bland<'Channel'> {
+  channelTypes: (
+    | ChannelType.GuildText
+    | ChannelType.GuildVoice
+    | ChannelType.GuildCategory
+    | ChannelType.GuildAnnouncement
+    | ChannelType.AnnouncementThread
+    | ChannelType.PublicThread
+    | ChannelType.PrivateThread
+    | ChannelType.GuildStageVoice
+    | ChannelType.GuildForum
+  )[]
+}
+type CommandOption_Bland<Type> = {
+  name: string
+  description: string
+  localizations?: {
+    name?: LocalizationMap
+    description?: LocalizationMap
+  }
+  required?: boolean
+  type: Type
+}
+
+type CommandOption =
+  | CommandOption_Number
+  | CommandOption_String
+  | CommandOption_Integer
+  | CommandOption_Channel
+  | CommandOption_Bland<BooleanConstructor>
+  | CommandOption_Bland<'Attachment'>
+  | CommandOption_Bland<'Role'>
+  | CommandOption_Bland<'User'>
+  | CommandOption_Bland<'Mentionable'>
+
 export type CommandFile = {
   description?: string
   default: (
@@ -67,25 +118,7 @@ export type CommandFile = {
   }
   defaultMemberPermissions?: string | number | bigint
   dmPermission?: boolean
-  options?: Array<{
-    type:
-      | NumberConstructor
-      | BooleanConstructor
-      | StringConstructor
-      | 'Integer'
-      | 'User'
-      | 'Channel'
-      | 'Role'
-      | 'Mentionable'
-      | 'Attachment'
-    name: string
-    description?: string
-    localizations?: {
-      name?: LocalizationMap
-      description?: LocalizationMap
-    }
-    required?: boolean
-  }>
+  options?: Array<CommandOption>
 }
 export interface CommandFileComplete extends CommandFile {
   absolutePath: string
@@ -97,20 +130,69 @@ export type EventFile = {
 }
 export interface EventFileComplete extends EventFile {
   absolutePath: string
-  name: string
+  name: keyof ClientEvents
 }
 
-export default async function build(dir: string, conf = null): Promise<void> {
+export function interopForEvent(mod: any): EventFile {
+  if (mod.default) {
+    delete mod['__name']
+    return mod as EventFile
+  } else
+    return {
+      default: mod,
+    } as EventFile
+}
+export function interopForCommand(mod: any): CommandFile {
+  if (mod.default) {
+    delete mod['__name']
+    return mod as CommandFile
+  } else {
+    const _: Partial<CommandFile> = { default: mod }
+
+    if (mod.description)
+      (_['description'] = mod.description), delete mod['description']
+
+    if (
+      mod.localizations &&
+      ((!!mod.localizations.name &&
+        Object.values(mod.localizations.name).length > 0) ||
+        (!!mod.localizations.description &&
+          Object.values(mod.localizations.description).length > 0))
+    )
+      (_['localizations'] = mod.localizations), delete mod['localizations']
+
+    if (mod.defaultMemberPermissions)
+      (_['defaultMemberPermissions'] = mod.defaultMemberPermissions),
+        delete mod['defaultMemberPermissions']
+
+    if (mod.dmPermission)
+      (_['dmPermission'] = mod.dmPermission), delete mod['dmPermission']
+
+    if (mod.options) (_['options'] = mod.options), delete mod['options']
+
+    return _ as CommandFile
+  }
+}
+
+export default async function build(
+  dir: string,
+  conf = null,
+  dev = false
+): Promise<void> {
   try {
+    let start: [number, number] | undefined
+    let end: number | undefined
+
     const jujutsuBuildSpan = trace('jujutsu-build', undefined, {
       version: process.env.__JUJUTSU_VERSION as string,
     })
 
     const buildResult = await jujutsuBuildSpan.traceAsyncFn(async () => {
+      start = process.hrtime()
       // attempt to load global env values so they are available in jujutsu.config.js
       const { loadedEnvFiles } = jujutsuBuildSpan
         .traceChild('load-dotenv')
-        .traceFn(() => loadEnvConfig(dir, false, Log))
+        .traceFn(() => loadEnvConfig(dir, dev, Log))
 
       const config: JujutsuConfigComplete = await jujutsuBuildSpan
         .traceChild('load-jujutsu-config')
@@ -138,11 +220,13 @@ export default async function build(dir: string, conf = null): Promise<void> {
         throw new Error('> Build directory is not writeable.')
       }
 
+      const tempDir = pathJoin(distDir, 'temp')
+
       if (config.cleanDistDir) {
         await recursiveDelete(distDir, /^cache/)
       }
 
-      // Ensure commonjs handling is used for files in the distDir (generally .next)
+      // Ensure commonjs handling is used for files in the distDir (generally .jujutsu)
       // Files outside of the distDir can be "type": "module"
       await promises.writeFile(
         path.join(distDir, 'package.json'),
@@ -165,28 +249,34 @@ export default async function build(dir: string, conf = null): Promise<void> {
       const isAppDirEnabled = true
       const { appDir } = findAppDir(dir, isAppDirEnabled)
 
+      // Allow for use of the events or commands directory
+      const { commandsDir } = findCommandsDir(dir)
+      const { eventsDir } = findEventsDir(dir)
+
       let appManifest: AppManifestComplete | undefined
 
       if (appDir) {
+        const opt: any = {
+          appDir,
+          commandExtensions: config.commandExtensions,
+          eventExtensions: config.eventExtensions,
+        }
+        if (commandsDir) opt['commandsDir'] = commandsDir
+        if (eventsDir) opt['eventsDir'] = eventsDir
+
         const appManifestUncomplete = await jujutsuBuildSpan
           .traceChild('generate-app-manifest')
-          .traceAsyncFn(() =>
-            createAppManifest({
-              appDir,
-              commandExtensions: config.commandExtensions,
-              eventExtensions: config.eventExtensions,
-            })
-          )
+          .traceAsyncFn(() => createAppManifest(opt))
 
         const appManifestCommands = appManifestUncomplete.commands.map(
           (command) => ({
             ...command,
-            absolutePath: path.join(process.cwd(), command.path),
+            absolutePath: path.join(dir, command.path),
           })
         ) as AppManifestComplete['commands']
         const appManifestEvents = appManifestUncomplete.events.map((event) => ({
           ...event,
-          absolutePath: path.join(process.cwd(), event.path),
+          absolutePath: path.join(dir, event.path),
         })) as AppManifestComplete['events']
 
         appManifest = {
@@ -271,39 +361,6 @@ export default async function build(dir: string, conf = null): Promise<void> {
               Log.error(`${paths.map((p) => `"${p}"`).join(' - ')}`)
             }
             process.exit(1)
-          }
-        }
-
-        function interopDefaultForCommand(mod: any): CommandFile {
-          if (mod.default) return mod as CommandFile
-          else {
-            const _: Partial<CommandFile> = { default: mod }
-
-            if (mod.description)
-              (_['description'] = mod.description), delete mod['description']
-
-            if (
-              mod.localizations &&
-              ((!!mod.localizations.name &&
-                Object.values(mod.localizations.name).length > 0) ||
-                (!!mod.localizations.description &&
-                  Object.values(mod.localizations.description).length > 0))
-            )
-              (_['localizations'] = mod.localizations),
-                delete mod['localizations']
-
-            if (mod.defaultMemberPermissions)
-              (_['defaultMemberPermissions'] = mod.defaultMemberPermissions),
-                delete mod['defaultMemberPermissions']
-
-            if (mod.dmPermission)
-              (_['dmPermission'] = mod.dmPermission), delete mod['dmPermission']
-
-            if (mod.options) (_['options'] = mod.options), delete mod['options']
-
-            new SlashCommandBuilder().options
-
-            return _ as CommandFile
           }
         }
         function validateCommandInfo(mod: CommandFile) {
@@ -404,14 +461,6 @@ export default async function build(dir: string, conf = null): Promise<void> {
 
           return errors
         }
-
-        function interopDefaultForEvent(mod: any): EventFile {
-          if (mod.default) return mod as EventFile
-          else
-            return {
-              default: mod,
-            } as EventFile
-        }
         function validateEventInfo(mod: EventFile) {
           const errors: {
             trace: 'execute function'
@@ -429,23 +478,22 @@ export default async function build(dir: string, conf = null): Promise<void> {
           return errors
         }
         async function fallback(path: string) {
-          const now =
-            existsSync(cacheDir) &&
-            (await recursiveReadDir(cacheDir, /^\\fallback\.[a-z0-9]+\.js$/))
-          console.log(now)
-
           const content = (await promises.readFile(path)).toString('utf8')
 
           await loadBindings()
           const { code } = await transform(content, SWC_CONFIG)
 
-          await mkdirp(cacheDir)
+          await mkdirp(tempDir)
 
-          const outpath = pathJoin(cacheDir, `fallback.${await uuid(7)}.js`)
+          const outpath = pathJoin(tempDir, `fallback.${await uuid(7)}.js`)
+
           await promises.writeFile(outpath, code, 'utf8')
+
+          const mod = require(outpath)
+
           return {
             path: outpath,
-            mod: require(outpath),
+            mod,
           }
         }
 
@@ -466,7 +514,7 @@ export default async function build(dir: string, conf = null): Promise<void> {
                 let Fallback
 
                 try {
-                  Module = interopDefaultForCommand(
+                  Module = interopForCommand(
                     esm(module, {
                       mode: 'auto',
                       cjs: true,
@@ -474,7 +522,7 @@ export default async function build(dir: string, conf = null): Promise<void> {
                   )
                 } catch (_) {
                   Fallback = await fallback(command.absolutePath)
-                  Module = interopDefaultForCommand(Fallback.mod)
+                  Module = interopForCommand(Fallback.mod)
                 }
 
                 if (Module) {
@@ -498,7 +546,7 @@ export default async function build(dir: string, conf = null): Promise<void> {
                 if (isError(error)) {
                   if (error.code === 'MODULE_NOT_FOUND')
                     Log.warn(
-                      `Skipping "${command.absolutePath}"\n       Reason: Command file has no exported contents.`
+                      `Skipping "${command.absolutePath}" - Command file has no exported contents.`
                     )
                   else Log.error(error)
                 } else console.error(error)
@@ -513,7 +561,7 @@ export default async function build(dir: string, conf = null): Promise<void> {
                 let Fallback
 
                 try {
-                  Module = interopDefaultForEvent(
+                  Module = interopForEvent(
                     esm(module, {
                       mode: 'auto',
                       cjs: true,
@@ -521,7 +569,7 @@ export default async function build(dir: string, conf = null): Promise<void> {
                   )
                 } catch (_) {
                   Fallback = await fallback(event.absolutePath)
-                  Module = interopDefaultForEvent(Fallback.mod)
+                  Module = interopForEvent(Fallback.mod)
                 }
 
                 if (Module) {
@@ -536,7 +584,7 @@ export default async function build(dir: string, conf = null): Promise<void> {
                     allEvents.add(event.name)
                     allEventInfos.set(event.name, {
                       absolutePath: event.absolutePath,
-                      name: event.name,
+                      name: event.name as any,
                       ...Module,
                     })
                   }
@@ -582,50 +630,65 @@ export default async function build(dir: string, conf = null): Promise<void> {
         )
       }
 
-      const buildSpinner = await createSpinner({
-        prefixText: `${Log.prefixes.info} Creating an optimized production build`,
-      })
+      let manifests: {
+        commands:
+          | {
+              path: string
+              name: string
+            }[]
+          | undefined
+        events:
+          | {
+              path: string
+              name: string
+            }[]
+          | undefined
+      } = {
+        commands: undefined,
+        events: undefined,
+      }
 
-      //await (async () => {
       if (allCommands.size > 0)
-        await compileCommands(allCommands, allCommandInfos, loadedEnvFiles)
+        manifests.commands = await compileCommands(
+          allCommands,
+          allCommandInfos,
+          loadedEnvFiles,
+          dir,
+          config.swcMinify,
+          dev
+        )
       if (allEvents.size > 0)
-        await compileEvents(allEvents, allEventInfos, loadedEnvFiles)
-      //})()
+        manifests.events = await compileEvents(
+          allEvents,
+          allEventInfos,
+          loadedEnvFiles,
+          dir,
+          config.swcMinify,
+          dev
+        )
+
+      if (await exists(tempDir)) await rm(tempDir, { recursive: true })
+
+      const _end = process.hrtime(start)
+      end = parseInt(
+        (
+          ((_end.at(0) as number) * 1000000000 + (_end.at(1) as number)) /
+          1000000
+        ).toFixed(0)
+      )
     })
 
-    // const distDirCreated =
+    const isTTY = process.stdout.isTTY
+    const jjGradient = `${chalk.bold(
+      isTTY
+        ? require('jujutsu/dist/compiled/gradient-string')('cyan', 'violet')(
+            '>>> JUJUTSU'
+          )
+        : '>>> Ready for producition use'
+    )} ${chalk.dim(`(alpha - built in ${ms(end as number)})`)}\n\n`
 
-    // if (!distDirCreated || !(await isWriteable(distDir))) {
-    //   throw new Error(
-    //     '> Build directory is not writeable. https://nextjs.org/docs/messages/build-dir-not-writeable'
-    //   )
-    // }
-
-    // if (config && config.cleanDistDir) {
-    //   await recursiveDelete(distDir, /^cache/)
-    // }
-
-    // const postCompileSpinner = createSpinner({
-    //   prefixText: `${Log.prefixes.info} Transforming your code`,
-    // })
-
-    // const startBuild = performance.now()
-    // compiler.compileBuild(dir)
-    // const endBuild = performance.now()
-
-    // if (postCompileSpinner) postCompileSpinner.stopAndPersist()
-
-    // const end = performance.now()
-
-    // console.log(
-    //   Log.jujutsu(
-    //     'Succesfully compilied project',
-    //     `\n\nBuild finished in ${ms(startBuild - endBuild)}\nDone in ${ms(
-    //       start - end
-    //     )}`
-    //   )
-    // )
+    let thankYouMsg = `Thank you for using the Jujutsu v1 for your Discord bot! As a reminder,\nJujutsu is a very new framework and you may come across some issues.\n\nPlease report issues here: https://github.com/vajitsu/jujutsu.js/issues.`
+    if (!dev) console.log(), console.log(jjGradient + thankYouMsg)
   } finally {
     // Ensure we wait for lockfile patching if present
     await lockfilePatchPromise.cur

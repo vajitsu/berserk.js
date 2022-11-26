@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { startedDevelopmentServer } from '../build/output'
 import { getProjectDir } from '../lib/get-project-dir'
-import { CONFIG_FILES } from '../lib/constants'
+import { CONFIG_FILES, PHASE_DEVELOPMENT_SERVER } from '../lib/constants'
 import arg from 'jujutsu/dist/compiled/arg/index.js'
 import { printAndExit } from '../client/lib/utils'
 import { traceGlobals } from '../trace/shared'
@@ -13,6 +13,10 @@ import isError from '../lib/is-error'
 import path from 'path'
 import startServer from '../client/lib/start-server'
 import { findConfig } from '../lib/find-config'
+import { EventEmitter } from 'jujutsu/dist/compiled/ws'
+import { Client } from 'jujutsu/dist/compiled/discord.js'
+import loadConfig from '../client/config'
+import build from '../build'
 
 let sessionStopHandled = false
 let sessionStarted = Date.now()
@@ -29,7 +33,7 @@ const jujutsuDev: cliCommand = async (argv) => {
   const validArgs: arg.Spec = {
     // Types
     '--help': Boolean,
-    '--turbo': Boolean,
+    '--quiet': Boolean,
 
     // Aliases
     '-h': '--help',
@@ -71,7 +75,7 @@ const jujutsuDev: cliCommand = async (argv) => {
     isJujutsuDevCommand: true,
   }
 
-  async function validateJujutsuConfig(isCustomTurbopack: boolean) {
+  async function validateJujutsuConfig() {
     const { getPkgManager } =
       require('../lib/helpers/get-pkg-manager') as typeof import('../lib/helpers/get-pkg-manager')
     const { defaultConfig } =
@@ -84,17 +88,6 @@ const jujutsuDev: cliCommand = async (argv) => {
       require('jujutsu/dist/compiled/chalk') as typeof import('jujutsu/dist/compiled/chalk')
     const { interopDefault } =
       require('../lib/interop-default') as typeof import('../lib/interop-default')
-
-    // To regenerate the TURBOPACK gradient require('gradient-string')('blue', 'red')('>>> TURBOPACK')
-    const isTTY = process.stdout.isTTY
-
-    const turbopackGradient = `${chalk.bold(
-      isTTY
-        ? '\x1B[38;2;0;0;255m>\x1B[39m\x1B[38;2;23;0;232m>\x1B[39m\x1B[38;2;46;0;209m>\x1B[39m \x1B[38;2;70;0;185mT\x1B[39m\x1B[38;2;93;0;162mU\x1B[39m\x1B[38;2;116;0;139mR\x1B[39m\x1B[38;2;139;0;116mB\x1B[39m\x1B[38;2;162;0;93mO\x1B[39m\x1B[38;2;185;0;70mP\x1B[39m\x1B[38;2;209;0;46mA\x1B[39m\x1B[38;2;232;0;23mC\x1B[39m\x1B[38;2;255;0;0mK\x1B[39m'
-        : '>>> TURBOPACK'
-    )} ${chalk.dim('(alpha)')}\n\n`
-
-    let thankYouMsg = `Thank you for trying Next.js v13 with Turbopack! As a reminder,\nTurbopack is currently in alpha and not yet ready for production.\nWe appreciate your ongoing support as we work to make it ready\nfor everyone.\n`
 
     let hasNonDefaultConfig
     let rawJujutsuConfig: JujutsuConfig = {}
@@ -155,16 +148,10 @@ const jujutsuDev: cliCommand = async (argv) => {
       console.error('Unexpected error occurred while checking config', e)
     }
 
-    const hasWarningOrError = hasNonDefaultConfig
-    if (!hasWarningOrError) {
-      thankYouMsg = chalk.dim(thankYouMsg)
-    }
-    console.log(turbopackGradient + thankYouMsg)
-
     return rawJujutsuConfig
   }
 
-  validateJujutsuConfig(false)
+  validateJujutsuConfig()
 
   //const
 
@@ -172,6 +159,19 @@ const jujutsuDev: cliCommand = async (argv) => {
   //     conf: findConfig<JujutsuConfig>(process.cwd(), 'jujutsu'),
   //     ...devServerOptions,
   //   })
+
+  const conf = await loadConfig(PHASE_DEVELOPMENT_SERVER, dir)
+
+  build(dir, null, true).then(() => {
+    startServer({
+      conf,
+      ...devServerOptions,
+      quiet: !!args['--quiet'],
+    }).catch((err: any) => {
+      console.error(err)
+      process.exit(1)
+    })
+  })
 
   for (const CONFIG_FILE of CONFIG_FILES) {
     watchFile(path.join(dir, CONFIG_FILE), (cur: any, prev: any) => {

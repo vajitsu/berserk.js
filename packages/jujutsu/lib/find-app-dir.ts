@@ -11,7 +11,10 @@ export const existsSync = (f: string): boolean => {
   }
 }
 
-export function findDir(dir: string, name: 'pages' | 'app'): string | null {
+export function findDir(
+  dir: string,
+  name: 'app' | 'commands' | 'events'
+): string | null {
   // prioritize ./${name} over ./src/${name}
   let curDir = path.join(dir, name)
   if (existsSync(curDir)) return curDir
@@ -38,5 +41,25 @@ export function findAppDir(
 
   return {
     appDir,
+  }
+}
+
+export function findCommandsDir(dir: string): {
+  commandsDir: string | undefined
+} {
+  const commandsDir = findDir(dir, 'commands') || undefined
+
+  return {
+    commandsDir,
+  }
+}
+
+export function findEventsDir(dir: string): {
+  eventsDir: string | undefined
+} {
+  const eventsDir = findDir(dir, 'commands') || undefined
+
+  return {
+    eventsDir,
   }
 }

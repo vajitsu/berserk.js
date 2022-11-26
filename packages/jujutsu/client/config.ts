@@ -10,7 +10,6 @@ import {
   validateConfig,
 } from './config-shared'
 import { gte as semverGte } from 'jujutsu/dist/compiled/semver'
-import { JujutsuError } from '../lib/is-error'
 
 export { JujutsuConfig, normalizeConfig } from './config-shared'
 

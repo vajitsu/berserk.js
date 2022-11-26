@@ -11,6 +11,11 @@ declare module 'jujutsu/dist/compiled/title' {
   export = m
 }
 
+declare module 'jujutsu/dist/compiled/gradient-string' {
+  import m from 'gradient-string'
+  export = m
+}
+
 declare module 'jujutsu/dist/compiled/chalk' {
   import m from 'chalk'
   export = m
@@ -296,6 +301,11 @@ declare module 'jujutsu/dist/compiled/shell-quote' {
 
 declare module 'jujutsu/dist/compiled/discord.js' {
   import m from 'discord.js'
+  export = m
+}
+
+declare module 'jujutsu/dist/compiled/@sapphire/shapeshift' {
+  import m from '@sapphire/shapeshift'
   export = m
 }
 

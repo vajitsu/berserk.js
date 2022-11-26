@@ -56,13 +56,7 @@ const configSchema = {
         },
         options: {
           type: 'object',
-          additionalProperties: false,
-          properties: {
-            intents: {
-              minItems: 1,
-              type: 'array',
-            },
-          },
+          additionalProperties: true,
         },
       },
       type: 'object',

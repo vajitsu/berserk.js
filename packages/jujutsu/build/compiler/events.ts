@@ -1,6 +1,6 @@
 import type { EventFileComplete as EventInfo } from '../index'
 import { join as pathJoin } from 'path'
-import { bundle } from '@swc/core'
+import { bundle as spack } from '@swc/core'
 import { mkdirp } from 'fs-extra'
 import uid from 'uid-promise'
 import { promises } from 'fs'
@@ -9,11 +9,15 @@ import { SWC_CONFIG } from '../../lib/constants'
 import { LoadedEnvFiles, processEnv } from '../../lib/env'
 import { escapeStringRegexp } from '../../lib/escape-regexp'
 import { isNumber } from 'jujutsu/dist/compiled/lodash'
+import findUp from 'jujutsu/dist/compiled/find-up'
 
 export default async function compileEvents(
   events: Set<string>,
   eventInfos: Map<string, EventInfo>,
-  loadedEnvFiles: LoadedEnvFiles
+  loadedEnvFiles: LoadedEnvFiles,
+  dir: string,
+  swcMinify: boolean,
+  dev = false
 ) {
   const manifest: {
     path: string
@@ -25,7 +29,7 @@ export default async function compileEvents(
 
     if (!event) return
 
-    let env = processEnv(loadedEnvFiles, process.cwd())
+    let env = processEnv(loadedEnvFiles, dir)
 
     const envEntries = (Object.entries(env) as [string, string][]).map((e) => [
       'process.env.'.concat(e[0]),
@@ -36,22 +40,20 @@ export default async function compileEvents(
 
     const unique = await (await uid(7)).toLowerCase()
 
-    swc.loadBindings()
+    const build = dev ? 'dev' : 'build'
+    const buildDir = pathJoin(dir, '.jujutsu', build)
+    const output = pathJoin(dir, '.jujutsu', build, `bundle.${unique}.js`)
 
-    const buildDir = pathJoin(process.cwd(), '.jujutsu', 'build')
-    const output = pathJoin(
-      process.cwd(),
-      '.jujutsu',
-      'build',
-      `bundle.${unique}.js`
-    )
+    // Don't bundle packages that are meant to be used in production
+    let pkgJson
+    const packageJsonPath = await findUp('package.json', { cwd: dir })
+    if (packageJsonPath) pkgJson = require(packageJsonPath)
 
-    const fileContent = await (
-      await promises.readFile(event.absolutePath)
-    ).toString('utf8')
-
-    const bundled = await bundle({
-      externalModules: ['discord.js', 'node:events'],
+    const bundled = await spack({
+      externalModules:
+        pkgJson && pkgJson.dependencies
+          ? Object.keys(pkgJson.dependencies).filter((dep) => !!require(dep))
+          : [],
       mode: 'production',
       target: 'node',
       entry: event.absolutePath,
@@ -67,31 +69,46 @@ export default async function compileEvents(
       ? bundled['event.js'].code
       : bundled['event.ts'].code
 
-    const transformed = await swc.transform(code, {
-      ...SWC_CONFIG,
-      jsc: {
-        transform: {
-          optimizer: {
-            simplify: false,
-            globals: {
-              vars: {
-                ...Object.fromEntries(envEntries),
+    const transformed = await swc.transform(
+      code.concat(`module.exports.__name = "${event.name}"`),
+      {
+        ...SWC_CONFIG,
+        jsc: {
+          transform: {
+            optimizer: {
+              simplify: true,
+              globals: {
+                vars: {
+                  ...Object.fromEntries(envEntries),
+                },
               },
             },
           },
+          minify: {
+            mangle: true,
+            compress: true,
+            module: true,
+          },
         },
-      },
-    })
+        minify: swcMinify,
+      }
+    )
 
     // Create directory if not already exists
     await mkdirp(buildDir)
 
     // Write transformed code to file
-    await promises.writeFile(output, transformed.code, 'utf8')
+    await promises.writeFile(
+      output,
+      `"use event";`.concat(transformed.code),
+      'utf8'
+    )
 
     manifest.push({
       path: output,
       name: event.name,
     })
   }
+
+  return manifest
 }

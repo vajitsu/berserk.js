@@ -79,6 +79,14 @@ export async function ncc_title(task, opts) {
     .target('compiled/title')
 }
 // eslint-disable-next-line camelcase
+externals['gradient-string'] = 'jujutsu/dist/compiled/gradient-string'
+export async function ncc_gradient_string(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('gradient-string')))
+    .ncc({ packageName: 'gradient-string', externals })
+    .target('compiled/gradient-string')
+}
+// eslint-disable-next-line camelcase
 externals['chalk'] = 'jujutsu/dist/compiled/chalk'
 export async function ncc_chalk(task, opts) {
   await task
@@ -182,6 +190,16 @@ export async function ncc_nft(task, opts) {
     .target('compiled/@vercel/nft')
 }
 // eslint-disable-next-line camelcase
+externals['@sapphire/shapeshift'] = 'jujutsu/dist/compiled/@sapphire/shapeshift'
+export async function ncc_shapeshift(task, opts) {
+  await task
+    .source(
+      opts.src || relative(__dirname, require.resolve('@sapphire/shapeshift'))
+    )
+    .ncc({ packageName: '@sapphire/shapeshift', externals })
+    .target('compiled/@sapphire/shapeshift')
+}
+// eslint-disable-next-line camelcase
 externals['comment-json'] = 'jujutsu/dist/compiled/comment-json'
 export async function ncc_comment_json(task, opts) {
   await task
@@ -239,6 +257,14 @@ export async function ncc_find_cache_dir(task, opts) {
     .source(opts.src || relative(__dirname, require.resolve('find-cache-dir')))
     .ncc({ packageName: 'find-cache-dir', externals })
     .target('compiled/find-cache-dir')
+}
+// eslint-disable-next-line camelcase
+externals['ws'] = 'jujutsu/dist/compiled/ws'
+export async function ncc_ws(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('ws')))
+    .ncc({ packageName: 'ws', externals })
+    .target('compiled/ws')
 }
 // eslint-disable-next-line camelcase
 externals['find-up'] = 'jujutsu/dist/compiled/find-up'
@@ -437,6 +463,20 @@ export async function trace(task, opts) {
   notify('Compiled trace files')
 }
 
+export async function discord_esm(task, opts) {
+  await task
+    .source(opts.src || 'discord/**/*.+(js|ts|tsx)')
+    .swc('discord', { dev: opts.dev, esm: true })
+    .target('dist/esm/discord')
+}
+
+export async function discord(task, opts) {
+  await task
+    .source(opts.src || 'discord/**/*.+(js|ts|tsx)')
+    .swc('discord', { dev: opts.dev })
+    .target('dist/discord')
+}
+
 export async function precompile(task, opts) {
   await task.parallel(['copy_ncced'], opts)
 }
@@ -465,6 +505,7 @@ export async function ncc(task, opts) {
         'ncc_events',
         'ncc_util',
         'ncc_ci_info',
+        'ncc_gradient_string',
         'ncc_comment_json',
         'ncc_conf',
         'ncc_lodash',
@@ -483,7 +524,9 @@ export async function ncc(task, opts) {
         'ncc_unistore',
         'ncc_title',
         'ncc_uid_promise',
-        'ncc_nft'
+        'ncc_nft',
+        'ncc_shapeshift',
+        'ncc_ws',
       ],
       opts
     )
@@ -501,7 +544,8 @@ export async function compile(task, opts) {
       'lib',
       'lib_esm',
       'trace',
-      'main',
+      'discord',
+      'discord_esm',
     ],
     opts
   )
@@ -519,7 +563,8 @@ export default async function (task) {
   await task.watch('lib/**/*.+(js|ts|tsx)', 'lib_esm', opts)
   await task.watch('cli/**/*.+(js|ts|tsx)', 'cli', opts)
   await task.watch('trace/**/*.+(js|ts|tsx)', 'trace', opts)
-  await task.watch('src/index.ts', 'main', opts)
+  await task.watch('discord/**/*.+(js|ts|tsx)', 'discord', opts)
+  await task.watch('discord/**/*.+(js|ts|tsx)', 'discord_esm', opts)
 }
 
 export async function release(task) {

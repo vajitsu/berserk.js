@@ -1,5 +1,17 @@
 import { Config as SwcConfig } from '@swc/core'
 import { Events as DiscordEvents } from 'jujutsu/dist/compiled/discord.js'
+import { builtinModules } from 'module'
+
+export const BUILT_IN_MODULES = builtinModules
+  .filter(
+    (mod) =>
+      !mod.startsWith('_http') &&
+      !mod.startsWith('_tls') &&
+      !mod.startsWith('_stream') &&
+      mod !== 'sys'
+  )
+  .map((mod) => 'node:'.concat(mod))
+  .filter((mod) => !!require(mod))
 
 export const DISCORD_EVENTS = Object.values(DiscordEvents) as string[]
 
