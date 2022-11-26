@@ -1,13 +1,13 @@
-import Discord from "discord.js";
+import Discord from 'discord.js'
 
 export default abstract class ActionRow {
-  public abstract components: Array<Discord.AnyComponentBuilder>;
+  public abstract components: Array<Discord.AnyComponentBuilder>
 
   private row: Discord.ActionRowBuilder<Discord.AnyComponentBuilder> =
-    new Discord.ActionRowBuilder();
+    new Discord.ActionRowBuilder()
 
   public build() {
-    this.row.addComponents(this.components);
+    this.row.addComponents(this.components)
     return this.row as
       | Discord.JSONEncodable<
           Discord.APIActionRowComponent<Discord.APIMessageActionRowComponent>
@@ -16,6 +16,6 @@ export default abstract class ActionRow {
           | Discord.MessageActionRowComponentData
           | Discord.MessageActionRowComponentBuilder
         >
-      | Discord.APIActionRowComponent<Discord.APIMessageActionRowComponent>;
+      | Discord.APIActionRowComponent<Discord.APIMessageActionRowComponent>
   }
 }

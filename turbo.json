@@ -3,20 +3,13 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", ".riku/**"]
-    },
-    "lint": {
-      "outputs": []
-    },
-    "test": {
-      "outputs": []
-    },
-    "test:watch": {
-      "cache": false
+      "outputs": ["dist/**", ".jujutsu/**"]
     },
     "dev": {
-      "cache": false
-    }
+      "dependsOn": ["^dev"],
+      "outputs": ["dist/**", ".jujutsu/**"]
+    },
+    "typescript": {}
   },
   "globalDependencies": [".env"]
 }

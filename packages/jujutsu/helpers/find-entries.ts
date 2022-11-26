@@ -1,162 +1,174 @@
-import { pathExists } from "path-exists";
-import fs from "recursive-fs";
-import path from "path";
+import { pathExists } from 'path-exists'
+import fs from 'recursive-fs'
+import path from 'path'
 
 export type Entries = {
   [key: string]: {
-    dirs: string[];
-    files: string[];
-  };
-};
+    dirs: string[]
+    files: string[]
+  }
+}
 
 function find(cwd: string, ..._path: string[]) {
-  const _dir = path.join(cwd, ..._path);
-  const out = fs.sync.read(_dir);
+  const _dir = path.join(cwd, ..._path)
+  const out = fs.sync.read(_dir)
 
-  return out;
+  return out
 }
 
-function findCommands(cwd: string) {
-  const dir = path.join(cwd, "commands");
+async function findCommands(cwd: string) {
+  const dir = path.join(cwd, 'commands')
 
-  if (!pathExists(dir))
+  const exists = await pathExists(dir)
+
+  if (!exists)
     return {
       dirs: [],
       files: [],
-    };
+    }
 
-  const out = find(cwd, "commands");
+  const out = find(cwd, 'commands')
 
   out.dirs = out.dirs
     .filter((d: string) => d !== dir)
-    .map((d: string) => d.replace(dir, "").replace("/", ""));
+    .map((d: string) => d.replace(dir, '').replace('/', ''))
 
   out.files = out.files
-    .filter((f: string) => f.endsWith(".ts") || f.endsWith(".js"))
-    .map((f: string) => f.replace(dir, "").replace("/", ""));
+    .filter((f: string) => f.endsWith('.ts') || f.endsWith('.js'))
+    .map((f: string) => f.replace(dir, '').replace('/', ''))
 
-  return out;
+  return out
 }
 
-function findEvents(cwd: string) {
-  const dir = path.join(cwd, "events");
+async function findEvents(cwd: string) {
+  const dir = path.join(cwd, 'events')
 
-  if (!pathExists(dir))
+  const exists = await pathExists(dir)
+
+  if (!exists)
     return {
       dirs: [],
       files: [],
-    };
+    }
 
-  const out = find(cwd, "events");
+  const out = find(cwd, 'events')
 
   out.dirs = out.dirs
     .filter((d: string) => d !== dir)
-    .map((d: string) => d.replace(dir, "").replace("/", ""));
+    .map((d: string) => d.replace(dir, '').replace('/', ''))
 
   out.files = out.files
-    .filter((f: string) => f.endsWith(".ts") || f.endsWith(".js"))
-    .map((f: string) => f.replace(dir, "").replace("/", ""));
+    .filter((f: string) => f.endsWith('.ts') || f.endsWith('.js'))
+    .map((f: string) => f.replace(dir, '').replace('/', ''))
 
-  return out;
+  return out
 }
 
-function findButtons(cwd: string) {
-  const dir = path.join(cwd, "interactions", "buttons");
+async function findButtons(cwd: string) {
+  const dir = path.join(cwd, 'interactions', 'buttons')
 
-  if (!pathExists(dir))
+  const exists = await pathExists(dir)
+
+  if (!exists)
     return {
       dirs: [],
       files: [],
-    };
+    }
 
-  const out = find(cwd, "interactions", "buttons");
+  const out = find(cwd, 'interactions', 'buttons')
 
   out.dirs = out.dirs
     .filter((d: string) => d !== dir)
-    .map((d: string) => d.replace(dir, "").replace("/", ""));
+    .map((d: string) => d.replace(dir, '').replace('/', ''))
 
   out.files = out.files
-    .filter((f: string) => f.endsWith(".ts") || f.endsWith(".js"))
-    .map((f: string) => f.replace(dir, "").replace("/", ""));
+    .filter((f: string) => f.endsWith('.ts') || f.endsWith('.js'))
+    .map((f: string) => f.replace(dir, '').replace('/', ''))
 
-  return out;
+  return out
 }
 
-function findModals(cwd: string) {
-  const dir = path.join(cwd, "modals");
+async function findModals(cwd: string) {
+  const dir = path.join(cwd, 'modals')
 
-  if (!pathExists(dir))
+  const exists = await pathExists(dir)
+
+  if (!exists)
     return {
       dirs: [],
       files: [],
-    };
+    }
 
-  const out = find(cwd, "modals");
+  const out = find(cwd, 'modals')
 
   out.dirs = out.dirs
     .filter((d: string) => d !== dir)
-    .map((d: string) => d.replace(dir, "").replace("/", ""));
+    .map((d: string) => d.replace(dir, '').replace('/', ''))
 
   out.files = out.files
-    .filter((f: string) => f.endsWith(".ts") || f.endsWith(".js"))
-    .map((f: string) => f.replace(dir, "").replace("/", ""));
+    .filter((f: string) => f.endsWith('.ts') || f.endsWith('.js'))
+    .map((f: string) => f.replace(dir, '').replace('/', ''))
 
-  return out;
+  return out
 }
 
-function findContextMenus(cwd: string) {
-  const dir = path.join(cwd, "interactions", "context-menus");
+async function findContextMenus(cwd: string) {
+  const dir = path.join(cwd, 'interactions', 'context-menus')
 
-  if (!pathExists(dir))
+  const exists = await pathExists(dir)
+
+  if (!exists)
     return {
       dirs: [],
       files: [],
-    };
+    }
 
-  const out = find(cwd, "interactions", "context-menus");
+  const out = find(cwd, 'interactions', 'context-menus')
 
   out.dirs = out.dirs
     .filter((d: string) => d !== dir)
-    .map((d: string) => d.replace(dir, "").replace("/", ""));
+    .map((d: string) => d.replace(dir, '').replace('/', ''))
 
   out.files = out.files
-    .filter((f: string) => f.endsWith(".ts") || f.endsWith(".js"))
-    .map((f: string) => f.replace(dir, "").replace("/", ""));
+    .filter((f: string) => f.endsWith('.ts') || f.endsWith('.js'))
+    .map((f: string) => f.replace(dir, '').replace('/', ''))
 
-  return out;
+  return out
 }
 
-function findSelectMenus(cwd: string) {
-  const dir = path.join(cwd, "interactions", "select-menus");
+async function findSelectMenus(cwd: string) {
+  const dir = path.join(cwd, 'interactions', 'select-menus')
 
-  if (!pathExists(dir))
+  const exists = await pathExists(dir)
+
+  if (!exists)
     return {
       dirs: [],
       files: [],
-    };
+    }
 
-  const out = find(cwd, "interactions", "select-menus");
+  const out = find(cwd, 'interactions', 'select-menus')
 
   out.dirs = out.dirs
     .filter((d: string) => d !== dir)
-    .map((d: string) => d.replace(dir, "").replace("/", ""));
+    .map((d: string) => d.replace(dir, '').replace('/', ''))
 
   out.files = out.files
-    .filter((f: string) => f.endsWith(".ts") || f.endsWith(".js"))
-    .map((f: string) => f.replace(dir, "").replace("/", ""));
+    .filter((f: string) => f.endsWith('.ts') || f.endsWith('.js'))
+    .map((f: string) => f.replace(dir, '').replace('/', ''))
 
-  return out;
+  return out
 }
 
-export default function findEntries(cwd: string): Entries {
+export default async function findEntries(cwd: string): Promise<Entries> {
   const entries = {
-    commands: findCommands(cwd),
-    events: findEvents(cwd),
-    buttons: findButtons(cwd),
-    modals: findModals(cwd),
-    contextMenus: findContextMenus(cwd),
-    selectMenus: findSelectMenus(cwd),
-  };
+    commands: await findCommands(cwd),
+    events: await findEvents(cwd),
+    buttons: await findButtons(cwd),
+    modals: await findModals(cwd),
+    contextMenus: await findContextMenus(cwd),
+    selectMenus: await findSelectMenus(cwd),
+  }
 
-  return entries;
+  return entries
 }

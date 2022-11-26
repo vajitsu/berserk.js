@@ -7,3 +7,4 @@ spack.config.js
 *.log
 .swrc
 *.toml
+license.md

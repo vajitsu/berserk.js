@@ -1,7 +1,6 @@
 dist
 src
-cli
 *.log
 tsup.config.ts
-.swcrc
 spack.config.js
+.swcrc

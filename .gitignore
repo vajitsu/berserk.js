@@ -1,43 +1,39 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# build output
+dist
+.jujutsu
 
 # dependencies
 node_modules
-.pnp
-.pnp.js
+package-lock.json
+yarn.lock
+!/yarn.lock
 
-# testing
-coverage
+# logs & pids
+*.log
+pids
+*.cpuprofile
 
-# next.js
-.next/
-out/
+# Editors
+**/.idea
+**/.#*
+.nvmrc
 
-# misc
-.DS_Store
-*.pem
+# examples
+examples/**/out
+examples/**/.env*.local
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+# Vercel
+.vercel
+.now
 
-# local env files
-.env.development.local
-.env.test.local
-.env.production.local
+# Cache
+*.tsbuildinfo
+.swc/
 
-# turbo
-.turbo
-
-# hints
+# Other
 .hintrc
-
-# bot app
-config/
-apps/bot/
-apps/f/
-
-# hide
-examples/
-.vscode/
+.vscode
+.turbo
+apps
+examples
+tsup.config.ts

@@ -1,5 +1,5 @@
 {
-  "include": ["src", "builders"],
+  "include": ["src", "builders", "helpers/chalk.ts"],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
     "module": "ESNext",

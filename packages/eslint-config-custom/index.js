@@ -1,9 +1,7 @@
 module.exports = {
-  extends: ["next", "turbo", "prettier"],
+  extends: ['turbo', 'prettier'],
   rules: {
-    "@next/next/no-html-link-for-pages": "off",
-    "react/jsx-key": "off",
-    "import/no-anonymous-default-export": "off",
-    "turbo/no-undeclared-env-vars": "off",
+    'import/no-anonymous-default-export': 'off',
+    'turbo/no-undeclared-env-vars': 'off',
   },
-};
+}
