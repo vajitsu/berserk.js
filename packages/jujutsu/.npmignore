@@ -8,3 +8,4 @@ spack.config.js
 .swrc
 *.toml
 license.md
+*.yaml

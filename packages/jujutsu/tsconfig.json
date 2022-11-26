@@ -1,13 +1,24 @@
 {
-  "include": ["src", "builders", "helpers/chalk.ts"],
-  "exclude": ["dist", "build", "node_modules"],
+  "extends": "../../tsconfig-tsec.json",
   "compilerOptions": {
-    "module": "ESNext",
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "target": "ES2017",
+    "esModuleInterop": true,
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "baseUrl": "."
-  }
+    "stripInternal": true,
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "dist",
+    "./*.d.ts",
+    "future/*.d.ts",
+    "image-types/global.d.ts",
+    "compat/*.d.ts",
+    "legacy/*.d.ts",
+    "types/compiled.d.ts",
+    "tsup.config.ts",
+    "node_modules",
+    "builders/*"
+  ]
 }

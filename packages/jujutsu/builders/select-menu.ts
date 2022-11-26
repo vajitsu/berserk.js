@@ -1,5 +1,5 @@
 import Discord from 'discord.js'
-import { Bot } from '../dist'
+import { Bot } from '../src'
 
 type SelectMenuData = {
   placeholder: string

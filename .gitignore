@@ -32,8 +32,9 @@ examples/**/.env*.local
 
 # Other
 .hintrc
-.vscode
 .turbo
 apps
 examples
 tsup.config.ts
+hyper.js
+packages/cli

@@ -1,5 +1,7 @@
+#!/usr/bin/env node
+
 import { commands } from '../lib/commands'
-import * as log from '../lib/output-log'
+import * as log from '../build/output/log'
 import arg from 'arg'
 ;['discord.js'].forEach((dependency) => {
   try {
@@ -30,7 +32,7 @@ const args = arg(
 )
 
 if (args['--version']) {
-  console.log(`Jujutsu.js v${process.env.__NEXT_VERSION}`)
+  console.log(`Jujutsu.js v${process.env.__JUJUTSU_VERSION}`)
   process.exit(0)
 }
 

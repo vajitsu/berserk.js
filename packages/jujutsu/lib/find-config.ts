@@ -1,7 +1,7 @@
-import path from 'path'
+import findUp from 'find-up'
 import fs from 'fs'
-import { findUp } from 'find-up'
 import JSON5 from 'json5'
+import { interopDefault } from './interop-default'
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -27,13 +27,6 @@ export function findConfigPath(
   )
 }
 
-function findPackageJson(dir: string): string | undefined {
-  const exists = fs.existsSync(path.join(dir, 'package.json'))
-  if (!exists) return undefined
-
-  return path.join(dir, 'package.json')
-}
-
 // We'll allow configuration to be typed, but we force everything provided to
 // become optional. We do not perform any schema validation. We should maybe
 // force all the types to be `unknown` as well.
@@ -55,7 +48,7 @@ export async function findConfig<T>(
 
   if (filePath) {
     if (filePath.endsWith('.js') || filePath.endsWith('.cjs')) {
-      return require(filePath)
+      return interopDefault(require(filePath))
     }
 
     // We load JSON contents with JSON5 to allow users to comment in their

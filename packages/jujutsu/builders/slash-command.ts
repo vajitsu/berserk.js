@@ -1,6 +1,6 @@
 import Discord from 'discord.js'
 import Utils from '../utils'
-import { Bot } from '../dist'
+import { Bot } from '../src'
 
 type SlashCommandData = {
   nameLocalizations?: Discord.LocalizationMap
