@@ -1,5 +1,0 @@
-{
-  "name": "riku",
-  "packagePath": "packages/riku",
-  "tagTemplate": "{{new-version}}"
-}
