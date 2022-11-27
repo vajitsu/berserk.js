@@ -1,3 +1,4 @@
+/* Based on https://github.com/vercel/next.js/blob/canary/packages/next/lib/find-config.ts */
 import findUp from 'find-up'
 import fs from 'fs'
 import JSON5 from 'json5'

@@ -1,3 +1,4 @@
+/* Based on https://github.com/vercel/next.js/blob/canary/packages/next/lib/find-pages-dir.ts */
 import fs from 'fs'
 import path from 'path'
 import * as Log from '../build/output/log'

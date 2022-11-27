@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+/* Based on https://github.com/vercel/next.js/blob/canary/packages/next/bin/next.ts */
 import { commands } from '../lib/commands'
 import * as log from '../build/output/log'
 import arg from 'arg'

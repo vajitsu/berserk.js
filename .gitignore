@@ -33,7 +33,8 @@ examples/**/.env*.local
 # Other
 .hintrc
 .turbo
-apps
+apps/bot
+apps/bot_
 examples
 tsup.config.ts
 hyper.js
