@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 declare module 'jujutsu/dist/compiled/node-fetch' {
   import m from 'node-fetch'
   export default m

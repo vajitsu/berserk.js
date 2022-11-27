@@ -1,12 +1,11 @@
 import { LocalizationMap as localizationMap } from 'jujutsu/dist/compiled/discord.js'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import getGzipSize from 'jujutsu/dist/compiled/gzip-size'
-import textTable from 'jujutsu/dist/compiled/text-table'
-import chalk from 'jujutsu/dist/compiled/chalk'
 import { promises as fs } from 'fs'
-import path from 'path'
 import { SLASH_COMMAND_REGEX } from '../lib/constants'
 
 const fileGzipStats: { [k: string]: Promise<number> | undefined } = {}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const fsStatGzip = (file: string) => {
   const cached = fileGzipStats[file]
   if (cached) return cached
@@ -16,6 +15,7 @@ const fsStatGzip = (file: string) => {
 const fileSize = async (file: string) => (await fs.stat(file)).size
 
 const fileStats: { [k: string]: Promise<number> | undefined } = {}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const fsStat = (file: string) => {
   const cached = fileStats[file]
   if (cached) return cached
@@ -38,12 +38,14 @@ export function difference<T>(
 /**
  * Return an array of the items shared by both arrays.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function intersect<T>(main: ReadonlyArray<T>, sub: ReadonlyArray<T>): T[] {
   const a = new Set(main)
   const b = new Set(sub)
   return [...new Set([...a].filter((x) => b.has(x)))]
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function sum(a: ReadonlyArray<number>): number {
   return a.reduce((size, stat) => size + stat, 0)
 }
@@ -57,10 +59,6 @@ export interface CommandInfo {
   }
 }
 
-export function isInvalidCommandName(command: string) {
-  return !SLASH_COMMAND_REGEX.test(command)
-}
-
-export function isInvalidEventName(eventname: string) {
-  //return !isCamel
+export function isCommandName(command: string) {
+  return SLASH_COMMAND_REGEX.is(command)
 }

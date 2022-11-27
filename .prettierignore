@@ -1,3 +1,9 @@
+node_modules
 **/.jujutsu/**
 **/_jujutsu/**
+**/dist/**
+packages/jujutsu/compiled/**
+**/__tmp__/**
+lerna.json
+pnpm-lock.yaml
 package.json

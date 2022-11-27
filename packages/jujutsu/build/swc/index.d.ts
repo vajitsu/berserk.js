@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Config } from '@swc/core'
 
 export function transform(src: string, options?: Config): Promise<any>

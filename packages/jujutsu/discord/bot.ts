@@ -1,9 +1,9 @@
-import { Client } from 'jujutsu/dist/compiled/discord.js'
+import { Client, ClientOptions } from 'jujutsu/dist/compiled/discord.js'
 import { DiscordConfig } from '../client/config-shared'
 import SlashCommandManager from './lib/managers/slash-commands'
 import { EventEmitter } from 'jujutsu/dist/compiled/ws'
 import EventManager from './lib/managers/events'
-import isError from '../lib/is-error'
+import isError, { JujutsuError } from '../lib/is-error'
 import * as Log from '../build/output/log'
 
 interface ExtendedConfig extends DiscordConfig {
@@ -17,26 +17,53 @@ export default class bot {
   public slashCommandManager: SlashCommandManager
   public eventManager: EventManager
 
-  constructor(private config: ExtendedConfig, public events: EventEmitter) {
-    this.client = new Client(config.options)
+  constructor(
+    public config: ExtendedConfig,
+    public events: EventEmitter,
+    public dev = false,
+    public debug = false
+  ) {
+    if (config.options == null)
+      throw new Error(
+        "> Couldn't find `discord.options`. Add a value for `options` to your `jujutsu.config.js` configuration under `discord`."
+      )
+
+    this.client = new Client(config.options as ClientOptions)
     this.slashCommandManager = new SlashCommandManager(this)
     this.eventManager = new EventManager(this)
   }
 
-  public getConfig(token: string | null) {
-    return token && this.config.token === token ? this.config : null
-  }
-
   public hookServerEvents() {
-    this.client.on('ready', () => void this.events.emit('ready', this.client))
+    this.client.on('ready', async () => {
+      this.events.emit('ready', this.client)
+      await this.slashCommandManager.registerCommands()
+    })
+    this.client.on('error', (e: JujutsuError) => {
+      if (this.config.quiet) return void 0
+      Log.error(e.type === 'init' ? e.message : e)
+      if (this.dev) Log.wait('Waiting for changes')
+    })
+    this.client.on('debug', (message) =>
+      this.debug && !this.config.quiet ? Log.event(message) : void 0
+    )
   }
 
   public async init() {
-    await this.slashCommandManager.registerCommands()
     try {
+      if (
+        !this.config.token ||
+        (this.config.token && this.config.token.length < 1)
+      )
+        throw new Error(
+          "> Couldn't find `discord.token`. Add a value for `token` to your `jujutsu.config.js` configuration under `discord`."
+        )
+
       await this.client.login(this.config.token)
     } catch (error) {
-      if (isError(error)) Log.error(error.message)
+      if (isError(error)) {
+        error.type = 'init'
+        this.client.emit('error', error)
+      }
     }
   }
 }

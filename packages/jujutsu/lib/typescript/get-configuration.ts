@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import chalk from 'jujutsu/dist/compiled/chalk'
 import os from 'os'
 import path from 'path'

@@ -1,5 +1,6 @@
 import path from 'path'
 import { promises, constants, Dirent, Stats } from 'fs'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Sema } from 'async-sema'
 import isError from './is-error'
 

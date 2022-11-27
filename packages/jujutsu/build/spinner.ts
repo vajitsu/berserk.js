@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import ora, { Options, Ora } from 'ora'
 
 const dotsSpinner = {

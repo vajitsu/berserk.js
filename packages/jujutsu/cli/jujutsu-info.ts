@@ -86,7 +86,7 @@ const jujutsuInfo: cliCommand = async (argv) => {
     const res = await fetch(
       'https://api.github.com/repos/vajitsu/jujutsu.js/releases'
     )
-    const releases = await res.json()
+    const releases = (await res.json()) as any
     const newestRelease = releases[0].tag_name.replace(/^v/, '')
 
     if (installedRelease !== newestRelease) {
@@ -95,7 +95,9 @@ const jujutsuInfo: cliCommand = async (argv) => {
           chalk.bold('warn')
         )}  - Latest canary version not detected, detected: "${installedRelease}", newest: "${newestRelease}".
         Please try the latest canary version (\`npm install jujutsu@canary\`) to confirm the issue still exists before creating a new issue.
-        ${/*Read more - https://vajitsu.com/jujutsu/docs/messages/opening-an-issue*/""}`
+        ${
+          /*Read more - https://vajitsu.com/jujutsu/docs/messages/opening-an-issue*/ ''
+        }`
       )
     }
   } catch (e) {
@@ -107,7 +109,9 @@ const jujutsuInfo: cliCommand = async (argv) => {
       }.)
       Detected "${installedRelease}". Visit https://github.com/vajitsu/jujutsu.js/releases.
       Make sure to try the latest canary version (eg.: \`npm install jujutsu@canary\`) to confirm the issue still exists before creating a new issue.
-      ${/*Read more - https://vajitsu.com/jujutsu/docs/messages/opening-an-issue*/""}`
+      ${
+        /*Read more - https://vajitsu.com/jujutsu/docs/messages/opening-an-issue*/ ''
+      }`
     )
   }
 }

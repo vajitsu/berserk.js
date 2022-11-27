@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import chalk from 'jujutsu/dist/compiled/chalk'
 import spawn from 'jujutsu/dist/compiled/cross-spawn'
 

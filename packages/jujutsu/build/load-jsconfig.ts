@@ -10,6 +10,7 @@ import { hasNecessaryDependencies } from '../lib/has-necessary-dependencies'
 let TSCONFIG_WARNED = false
 
 function parseJsonFile(filePath: string) {
+  // eslint-disable-next-line import/no-extraneous-dependencies
   const JSON5 = require('jujutsu/dist/compiled/json5')
   const contents = readFileSync(filePath, 'utf8')
 

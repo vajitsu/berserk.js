@@ -2,7 +2,6 @@
 
 import arg from 'jujutsu/dist/compiled/arg/index.js'
 import startServer from '../client/lib/start-server'
-import * as Log from '../build/output/log'
 import isError from '../lib/is-error'
 import { getProjectDir } from '../lib/get-project-dir'
 import { cliCommand } from '../lib/commands'
@@ -14,6 +13,7 @@ const jujutsuStart: cliCommand = async (argv) => {
   const validArgs: arg.Spec = {
     // Types
     '--help': Boolean,
+    '--debug': Boolean,
 
     // Aliases
     '-h': '--help',
@@ -38,6 +38,7 @@ const jujutsuStart: cliCommand = async (argv) => {
       If no directory is provided, the current directory will be used.
       Options
         --help, -h      Displays this message
+        --debug         Log extra information (provided by Discord.js)
     `)
     process.exit(0)
   }
@@ -45,10 +46,13 @@ const jujutsuStart: cliCommand = async (argv) => {
   const dir = getProjectDir(args._[0])
   const conf = await loadConfig(PHASE_PRODUCTION_SERVER, dir)
 
-  startServer({
+  startServer(
+    {
       dir,
-      conf
-  }).catch((err: any) => {
+      conf,
+    },
+    !!args['--debug']
+  ).catch((err: any) => {
     console.error(err)
     process.exit(1)
   })

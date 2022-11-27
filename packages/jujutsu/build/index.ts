@@ -1,10 +1,17 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { JujutsuConfigComplete } from '../client/config-shared'
 import { trace, flushAllTraces, setGlobal } from '../trace'
 import { AppManifest, createAppManifest } from './entries'
 import { recursiveDelete } from '../lib/recursive-delete'
-import { PHASE_PRODUCTION_BUILD, SWC_CONFIG } from '../lib/constants'
+import {
+  APP_PATHS_MANIFEST,
+  PHASE_PRODUCTION_BUILD,
+  SERVER_DIRECTORY,
+  SWC_CONFIG,
+} from '../lib/constants'
 import compileCommands from './compiler/commands'
-import { findAppDir, findCommandsDir, findEventsDir } from '../lib/find-app-dir'
+import { findDirs } from '../lib/find-dirs'
 import { fileExists } from '../lib/file-exists'
 import * as ciEnvironment from '../lib/ci-info'
 import title from 'jujutsu/dist/compiled/title'
@@ -22,7 +29,6 @@ import {
   lockfilePatchPromise,
   teardownTraceSubscriber,
   teardownCrashReporter,
-  loadBindings,
   transform,
 } from './swc'
 import { isBoolean, isFunction } from 'jujutsu/dist/compiled/lodash'
@@ -33,7 +39,6 @@ import {
   Locale,
   LocalizationMap,
   ChannelType,
-  Events,
 } from 'jujutsu/dist/compiled/discord.js'
 import { printAndExit } from '../lib/utils'
 import compileEvents from './compiler/events'
@@ -43,7 +48,7 @@ import chalk from 'jujutsu/dist/compiled/chalk'
 import { exists } from 'jujutsu/dist/compiled/find-up'
 import { rm } from 'fs/promises'
 
-interface AppManifestComplete extends AppManifest {
+export interface AppManifestComplete extends AppManifest {
   commands: {
     name: string
     path: string
@@ -52,6 +57,12 @@ interface AppManifestComplete extends AppManifest {
   events: {
     name: string
     path: string
+    absolutePath: string
+  }[]
+  subcommands: {
+    name: string
+    path: string
+    parent: string
     absolutePath: string
   }[]
 }
@@ -123,34 +134,37 @@ export type CommandFile = {
 export interface CommandFileComplete extends CommandFile {
   absolutePath: string
   name: string
+  subcommands?: CommandFileComplete[]
 }
 
-export type EventFile = {
-  default: (...args: ClientEvents[keyof ClientEvents]) => Promise<void>
+export type EventFile<T extends keyof ClientEvents> = {
+  default: (...args: ClientEvents[T]) => Promise<void>
 }
-export interface EventFileComplete extends EventFile {
+export interface EventFileComplete extends EventFile<any> {
   absolutePath: string
   name: keyof ClientEvents
 }
 
-export function interopForEvent(mod: any): EventFile {
+export function interopForEvent(mod: any): EventFile<any> {
   if (mod.default) {
     delete mod['__name']
-    return mod as EventFile
+    return mod as EventFile<any>
   } else
     return {
       default: mod,
-    } as EventFile
+    } as EventFile<any>
 }
-export function interopForCommand(mod: any): CommandFile {
+export function interopForCommand(mod: any, _sub = false): CommandFile {
   if (mod.default) {
     delete mod['__name']
     return mod as CommandFile
   } else {
     const _: Partial<CommandFile> = { default: mod }
 
-    if (mod.description)
-      (_['description'] = mod.description), delete mod['description']
+    if (mod.description) {
+      _['description'] = mod.description
+      delete mod['description']
+    }
 
     if (
       mod.localizations &&
@@ -158,17 +172,25 @@ export function interopForCommand(mod: any): CommandFile {
         Object.values(mod.localizations.name).length > 0) ||
         (!!mod.localizations.description &&
           Object.values(mod.localizations.description).length > 0))
-    )
-      (_['localizations'] = mod.localizations), delete mod['localizations']
+    ) {
+      _['localizations'] = mod.localizations
+      delete mod['localizations']
+    }
 
-    if (mod.defaultMemberPermissions)
-      (_['defaultMemberPermissions'] = mod.defaultMemberPermissions),
-        delete mod['defaultMemberPermissions']
+    if (mod.defaultMemberPermissions) {
+      _['defaultMemberPermissions'] = mod.defaultMemberPermissions
+      delete mod['defaultMemberPermissions']
+    }
 
-    if (mod.dmPermission)
-      (_['dmPermission'] = mod.dmPermission), delete mod['dmPermission']
+    if (mod.dmPermission) {
+      _['dmPermission'] = mod.dmPermission
+      delete mod['dmPermission']
+    }
 
-    if (mod.options) (_['options'] = mod.options), delete mod['options']
+    if (mod.options) {
+      _['options'] = mod.options
+      delete mod['options']
+    }
 
     return _ as CommandFile
   }
@@ -187,6 +209,7 @@ export default async function build(
       version: process.env.__JUJUTSU_VERSION as string,
     })
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const buildResult = await jujutsuBuildSpan.traceAsyncFn(async () => {
       start = process.hrtime()
       // attempt to load global env values so they are available in jujutsu.config.js
@@ -220,7 +243,7 @@ export default async function build(
         throw new Error('> Build directory is not writeable.')
       }
 
-      const tempDir = pathJoin(distDir, 'temp')
+      const tempDir = pathJoin(distDir, 'fallback')
 
       if (config.cleanDistDir) {
         await recursiveDelete(distDir, /^cache/)
@@ -246,43 +269,46 @@ export default async function build(
         }
       }
 
-      const isAppDirEnabled = true
-      const { appDir } = findAppDir(dir, isAppDirEnabled)
-
-      // Allow for use of the events or commands directory
-      const { commandsDir } = findCommandsDir(dir)
-      const { eventsDir } = findEventsDir(dir)
+      const isAppDirEnabled = !!config.experimental.appDir
+      const { appDir, eventsDir, commandsDir } = findDirs(dir, isAppDirEnabled)
 
       let appManifest: AppManifestComplete | undefined
 
-      if (appDir) {
-        const opt: any = {
-          appDir,
-          commandExtensions: config.commandExtensions,
-          eventExtensions: config.eventExtensions,
-        }
-        if (commandsDir) opt['commandsDir'] = commandsDir
-        if (eventsDir) opt['eventsDir'] = eventsDir
-
-        const appManifestUncomplete = await jujutsuBuildSpan
-          .traceChild('generate-app-manifest')
-          .traceAsyncFn(() => createAppManifest(opt))
-
-        const appManifestCommands = appManifestUncomplete.commands.map(
-          (command) => ({
-            ...command,
-            absolutePath: path.join(dir, command.path),
+      const appManifestUncomplete = await jujutsuBuildSpan
+        .traceChild('generate-app-manifest')
+        .traceAsyncFn(() =>
+          createAppManifest({
+            appDir,
+            commandExtensions: config.commandExtensions,
+            eventExtensions: config.eventExtensions,
+            subCommandsEnabled: true,
+            commandsDir,
+            eventsDir,
+            isAppDirEnabled,
           })
-        ) as AppManifestComplete['commands']
-        const appManifestEvents = appManifestUncomplete.events.map((event) => ({
-          ...event,
-          absolutePath: path.join(dir, event.path),
-        })) as AppManifestComplete['events']
+        )
 
-        appManifest = {
-          commands: appManifestCommands,
-          events: appManifestEvents,
-        }
+      const appManifestCommands = appManifestUncomplete.commands.map(
+        (command) => ({
+          ...command,
+          absolutePath: path.join(dir, command.path),
+        })
+      ) as AppManifestComplete['commands']
+      const appManifestSubcommands = appManifestUncomplete.subcommands.map(
+        (command) => ({
+          ...command,
+          absolutePath: path.join(dir, command.path),
+        })
+      ) as AppManifestComplete['subcommands']
+      const appManifestEvents = appManifestUncomplete.events.map((event) => ({
+        ...event,
+        absolutePath: path.join(dir, event.path),
+      })) as AppManifestComplete['events']
+
+      appManifest = {
+        subcommands: appManifestSubcommands,
+        commands: appManifestCommands,
+        events: appManifestEvents,
       }
 
       const allCommands = new Set<string>()
@@ -295,9 +321,11 @@ export default async function build(
         async function detectConflictingNames({
           events,
           commands,
+          subcommands,
         }: AppManifest) {
           let conflictingEvents: string[][] = []
           let conflictingCommands: string[][] = []
+          let conflictingSubcommands: string[][] = []
 
           // Discover conflicting event names
           for (let event of events) {
@@ -329,14 +357,48 @@ export default async function build(
             }
           }
 
+          for (let subcommand of subcommands) {
+            if (
+              subcommands.filter(
+                (sco) =>
+                  sco.name === subcommand.name &&
+                  sco.parent === subcommand.parent
+              ).length > 1
+            ) {
+              const other = commands
+                .filter(
+                  (sco) =>
+                    sco.name === subcommand.name && sco.path !== subcommand.path
+                )
+                .map((sco) => sco.path.replace('app\\', ''))
+              conflictingSubcommands.push([
+                subcommand.path.replace('app\\', ''),
+                ...other,
+              ])
+            }
+          }
+
           let numCommandConflicts = conflictingCommands.length
           let numEventConflicts = conflictingEvents.length
+          let numSubcommandConflicts = conflictingSubcommands.length
 
           if (commands.length > 0 && numCommandConflicts > 0) {
             Log.error(
               `Conflicting command name${
                 numCommandConflicts === 1 ? ' was' : 's were'
               } found, please remove the conflicting command names to continue:`
+            )
+            for (const [...paths] of conflictingCommands) {
+              Log.error(`  ${paths.map((p) => `"${p}"`).join(' - ')}`)
+            }
+            process.exit(1)
+          }
+
+          if (subcommands.length > 0 && numSubcommandConflicts > 0) {
+            Log.error(
+              `Conflicting sub-command name${
+                numCommandConflicts === 1 ? ' was' : 's were'
+              } found, please remove the conflicting sub-command names to continue:`
             )
             for (const [...paths] of conflictingCommands) {
               Log.error(`  ${paths.map((p) => `"${p}"`).join(' - ')}`)
@@ -374,6 +436,14 @@ export default async function build(
               | 'execute function'
             message: string
           }[] = []
+
+          if (typeof mod.description !== 'string') {
+            errors.push({
+              trace: 'description',
+              message:
+                'A description is required for slash commands and sub-commands',
+            })
+          }
 
           const optionTypes = [
             String,
@@ -461,7 +531,7 @@ export default async function build(
 
           return errors
         }
-        function validateEventInfo(mod: EventFile) {
+        function validateEventInfo(mod: EventFile<any>) {
           const errors: {
             trace: 'execute function'
             message: string
@@ -477,15 +547,36 @@ export default async function build(
 
           return errors
         }
-        async function fallback(path: string) {
-          const content = (await promises.readFile(path)).toString('utf8')
+        async function fallback(
+          _path: string,
+          uid: string | Promise<string> = uuid(7)
+        ) {
+          const outpath = pathJoin(tempDir, `fallback.${await uid}.js`)
+          const alreadyExists = await exists(outpath)
 
-          await loadBindings()
-          const { code } = await transform(content, SWC_CONFIG)
+          const content = (await promises.readFile(_path)).toString('utf8')
+          const { code } = await transform(content, {
+            ...SWC_CONFIG,
+            jsc: {
+              parser: _path.endsWith('.ts')
+                ? {
+                    syntax: 'typescript',
+                  }
+                : {
+                    syntax: 'ecmascript',
+                    exportDefaultFrom: true,
+                    importAssertions: true,
+                  },
+            },
+          })
 
           await mkdirp(tempDir)
 
-          const outpath = pathJoin(tempDir, `fallback.${await uuid(7)}.js`)
+          let current =
+            alreadyExists && (await promises.readFile(outpath)).toString('utf8')
+
+          if ((current && current !== code) || !current)
+            await promises.writeFile(outpath, code, 'utf8')
 
           await promises.writeFile(outpath, code, 'utf8')
 
@@ -499,7 +590,11 @@ export default async function build(
 
         await detectConflictingNames(appManifest)
 
-        if (appManifest.commands.length > 0 || appManifest.events.length > 0) {
+        if (
+          appManifest.commands.length > 0 ||
+          appManifest.events.length > 0 ||
+          appManifest.subcommands.length > 0
+        ) {
           let conflicts: Array<{
             path: string
             conflicts: Array<{
@@ -521,7 +616,10 @@ export default async function build(
                     })(command.absolutePath)
                   )
                 } catch (_) {
-                  Fallback = await fallback(command.absolutePath)
+                  Fallback = await fallback(
+                    command.absolutePath,
+                    Buffer.from(command.name).toString('base64url')
+                  )
                   Module = interopForCommand(Fallback.mod)
                 }
 
@@ -546,7 +644,7 @@ export default async function build(
                 if (isError(error)) {
                   if (error.code === 'MODULE_NOT_FOUND')
                     Log.warn(
-                      `Skipping "${command.absolutePath}" - Command file has no exported contents.`
+                      `Skipping "${command.absolutePath}" - Command file is empty.`
                     )
                   else Log.error(error)
                 } else console.error(error)
@@ -557,7 +655,7 @@ export default async function build(
           if (appManifest.events.length > 0) {
             for (let event of appManifest.events) {
               try {
-                let Module: EventFile | undefined
+                let Module: EventFile<any> | undefined
                 let Fallback
 
                 try {
@@ -568,7 +666,10 @@ export default async function build(
                     })(event.absolutePath)
                   )
                 } catch (_) {
-                  Fallback = await fallback(event.absolutePath)
+                  Fallback = await fallback(
+                    event.absolutePath,
+                    Buffer.from(event.name).toString('base64url')
+                  )
                   Module = interopForEvent(Fallback.mod)
                 }
 
@@ -593,7 +694,85 @@ export default async function build(
                 if (isError(error)) {
                   if (error.code === 'MODULE_NOT_FOUND')
                     Log.warn(
-                      `Skipping "${event.absolutePath}" - Event file has no exported contents.`
+                      `Skipping "${event.absolutePath}" - Event file is empty.`
+                    )
+                  else Log.error(error)
+                } else console.error(error)
+              }
+            }
+          }
+
+          if (appManifest.subcommands.length > 0) {
+            for (let command of appManifest.subcommands) {
+              try {
+                let Module: CommandFile | undefined
+                let Fallback
+
+                try {
+                  Module = interopForCommand(
+                    esm(module, {
+                      mode: 'auto',
+                      cjs: true,
+                    })(command.absolutePath),
+                    true
+                  )
+                } catch (_) {
+                  Fallback = await fallback(
+                    command.absolutePath,
+                    Buffer.from(command.name).toString('base64url')
+                  )
+                  Module = interopForCommand(Fallback.mod, true)
+                }
+
+                if (Module) {
+                  const errors = validateCommandInfo(Module)
+                  if (errors.length > 0) {
+                    conflicts.push({
+                      path: command.path.replace('app\\', ''),
+                      conflicts: errors,
+                    })
+                    Fallback && (await promises.rm(Fallback.path))
+                  } else {
+                    const Parent = allCommandInfos.get(
+                      command.parent
+                    ) as CommandFileComplete
+                    if (Parent)
+                      allCommandInfos.set(command.parent, {
+                        ...Parent,
+                        subcommands: Parent.subcommands
+                          ? [
+                              ...Parent.subcommands,
+                              {
+                                absolutePath: command.absolutePath,
+                                name: command.name,
+                                ...Module,
+                              },
+                            ]
+                          : [
+                              {
+                                absolutePath: command.absolutePath,
+                                name: command.name,
+                                ...Module,
+                              },
+                            ],
+                      })
+                    else
+                      allCommandInfos.set(command.parent, {
+                        subcommands: [
+                          {
+                            absolutePath: command.absolutePath,
+                            name: command.name,
+                            ...Module,
+                          },
+                        ],
+                      } as CommandFileComplete)
+                  }
+                }
+              } catch (error) {
+                if (isError(error)) {
+                  if (error.code === 'MODULE_NOT_FOUND')
+                    Log.warn(
+                      `Skipping "${command.absolutePath}" - Command file is empty.`
                     )
                   else Log.error(error)
                 } else console.error(error)
@@ -654,8 +833,7 @@ export default async function build(
           allCommandInfos,
           loadedEnvFiles,
           dir,
-          config.swcMinify,
-          dev
+          config.experimental.swcMinify || false
         )
       if (allEvents.size > 0)
         manifests.events = await compileEvents(
@@ -663,11 +841,31 @@ export default async function build(
           allEventInfos,
           loadedEnvFiles,
           dir,
-          config.swcMinify,
-          dev
+          config.experimental.swcMinify || false
         )
 
-      if (await exists(tempDir)) await rm(tempDir, { recursive: true })
+      if (!dev && (await exists(tempDir)))
+        await rm(tempDir, { recursive: true })
+
+      const appPathsManifest = []
+
+      if (manifests.commands)
+        appPathsManifest.push(
+          ...manifests.commands?.map((x) => ({ type: 'command', ...x }))
+        )
+      if (manifests.events)
+        appPathsManifest.push(
+          ...manifests.events?.map((x) => ({ type: 'event', ...x }))
+        )
+
+      await mkdirp(pathJoin(distDir, SERVER_DIRECTORY))
+      await promises.writeFile(
+        pathJoin(distDir, SERVER_DIRECTORY, APP_PATHS_MANIFEST),
+        appPathsManifest.length > 0
+          ? JSON.stringify(appPathsManifest.map((x) => [x.name, x]))
+          : '{}',
+        'utf8'
+      )
 
       const _end = process.hrtime(start)
       end = parseInt(
@@ -688,6 +886,7 @@ export default async function build(
     )} ${chalk.dim(`(alpha - built in ${ms(end as number)})`)}\n\n`
 
     let thankYouMsg = `Thank you for using the Jujutsu v1 for your Discord bot! As a reminder,\nJujutsu is a very new framework and you may come across some issues.\n\nPlease report issues here: https://github.com/vajitsu/jujutsu.js/issues.`
+    // eslint-disable-next-line no-sequences
     if (!dev) console.log(), console.log(jjGradient + thankYouMsg)
   } finally {
     // Ensure we wait for lockfile patching if present

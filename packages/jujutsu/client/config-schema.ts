@@ -16,9 +16,6 @@ const configSchema = {
       minItems: 1,
       type: 'array',
     },
-    compress: {
-      type: 'boolean',
-    },
     distDir: {
       minLength: 1,
       type: 'string',
@@ -26,9 +23,6 @@ const configSchema = {
     },
     env: {
       type: 'object',
-    },
-    swcMinify: {
-      type: 'boolean',
     },
     typescript: {
       additionalProperties: false,
@@ -50,13 +44,30 @@ const configSchema = {
           minLength: 1,
           type: 'string',
         },
-        applicationId: {
-          minLength: 1,
-          type: 'string',
-        },
         options: {
           type: 'object',
           additionalProperties: true,
+          properties: {
+            intents: {
+              minItems: 1,
+              type: 'array',
+            },
+          },
+        },
+      },
+      type: 'object',
+    },
+    experimental: {
+      additionalProperties: false,
+      properties: {
+        swcMinify: {
+          type: 'boolean',
+        },
+        compress: {
+          type: 'boolean',
+        },
+        appDir: {
+          type: 'boolean',
         },
       },
       type: 'object',

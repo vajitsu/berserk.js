@@ -1,0 +1,6 @@
+**/.jujutsu/**
+**/_jujutsu/**
+**/dist/**
+packages/jujutsu/compiled/**/*
+lerna.json
+pnpm-lock.yaml

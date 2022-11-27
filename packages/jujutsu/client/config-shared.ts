@@ -1,4 +1,4 @@
-import { ClientOptions as discordOptions } from 'jujutsu/dist/compiled/discord.js'
+import { ClientOptions } from 'jujutsu/dist/compiled/discord.js'
 
 export type JujutsuConfigComplete = Required<JujutsuConfig> & {
   typescript: Required<TypeScriptConfig>
@@ -15,9 +15,25 @@ export interface TypeScriptConfig {
 }
 
 export interface DiscordConfig {
-  token: string
-  applicationId: string
-  options: discordOptions
+  token?: string
+  options?: ClientOptions
+}
+
+export interface ExperimentalConfig {
+  /**
+   * Enables use of the `app` directory in your Jujutsu.js application
+   */
+  appDir?: boolean
+  /**
+   * Use [SWC compiler](https://swc.rs) to compress the generated JavaScript
+   */
+  compress?: boolean
+  /**
+   * Use [SWC compiler](https://swc.rs) to minify the generated JavaScript
+   *
+   * @see [SWC Minification](https://nextjs.org/docs/advanced-features/compiler#minification)
+   */
+  swcMinify?: boolean
 }
 
 export interface JujutsuConfig extends Record<string, any> {
@@ -44,15 +60,9 @@ export interface JujutsuConfig extends Record<string, any> {
   commandExtensions?: string[]
   eventExtensions?: string[]
   /**
-   * Use [SWC compiler](https://swc.rs) to compress the generated JavaScript
+   * Enable experimental features. Note that all experimental features are subject to breaking changes in the future.
    */
-  compress?: boolean
-  /**
-   * Use [SWC compiler](https://swc.rs) to minify the generated JavaScript
-   *
-   * @see [SWC Minification](https://nextjs.org/docs/advanced-features/compiler#minification)
-   */
-  swcMinify?: boolean
+  experimental?: ExperimentalConfig
 }
 
 export const defaultConfig: JujutsuConfig = {
@@ -65,14 +75,16 @@ export const defaultConfig: JujutsuConfig = {
   cleanDistDir: true,
   commandExtensions: ['js', 'ts'],
   eventExtensions: ['js', 'ts'],
-  compress: true,
-  swcMinify: true,
   discord: {
     token: '',
-    applicationId: '',
     options: {
       intents: [1],
     },
+  },
+  experimental: {
+    compress: true,
+    swcMinify: true,
+    appDir: false,
   },
 }
 
@@ -87,6 +99,7 @@ export async function normalizeConfig(phase: string, config: any) {
 export function validateConfig(userConfig: JujutsuConfig): {
   errors?: Array<any> | null
 } {
+  // eslint-disable-next-line import/no-extraneous-dependencies
   const configValidator = require('jujutsu/dist/jujutsu-config-validate.js')
   configValidator(userConfig)
   return {

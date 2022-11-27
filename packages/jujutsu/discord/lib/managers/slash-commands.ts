@@ -5,8 +5,9 @@ import {
   SlashCommandBuilder,
 } from 'jujutsu/dist/compiled/discord.js'
 import { CommandFileComplete } from '../../../build'
-import { DiscordConfig } from '../../../client/config-shared'
+import isError from '../../../lib/is-error'
 import bot from '../../bot'
+import * as Log from '../../../build/output/log'
 
 function formData({
   name,
@@ -15,6 +16,7 @@ function formData({
   defaultMemberPermissions,
   options,
   localizations,
+  subcommands,
 }: CommandFileComplete) {
   const _ = new SlashCommandBuilder()
   _.setName(name)
@@ -25,9 +27,10 @@ function formData({
   if (localizations?.name) _.setNameLocalizations(localizations.name)
   if (localizations?.description)
     _.setDescriptionLocalizations(localizations.description)
-  if (options)
+  if (options && options.length > 0)
     for (let _opt of options) {
       let opt = _opt as any
+      // eslint-disable-next-line default-case
       switch (opt.type) {
         // Autocomplete, min & max length
         case String:
@@ -179,18 +182,183 @@ function formData({
           break
       }
     }
+  if (subcommands && subcommands.length > 0)
+    // eslint-disable-next-line no-loop-func
+    for (let _opt of subcommands)
+      _.addSubcommand((_i) => {
+        _i.setName(_opt.name)
+          .setDescriptionLocalizations(_opt.localizations?.description || null)
+          .setNameLocalizations(_opt.localizations?.name || null)
+
+        if (_opt.description) _i.setDescription(_opt.description)
+
+        if (_opt.options && _opt.options.length > 0)
+          for (let __opt of _opt.options) {
+            let opt = __opt as any
+            // eslint-disable-next-line default-case
+            switch (opt.type) {
+              // Autocomplete, min & max length
+              case String:
+                _i.addStringOption((is) => {
+                  is.setName(opt.name)
+                    .setDescriptionLocalizations(
+                      opt.localizations?.description || null
+                    )
+                    .setNameLocalizations(opt.localizations?.name || null)
+
+                  if (opt.description) is.setDescription(opt.description)
+                  if (opt.autoComplete !== undefined)
+                    is.setAutocomplete(opt.autoComplete)
+                  if (opt.minLength !== undefined)
+                    is.setMinLength(opt.minLength)
+                  if (opt.maxLength !== undefined)
+                    is.setMaxLength(opt.maxLength)
+
+                  return is
+                })
+
+                break
+
+              // Nothing special
+              case Boolean:
+                _i.addBooleanOption((ib) => {
+                  ib.setName(opt.name)
+                    .setDescriptionLocalizations(
+                      opt.localizations?.description || null
+                    )
+                    .setNameLocalizations(opt.localizations?.name || null)
+
+                  if (opt.description) ib.setDescription(opt.description)
+
+                  return ib
+                })
+                break
+
+              // Autocomplete, min & max value
+              case Number:
+                _i.addNumberOption((in_) => {
+                  in_
+                    .setName(opt.name)
+                    .setDescriptionLocalizations(
+                      opt.localizations?.description || null
+                    )
+                    .setNameLocalizations(opt.localizations?.name || null)
+
+                  if (opt.description) in_.setDescription(opt.description)
+                  if (opt.autoComplete !== undefined)
+                    in_.setAutocomplete(opt.autoComplete)
+                  if (opt.minValue !== undefined) in_.setMinValue(opt.minValue)
+                  if (opt.maxValue !== undefined) in_.setMaxValue(opt.maxValue)
+
+                  return in_
+                })
+                break
+
+              // Autocomplete, min & max value
+              case 'Integer':
+                _i.addIntegerOption((it) => {
+                  it.setName(opt.name)
+                    .setDescriptionLocalizations(
+                      opt.localizations?.description || null
+                    )
+                    .setNameLocalizations(opt.localizations?.name || null)
+
+                  if (opt.description) it.setDescription(opt.description)
+                  if (opt.autoComplete !== undefined)
+                    it.setAutocomplete(opt.autoComplete)
+                  if (opt.minValue !== undefined) it.setMinValue(opt.minValue)
+                  if (opt.maxValue !== undefined) it.setMaxValue(opt.maxValue)
+
+                  return it
+                })
+                break
+
+              // Nothing special
+              case 'User':
+                _i.addUserOption((iu) => {
+                  iu.setName(opt.name)
+                    .setDescriptionLocalizations(
+                      opt.localizations?.description || null
+                    )
+                    .setNameLocalizations(opt.localizations?.name || null)
+
+                  if (opt.description) iu.setDescription(opt.description)
+
+                  return iu
+                })
+                break
+
+              // Channel Types
+              case 'Channel':
+                _i.addChannelOption((ic) => {
+                  ic.setName(opt.name)
+                    .setDescriptionLocalizations(
+                      opt.localizations?.description || null
+                    )
+                    .setNameLocalizations(opt.localizations?.name || null)
+
+                  if (opt.description) ic.setDescription(opt.description)
+                  if (opt.channelTypes) ic.addChannelTypes(opt.channelTypes)
+
+                  return ic
+                })
+                break
+
+              // Nothing special
+              case 'Attachment':
+                _i.addAttachmentOption((ia) => {
+                  ia.setName(opt.name)
+                    .setDescriptionLocalizations(
+                      opt.localizations?.description || null
+                    )
+                    .setNameLocalizations(opt.localizations?.name || null)
+
+                  if (opt.description) ia.setDescription(opt.description)
+
+                  return ia
+                })
+                break
+
+              // Nothing special
+              case 'Role':
+                _i.addRoleOption((ir) => {
+                  ir.setName(opt.name)
+                    .setDescriptionLocalizations(
+                      opt.localizations?.description || null
+                    )
+                    .setNameLocalizations(opt.localizations?.name || null)
+
+                  if (opt.description) ir.setDescription(opt.description)
+
+                  return ir
+                })
+                break
+
+              // Nothing special
+              case 'Mentionable':
+                _i.addMentionableOption((im) => {
+                  _i.setName(opt.name)
+                    .setDescriptionLocalizations(
+                      opt.localizations?.description || null
+                    )
+                    .setNameLocalizations(opt.localizations?.name || null)
+
+                  if (opt.description) im.setDescription(opt.description)
+
+                  return im
+                })
+                break
+            }
+          }
+
+        return _i
+      })
 
   return _.toJSON()
 }
 
 export default class SlashCommandManager {
-  constructor(private instance: bot) {
-    this.config = this.instance.getConfig(
-      this.instance.client.token
-    ) as DiscordConfig
-  }
-
-  private config: DiscordConfig
+  constructor(private instance: bot) {}
 
   private commands: { [name: string]: CommandFileComplete } = {}
 
@@ -207,30 +375,35 @@ export default class SlashCommandManager {
   }
 
   async runCommand(interaction: ChatInputCommandInteraction) {
-    if (!interaction.command?.name) return
+    if (!interaction.commandName) return
 
-    const command = this.getCommand(interaction.command?.name)
+    const command = this.getCommand(interaction.commandName)
 
     if (!command) return
 
     try {
-      void command.default(interaction, this.instance.client)
+      return void (await command.default(interaction, this.instance.client))
     } catch (error) {
-      void this.instance.events.emit('error', error)
+      return void this.instance.events.emit('error', error)
     }
   }
 
   async registerCommands() {
-    if (!this.instance?.client?.application) return
+    try {
+      if (!this.instance?.client?.application) return
 
-    const commands = this.getCommands().map((com) => formData(com))
-    const rest = new REST().setToken(this.config.token)
+      const commands = this.getCommands().map((com) => formData(com))
+      const rest = new REST().setToken(this.instance.config.token as string)
 
-    await rest.put(
-      Routes.applicationCommands(this.instance?.client?.application.id),
-      {
-        body: commands,
-      }
-    )
+      await rest.put(
+        Routes.applicationCommands(this.instance?.client?.application.id),
+        {
+          body: commands,
+        }
+      )
+    } catch (error) {
+      if (isError(error)) this.instance.client.emit('error', error)
+      else Log.error(error)
+    }
   }
 }

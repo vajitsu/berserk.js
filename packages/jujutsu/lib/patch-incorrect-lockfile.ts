@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { promises } from 'fs'
 import * as Log from '../build/output/log'
 import findUp from 'jujutsu/dist/compiled/find-up'

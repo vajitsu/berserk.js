@@ -1,4 +1,3 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
 export type PackageManager = 'npm' | 'pnpm' | 'yarn'
 
 export function getPkgManager(): PackageManager {

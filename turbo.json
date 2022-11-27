@@ -3,11 +3,11 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".jujutsu/**"]
+      "outputs": ["dist/**"]
     },
     "dev": {
       "dependsOn": ["^dev"],
-      "outputs": ["dist/**", ".jujutsu/**"]
+      "outputs": ["dist/**"]
     },
     "typescript": {}
   },

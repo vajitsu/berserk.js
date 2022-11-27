@@ -1,4 +1,5 @@
 import chalk from '../../lib/chalk'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import gs from 'gradient-string'
 
 export const prefixes = {

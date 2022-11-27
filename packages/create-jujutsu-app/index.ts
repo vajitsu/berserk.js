@@ -3,13 +3,13 @@
 import chalk from 'chalk'
 import Commander from 'commander'
 import path from 'path'
-import ciInfo from 'ci-info'
 import prompts from 'prompts'
 import checkForUpdate from 'update-check'
 import { createApp, DownloadError } from './create-app'
 import { getPkgManager } from './helpers/get-pkg-manager'
 import { validateNpmName } from './helpers/validate-pkg'
 import packageJson from './package.json'
+import ciInfo from 'ci-info'
 
 let projectPath: string = ''
 
@@ -23,8 +23,7 @@ const program = new Commander.Command(packageJson.name)
   .option(
     '--ts, --typescript',
     `
-
-  Initialize as a TypeScript project.
+  Initialize as a TypeScript project. (default)
 `
   )
   .option(
@@ -33,24 +32,34 @@ const program = new Commander.Command(packageJson.name)
   Initialize as a JavaScript project.
 `
   )
+  /*.option(
+    '--eslint',
+    `
+  Initialize with eslint config.
+`
+  )
+  */
+  .option(
+    '--experimental-app',
+    `
+  Initialize as a \`app/\` directory project.
+`
+  )
   .option(
     '--use-npm',
     `
-
   Explicitly tell the CLI to bootstrap the app using npm
 `
   )
   .option(
     '--use-pnpm',
     `
-
   Explicitly tell the CLI to bootstrap the app using pnpm
 `
   )
   .option(
     '-e, --example [name]|[github-url]',
     `
-
   An example to bootstrap the app with. You can use an example name
   from the official Jujutsu.js repo or a GitHub URL. The URL can use
   any branch and/or subdirectory
@@ -59,7 +68,6 @@ const program = new Commander.Command(packageJson.name)
   .option(
     '--example-path <path-to-example>',
     `
-
   In a rare case, your GitHub URL might contain a branch name with
   a slash (e.g. bug/fix-1) and the path to the example (e.g. foo/bar).
   In this case, you must specify the path to the example separately:
@@ -142,13 +150,13 @@ async function run(): Promise<void> {
    * to use TS or JS.
    */
   if (!example) {
-    if (ciInfo.isCI) {
-      // default to JavaScript in CI as we can't prompt to
-      // prevent breaking setup flows
-      program.javascript = true
-      program.typescript = false
-    } else {
-      if (!program.typescript && !program.javascript) {
+    if (!program.typescript && !program.javascript) {
+      if (ciInfo.isCI) {
+        // default to JavaScript in CI as we can't prompt to
+        // prevent breaking setup flows
+        program.typescript = false
+        program.javascript = true
+      } else {
         const styledTypeScript = chalk.hex('#007acc')('TypeScript')
         const { typescript } = await prompts(
           {
@@ -170,7 +178,6 @@ async function run(): Promise<void> {
             },
           }
         )
-
         /**
          * Depending on the prompt response, set the appropriate program flags.
          */
@@ -178,6 +185,28 @@ async function run(): Promise<void> {
         program.javascript = !Boolean(typescript)
       }
     }
+
+    /*
+    if (
+      !process.argv.includes('--eslint') &&
+      !process.argv.includes('--no-eslint')
+    ) {
+      if (ciInfo.isCI) {
+        program.eslint = true
+      } else {
+        const styledEslint = chalk.hex('#007acc')('ESLint')
+        const { eslint } = await prompts({
+          type: 'toggle',
+          name: 'eslint',
+          message: `Would you like to use ${styledEslint} with this project?`,
+          initial: true,
+          active: 'Yes',
+          inactive: 'No',
+        })
+        program.eslint = Boolean(eslint)
+      }
+    }
+    */
   }
 
   try {
@@ -187,6 +216,8 @@ async function run(): Promise<void> {
       example: example && example !== 'default' ? example : undefined,
       examplePath: program.examplePath,
       typescript: program.typescript,
+      eslint: false,
+      experimentalApp: program.experimentalApp,
     })
   } catch (reason) {
     if (!(reason instanceof DownloadError)) {
@@ -209,6 +240,8 @@ async function run(): Promise<void> {
       appPath: resolvedProjectPath,
       packageManager,
       typescript: program.typescript,
+      eslint: program.eslint,
+      experimentalApp: program.experimentalApp,
     })
   }
 }

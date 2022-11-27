@@ -1,11 +1,11 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import type { EventFileComplete as EventInfo } from '../index'
 import { join as pathJoin } from 'path'
 import { bundle as spack } from '@swc/core'
 import { mkdirp } from 'fs-extra'
-import uid from 'uid-promise'
 import { promises } from 'fs'
 import * as swc from '../swc'
-import { SWC_CONFIG } from '../../lib/constants'
+import { SERVER_DIRECTORY, SWC_CONFIG } from '../../lib/constants'
 import { LoadedEnvFiles, processEnv } from '../../lib/env'
 import { escapeStringRegexp } from '../../lib/escape-regexp'
 import { isNumber } from 'jujutsu/dist/compiled/lodash'
@@ -16,8 +16,7 @@ export default async function compileEvents(
   eventInfos: Map<string, EventInfo>,
   loadedEnvFiles: LoadedEnvFiles,
   dir: string,
-  swcMinify: boolean,
-  dev = false
+  swcMinify: boolean
 ) {
   const manifest: {
     path: string
@@ -31,18 +30,24 @@ export default async function compileEvents(
 
     let env = processEnv(loadedEnvFiles, dir)
 
+    const isTypescript = event.absolutePath.endsWith('.ts')
+
     const envEntries = (Object.entries(env) as [string, string][]).map((e) => [
       'process.env.'.concat(e[0]),
       isNumber(parseInt(e[1])) && e[1] !== 'true' && e[1] !== 'false'
-        ? `\"${escapeStringRegexp(e[1])}\"`
+        ? `"${escapeStringRegexp(e[1])}"`
         : e[1],
     ])
 
-    const unique = await (await uid(7)).toLowerCase()
+    const unique = Buffer.from(event.name).toString('base64url')
 
-    const build = dev ? 'dev' : 'build'
-    const buildDir = pathJoin(dir, '.jujutsu', build)
-    const output = pathJoin(dir, '.jujutsu', build, `bundle.${unique}.js`)
+    const buildDir = pathJoin(dir, '.jujutsu', SERVER_DIRECTORY)
+    const output = pathJoin(
+      dir,
+      '.jujutsu',
+      SERVER_DIRECTORY,
+      `bundle.${unique}.js`
+    )
 
     // Don't bundle packages that are meant to be used in production
     let pkgJson
@@ -52,7 +57,9 @@ export default async function compileEvents(
     const bundled = await spack({
       externalModules:
         pkgJson && pkgJson.dependencies
-          ? Object.keys(pkgJson.dependencies).filter((dep) => !!require(dep))
+          ? Object.keys(pkgJson.dependencies)
+              .filter((dep) => !dep.startsWith('@types'))
+              .filter((dep) => !!require(dep))
           : [],
       mode: 'production',
       target: 'node',
@@ -62,18 +69,42 @@ export default async function compileEvents(
         name: `bundle.${unique}.js`,
       },
       module: {},
-      options: SWC_CONFIG,
+      options: {
+        ...SWC_CONFIG,
+        jsc: {
+          parser: isTypescript
+            ? {
+                syntax: 'typescript',
+              }
+            : {
+                syntax: 'ecmascript',
+                exportDefaultFrom: true,
+                importAssertions: true,
+              },
+        },
+      },
     })
 
     const code = bundled['event.js']
       ? bundled['event.js'].code
-      : bundled['event.ts'].code
+      : bundled['event.ts']
+      ? bundled['event.ts'].code
+      : Object.values(bundled)[0].code
 
     const transformed = await swc.transform(
       code.concat(`module.exports.__name = "${event.name}"`),
       {
         ...SWC_CONFIG,
         jsc: {
+          parser: isTypescript
+            ? {
+                syntax: 'typescript',
+              }
+            : {
+                syntax: 'ecmascript',
+                exportDefaultFrom: true,
+                importAssertions: true,
+              },
           transform: {
             optimizer: {
               simplify: true,

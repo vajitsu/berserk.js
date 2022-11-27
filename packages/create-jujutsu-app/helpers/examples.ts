@@ -29,12 +29,12 @@ export async function getRepoInfo(
   const filePath = examplePath ? examplePath.replace(/^\//, '') : file.join('/')
 
   if (
-    // Support repos whose entire purpose is to be a NextJS example, e.g.
-    // https://github.com/:username/:my-cool-nextjs-example-repo-name.
+    // Support repos whose entire purpose is to be a JujutsuJS example, e.g.
+    // https://github.com/:username/:my-cool-jujutsujs-example-repo-name.
     t === undefined ||
     // Support GitHub URL that ends with a trailing slash, e.g.
-    // https://github.com/:username/:my-cool-nextjs-example-repo-name/
-    // In this case "t" will be an empty string while the next part "_branch" will be undefined
+    // https://github.com/:username/:my-cool-jujutsujs-example-repo-name/
+    // In this case "t" will be an empty string while the jujutsu part "_branch" will be undefined
     (t === '' && _branch === undefined)
   ) {
     const infoResponse = await got(
@@ -75,7 +75,7 @@ export function existsInRepo(nameOrUrl: string): Promise<boolean> {
     return isUrlOk(url.href)
   } catch {
     return isUrlOk(
-      `https://api.github.com/repos/vajitsu/riku/contents/examples/${encodeURIComponent(
+      `https://api.github.com/repos/vajitsu/jujutsu.js/contents/examples/${encodeURIComponent(
         nameOrUrl
       )}`
     )
@@ -83,7 +83,7 @@ export function existsInRepo(nameOrUrl: string): Promise<boolean> {
 }
 
 async function downloadTar(url: string) {
-  const tempFile = join(tmpdir(), `riku-example.temp-${Date.now()}`)
+  const tempFile = join(tmpdir(), `jujutsu.js-cna-example.temp-${Date.now()}`)
   await pipeline(got.stream(url), createWriteStream(tempFile))
   return tempFile
 }
@@ -93,7 +93,7 @@ export async function downloadAndExtractRepo(
   { username, name, branch, filePath }: RepoInfo
 ) {
   const tempFile = await downloadTar(
-    `https://github.com/${username}/${name}/archive/refs/heads/${branch}.tar.gz`
+    `https://codeload.github.com/${username}/${name}/tar.gz/${branch}`
   )
 
   await tar.x({
@@ -102,7 +102,9 @@ export async function downloadAndExtractRepo(
     strip: filePath ? filePath.split('/').length + 1 : 1,
     filter: (p) =>
       p.startsWith(
-        `${name}-${branch.replace(/\//g, '-')}${filePath ? `/${filePath}` : ''}`
+        `${name}-${branch.replace(/\//g, '-')}${
+          filePath ? `/${filePath}/` : '/'
+        }`
       ),
   })
 
@@ -115,14 +117,14 @@ export async function downloadAndExtractExample(root: string, name: string) {
   }
 
   const tempFile = await downloadTar(
-    'https://github.com/vajitsu/riku/archive/refs/heads/main.tar.gz'
+    'https://codeload.github.com/vajitsu/jujutsu.js/tar.gz/canary'
   )
 
   await tar.x({
     file: tempFile,
     cwd: root,
     strip: 3,
-    filter: (p) => p.includes(`riku-main/examples/${name}/`),
+    filter: (p) => p.includes(`jujutsu.js-canary/examples/${name}/`),
   })
 
   await fs.unlink(tempFile)

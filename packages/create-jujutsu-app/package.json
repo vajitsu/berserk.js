@@ -1,6 +1,6 @@
 {
   "name": "create-jujutsu-app",
-  "version": "0.0.0",
+  "version": "13.0.6-canary.1",
   "keywords": [
     "discord",
     "jujutsu",
@@ -12,7 +12,7 @@
     "url": "https://github.com/vajitsu/jujutsu.js",
     "directory": "packages/create-jujutsu-app"
   },
-  "author": "Foup <fouptogo@gmail.com>",
+  "author": "Jujutsu.js Team <support@vajitsu.com>",
   "license": "MIT",
   "bin": {
     "create-jujutsu-app": "./dist/index.js"
@@ -22,8 +22,10 @@
   ],
   "scripts": {
     "dev": "ncc build ./index.ts -w -o dist/",
-    "prebuild": "rimraf ./dist/",
-    "build": "tsup build ./index.ts --outDir ./dist/ --minify --format cjs"
+    "prerelease": "rimraf ./dist/",
+    "release": "ncc build ./index.ts -o ./dist/ --minify --no-cache --no-source-map-register",
+    "prepublishOnly": "cd ../../ && turbo run build",
+    "build": "pnpm release"
   },
   "devDependencies": {
     "@types/async-retry": "1.4.2",

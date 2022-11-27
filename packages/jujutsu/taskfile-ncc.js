@@ -1,5 +1,6 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const { existsSync, readFileSync } = require('fs')
-const { basename, dirname, extname, join, resolve, relative } = require('path')
+const { basename, dirname, extname, join, resolve } = require('path')
 const { Module } = require('node:module')
 const ncc = require('@vercel/ncc')
 const findUp = require('find-up')

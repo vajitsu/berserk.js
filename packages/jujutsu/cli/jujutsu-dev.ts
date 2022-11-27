@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-import { startedDevelopmentServer } from '../build/output'
 import { getProjectDir } from '../lib/get-project-dir'
 import { CONFIG_FILES, PHASE_DEVELOPMENT_SERVER } from '../lib/constants'
 import arg from 'jujutsu/dist/compiled/arg/index.js'
 import { printAndExit } from '../client/lib/utils'
-import { traceGlobals } from '../trace/shared'
 import { JujutsuConfig } from '../types'
 import { cliCommand } from '../lib/commands'
 import * as Log from '../build/output/log'
@@ -12,14 +10,16 @@ import { existsSync, watchFile } from 'fs'
 import isError from '../lib/is-error'
 import path from 'path'
 import startServer from '../client/lib/start-server'
-import { findConfig } from '../lib/find-config'
-import { EventEmitter } from 'jujutsu/dist/compiled/ws'
-import { Client } from 'jujutsu/dist/compiled/discord.js'
 import loadConfig from '../client/config'
 import build from '../build'
+import {
+  lockfilePatchPromise,
+  teardownCrashReporter,
+  teardownTraceSubscriber,
+} from '../build/swc'
+import { flushAllTraces } from '../trace'
 
 let sessionStopHandled = false
-let sessionStarted = Date.now()
 
 const handleSessionStop = async () => {
   if (sessionStopHandled) return
@@ -33,6 +33,7 @@ const jujutsuDev: cliCommand = async (argv) => {
   const validArgs: arg.Spec = {
     // Types
     '--help': Boolean,
+    '--debug': Boolean,
     '--quiet': Boolean,
 
     // Aliases
@@ -58,6 +59,8 @@ const jujutsuDev: cliCommand = async (argv) => {
       If no directory is provided, the current directory will be used.
       Options
         --help, -h      Displays this message
+        --debug         Log extra information (provided by Discord.js)
+        --quiet         Disables logging of any kind
     `)
     process.exit(0)
   }
@@ -76,16 +79,8 @@ const jujutsuDev: cliCommand = async (argv) => {
   }
 
   async function validateJujutsuConfig() {
-    const { getPkgManager } =
-      require('../lib/helpers/get-pkg-manager') as typeof import('../lib/helpers/get-pkg-manager')
     const { defaultConfig } =
       require('../client/config-shared') as typeof import('../client/config-shared')
-    const { default: loadConfig } =
-      require('../client/config') as typeof import('../client/config')
-    const { PHASE_DEVELOPMENT_SERVER } =
-      require('../lib/constants') as typeof import('../lib/constants')
-    const chalk =
-      require('jujutsu/dist/compiled/chalk') as typeof import('jujutsu/dist/compiled/chalk')
     const { interopDefault } =
       require('../lib/interop-default') as typeof import('../lib/interop-default')
 
@@ -103,7 +98,7 @@ const jujutsuDev: cliCommand = async (argv) => {
         })
       }
 
-      if (!rawJujutsuConfig.discord.token)
+      if (!rawJujutsuConfig.discord?.token)
         Log.error(`"discord.token" is required for your application to run.`)
 
       const checkUnsupportedCustomConfig = (
@@ -141,6 +136,7 @@ const jujutsuDev: cliCommand = async (argv) => {
         }
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       hasNonDefaultConfig = Object.keys(rawJujutsuConfig).some((key) =>
         checkUnsupportedCustomConfig(key, rawJujutsuConfig, defaultConfig)
       )
@@ -162,12 +158,21 @@ const jujutsuDev: cliCommand = async (argv) => {
 
   const conf = await loadConfig(PHASE_DEVELOPMENT_SERVER, dir)
 
-  build(dir, null, true).then(() => {
-    startServer({
-      conf,
-      ...devServerOptions,
-      quiet: !!args['--quiet'],
-    }).catch((err: any) => {
+  await build(dir, null, true).finally(async () => {
+    // Execute here as this is where 'finally' is called
+    await lockfilePatchPromise.cur
+    await flushAllTraces()
+    teardownTraceSubscriber()
+    teardownCrashReporter()
+
+    startServer(
+      {
+        conf,
+        ...devServerOptions,
+        quiet: !!args['--quiet'],
+      },
+      !!args['--debug']
+    ).catch((err: any) => {
       console.error(err)
       process.exit(1)
     })

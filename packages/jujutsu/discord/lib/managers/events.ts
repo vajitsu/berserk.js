@@ -1,12 +1,15 @@
-import { Events } from 'jujutsu/dist/compiled/discord.js'
 import { EventFileComplete } from '../../../build'
-import { DiscordConfig } from '../../../client/config-shared'
 import bot from '../../bot'
 
 export default class EventManager {
   private events: { [name: string]: EventFileComplete } = {}
 
-  constructor(private instance: bot) {}
+  constructor(private instance: bot) {
+    this.instance.client.on('interactionCreate', (i) => {
+      if (i.isChatInputCommand())
+        return this.instance.slashCommandManager.runCommand(i)
+    })
+  }
 
   registerEvent(event: EventFileComplete) {
     this.events[event.name] = event

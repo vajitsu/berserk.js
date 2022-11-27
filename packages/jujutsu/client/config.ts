@@ -9,16 +9,10 @@ import {
   JujutsuConfigComplete,
   validateConfig,
 } from './config-shared'
-import { gte as semverGte } from 'jujutsu/dist/compiled/semver'
 
 export { JujutsuConfig, normalizeConfig } from './config-shared'
 
-const NODE_16_VERSION = '16.8.0'
-const NODE_18_VERSION = '18.0.0'
-const isAboveNodejs16 = semverGte(process.version, NODE_16_VERSION)
-const isAboveNodejs18 = semverGte(process.version, NODE_18_VERSION)
-
-function assignDefaults(dir: string, userConfig: { [key: string]: any }) {
+function assignDefaults(_dir: string, userConfig: { [key: string]: any }) {
   const config = Object.keys(userConfig).reduce<{ [key: string]: any }>(
     (currentConfig, key) => {
       const value = userConfig[key]

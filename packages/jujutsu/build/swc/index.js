@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { platformArchTriples } from 'jujutsu/dist/compiled/@napi-rs/triples'
 import { patchIncorrectLockfile } from '../../lib/patch-incorrect-lockfile'
 import { getParserOptions } from './options'

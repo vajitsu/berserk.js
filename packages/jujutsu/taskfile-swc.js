@@ -155,10 +155,6 @@ function setJujutsuVersion(code) {
     )
     .replace(
       /process\.env\.REQUIRED_APP_DJS_VERSION/g,
-      `"${
-        require('../../package.json').devDependencies[
-          'discord.js'
-        ]
-      }"`
+      `"${require('../../package.json').devDependencies['discord.js']}"`
     )
 }
