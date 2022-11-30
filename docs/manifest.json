@@ -6,11 +6,11 @@
       "routes": [
         {
           "name": "Getting Started",
-          "path": "/getting-started"
+          "path": "/docs/getting-started"
         },
         {
           "name": "Installation",
-          "path": "/installation"
+          "path": "/docs/installation"
         },
         {
           "title": "FAQ",
