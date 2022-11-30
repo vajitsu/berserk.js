@@ -31,15 +31,21 @@
     "jujutsu": "workspace:*"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "7.19.1",
+    "@babel/core": "7.18.0",
+    "@babel/eslint-parser": "7.18.2",
+    "@babel/generator": "7.18.0",
     "@changesets/cli": "^2.25.2",
+    "@mdx-js/loader": "1.5.1",
     "@sapphire/shapeshift": "^3.7.0",
-    "@swc/cli": "^0.1.57",
+    "@swc/cli": "0.1.55",
+    "@swc/core": "1.2.203",
+    "@swc/helpers": "0.4.14",
     "@taskr/clear": "1.1.0",
     "@taskr/esnext": "1.1.0",
     "@taskr/watch": "1.1.0",
+    "@typescript-eslint/eslint-plugin": "4.29.1",
+    "@typescript-eslint/parser": "4.29.1",
     "@vercel/ncc": "0.34.0",
-    "@vercel/style-guide": "4.0.2",
     "arg": "^5.0.2",
     "async-sema": "^3.1.1",
     "chalk": "^5.1.2",
@@ -62,7 +68,8 @@
     "shell-quote": "1.7.3",
     "taskr": "1.1.0",
     "tsconfig-paths": "^4.1.0",
-    "turbo": "latest"
+    "turbo": "latest",
+    "typescript": "4.9.3"
   },
   "packageManager": "pnpm@7.3.0",
   "engines": {

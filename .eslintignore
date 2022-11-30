@@ -5,3 +5,4 @@ node_modules
 packages/jujutsu/compiled/**/*
 **/__tmp__/**
 packages/create-jujutsu-app/templates/**
+apps
