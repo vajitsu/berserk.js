@@ -1,5 +1,6 @@
 /* Based on https://github.com/vercel/next.js/blob/canary/packages/next/lib/find-pages-dir.ts */
 import fs from 'fs'
+import chalk from 'jujutsu/dist/compiled/chalk'
 import path from 'path'
 import * as Log from '../build/output/log'
 
@@ -57,7 +58,7 @@ export function findDirs(
     }
     if (appDir != null && (commandsDir != null || eventsDir != null)) {
       Log.warn(
-        'The `app` directory is experimental. To enable, add `appDir: true` to your `jujutsu.config.js` configuration under `experimental`.'
+        '> The `app` directory is experimental. To enable, add `appDir: true` to your `jujutsu.config.js` configuration under `experimental`.'
       )
     }
     if (commandsDir == null && eventsDir == null) {
@@ -65,6 +66,12 @@ export function findDirs(
         "> Couldn't find a `events` or `commands` directory. Please create one under the project root"
       )
     }
+  } else if (isAppDirEnabled && appDir !== null) {
+    Log.warn(
+      chalk.bold(
+        'You have enabled experimental feature (appDir) in jujutsu.config.js.'
+      )
+    )
   }
 
   return {

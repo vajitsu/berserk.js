@@ -10,6 +10,7 @@ import { LoadedEnvFiles, processEnv } from '../../lib/env'
 import { escapeStringRegexp } from '../../lib/escape-regexp'
 import { isNumber } from 'jujutsu/dist/compiled/lodash'
 import findUp from 'jujutsu/dist/compiled/find-up'
+import { nanoid } from 'jujutsu/dist/compiled/nanoid'
 
 export default async function compileEvents(
   events: Set<string>,
@@ -39,15 +40,11 @@ export default async function compileEvents(
         : e[1],
     ])
 
-    const unique = Buffer.from(event.name).toString('base64url')
+    const id = nanoid(5)
+    const unique = `bundle_${id}.js`
 
     const buildDir = pathJoin(dir, '.jujutsu', SERVER_DIRECTORY)
-    const output = pathJoin(
-      dir,
-      '.jujutsu',
-      SERVER_DIRECTORY,
-      `bundle.${unique}.js`
-    )
+    const output = pathJoin(dir, '.jujutsu', SERVER_DIRECTORY, unique)
 
     // Don't bundle packages that are meant to be used in production
     let pkgJson
@@ -66,7 +63,7 @@ export default async function compileEvents(
       entry: event.absolutePath,
       output: {
         path: buildDir,
-        name: `bundle.${unique}.js`,
+        name: unique,
       },
       module: {},
       options: {
@@ -92,7 +89,7 @@ export default async function compileEvents(
       : Object.values(bundled)[0].code
 
     const transformed = await swc.transform(
-      code.concat(`module.exports.__name = "${event.name}"`),
+      code.concat(`exports.__name = "${event.name}"`),
       {
         ...SWC_CONFIG,
         jsc: {
@@ -107,7 +104,6 @@ export default async function compileEvents(
               },
           transform: {
             optimizer: {
-              simplify: true,
               globals: {
                 vars: {
                   ...Object.fromEntries(envEntries),

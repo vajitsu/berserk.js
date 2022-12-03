@@ -12,6 +12,11 @@ declare module 'jujutsu/dist/compiled/title' {
   export = m
 }
 
+declare module 'jujutsu/dist/compiled/nanoid' {
+  import m from 'nanoid'
+  export = m
+}
+
 declare module 'jujutsu/dist/compiled/gradient-string' {
   import m from 'gradient-string'
   export = m

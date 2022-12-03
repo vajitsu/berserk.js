@@ -6,8 +6,8 @@ import { AppManifest, createAppManifest } from './entries'
 import { recursiveDelete } from '../lib/recursive-delete'
 import {
   APP_PATHS_MANIFEST,
+  BUILD_MANIFEST,
   PHASE_PRODUCTION_BUILD,
-  SERVER_DIRECTORY,
   SWC_CONFIG,
 } from '../lib/constants'
 import compileCommands from './compiler/commands'
@@ -858,13 +858,57 @@ export default async function build(
           ...manifests.events?.map((x) => ({ type: 'event', ...x }))
         )
 
-      await mkdirp(pathJoin(distDir, SERVER_DIRECTORY))
+      await mkdirp(pathJoin(distDir))
+
       await promises.writeFile(
-        pathJoin(distDir, SERVER_DIRECTORY, APP_PATHS_MANIFEST),
-        appPathsManifest.length > 0
-          ? JSON.stringify(appPathsManifest.map((x) => [x.name, x]))
-          : '{}',
+        pathJoin(distDir, APP_PATHS_MANIFEST),
+        appPathsManifest.filter((x) => x.path.includes(pathJoin(dir, 'app')))
+          .length > 0
+          ? JSON.stringify(
+              appPathsManifest
+                .filter((x) => x.path.includes(pathJoin(dir, 'app')))
+                .map((x) => [x.name, x])
+            )
+          : '[]',
         'utf8'
+      )
+
+      const buildManifest = [...appPathsManifest]
+      if (!!manifests.commands)
+        buildManifest.push(
+          ...manifests.commands.map((command) => ({
+            ...command,
+            type: 'command',
+          }))
+        )
+      if (!!manifests.events)
+        buildManifest.push(
+          ...manifests.events.map((event) => ({
+            ...event,
+            type: 'event',
+          }))
+        )
+
+      await promises.writeFile(
+        pathJoin(distDir, BUILD_MANIFEST),
+        JSON.stringify({
+          commands: buildManifest
+            .filter((manifest) => manifest.type === 'command')
+            .map((manifest) => ({
+              app: manifest.path.includes(pathJoin(dir, 'app')),
+              type: 'command',
+              path: manifest.path,
+              name: manifest.name,
+            })),
+          events: buildManifest
+            .filter((manifest) => manifest.type === 'event')
+            .map((manifest) => ({
+              app: manifest.path.includes(pathJoin(dir, 'app')),
+              type: 'event',
+              path: manifest.path,
+              name: manifest.name,
+            })),
+        })
       )
 
       const _end = process.hrtime(start)

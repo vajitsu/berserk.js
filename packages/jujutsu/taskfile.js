@@ -64,6 +64,14 @@ export async function ncc_jest_worker(task, opts) {
   await fs.remove(join(__dirname, 'compiled/jest-worker/out'))
 }
 // eslint-disable-next-line camelcase
+externals['nanoid'] = 'jujutsu/dist/compiled/nanoid'
+export async function ncc_nanoid(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('nanoid')))
+    .ncc({ packageName: 'nanoid', externals })
+    .target('compiled/nanoid')
+}
+// eslint-disable-next-line camelcase
 externals['undici'] = 'jujutsu/dist/compiled/undici'
 export async function ncc_undici(task, opts) {
   await task
@@ -528,6 +536,7 @@ export async function ncc(task, opts) {
         'ncc_nft',
         'ncc_shapeshift',
         'ncc_ws',
+        'ncc_nanoid',
       ],
       opts
     )

@@ -51,7 +51,7 @@ export const SWC_CONFIG: SwcConfig = {
   },
   module: {
     type: 'commonjs',
-    importInterop: 'node',
+    //importInterop: 'node',
     strict: true,
     lazy: true,
   },
@@ -67,6 +67,7 @@ export const DOT_JUJUTSU_ALIAS = 'private-dot-jujutsu'
 export const ROOT_DIR_ALIAS = 'private-jujutsu-root-dir'
 export const APP_DIR_ALIAS = 'private-jujutsu-app-dir'
 export const APP_PATHS_MANIFEST = 'app-paths-manifest.json'
+export const BUILD_MANIFEST = 'build-manifest.json'
 
 export const SLASH_COMMAND_REGEX = s.string
   .lengthGreaterThanOrEqual(1)

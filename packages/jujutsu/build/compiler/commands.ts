@@ -10,6 +10,7 @@ import { LoadedEnvFiles, processEnv } from '../../lib/env'
 import { escapeStringRegexp } from '../../lib/escape-regexp'
 import { isNumber } from 'jujutsu/dist/compiled/lodash'
 import findUp from 'jujutsu/dist/compiled/find-up'
+import { nanoid } from 'jujutsu/dist/compiled/nanoid'
 
 export default async function compileCommands(
   commands: Set<string>,
@@ -41,9 +42,10 @@ export default async function compileCommands(
         : e[1],
     ])
 
-    const unique = Buffer.from(command.name).toString('base64url')
+    const id = nanoid(5)
+    const unique = `bundle_${id}.js`
 
-    const output = pathJoin(distDir, SERVER_DIRECTORY, `bundle.${unique}.js`)
+    const output = pathJoin(distDir, SERVER_DIRECTORY, unique)
 
     // Don't bundle packages that are meant to be used in production
     let pkgJson
@@ -62,7 +64,7 @@ export default async function compileCommands(
       entry: command.absolutePath,
       output: {
         path: pathJoin(distDir, SERVER_DIRECTORY),
-        name: `bundle.${unique}.js`,
+        name: unique,
       },
       module: {},
       options: {
@@ -89,9 +91,9 @@ export default async function compileCommands(
 
     const transformed = await swc.transform(
       code.concat(
-        `module.exports.__name = "${
+        `exports.__name = "${
           command.name
-        }";module.exports.subcommands = ${JSON.stringify(command.subcommands)};`
+        }";exports.subcommands = ${JSON.stringify(command.subcommands)};`
       ),
       {
         ...SWC_CONFIG,
@@ -107,7 +109,6 @@ export default async function compileCommands(
               },
           transform: {
             optimizer: {
-              simplify: true,
               globals: {
                 vars: {
                   ...Object.fromEntries(envEntries),

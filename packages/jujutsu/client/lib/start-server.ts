@@ -33,7 +33,7 @@ export default async function startServer(
   const events = new EventEmitter()
 
   events.once('ready', (client: Client) => {
-    Log.ready(`Bot is ready at ${client.user?.tag}`)
+    Log.ready(`Bot is located at ${client.user?.tag}`)
   })
 
   const instance = new bot(
@@ -53,14 +53,14 @@ export default async function startServer(
 
   const buildDir = join(distDir, SERVER_DIRECTORY)
 
-  const _ = () => {
+  const startBot = () => {
     const files = recursiveReadDirSync(buildDir).map((f) => ({
       type: identifyBundle(f, buildDir),
       absolute: join(join(buildDir, f)),
     }))
 
     const event_files = files
-      .filter((__) => __.type === 'event')
+      .filter((file) => file.type === 'event')
       .map((f) => ({
         mod: require(relative(__dirname, f.absolute)),
         absolute: f.absolute,
@@ -72,7 +72,7 @@ export default async function startServer(
       }))
 
     const command_files = files
-      .filter((__) => __.type === 'command')
+      .filter((file) => file.type === 'command')
       .map((f) => ({
         mod: require(relative(__dirname, f.absolute)),
         absolute: f.absolute,
@@ -83,8 +83,9 @@ export default async function startServer(
         absolutePath: f.absolute,
       }))
 
-    for (let __ of command_files) instance.slashCommandManager.addCommand(__)
-    for (let __ of event_files) instance.eventManager.registerEvent(__)
+    for (let file of command_files)
+      instance.slashCommandManager.addCommand(file)
+    for (let file of event_files) instance.eventManager.registerEvent(file)
 
     if (!options.quiet) instance.hookServerEvents()
 
@@ -101,9 +102,9 @@ export default async function startServer(
   }
 
   if (await exists(buildDir)) {
-    _()
+    startBot()
   } else {
-    build(options.dir || process.cwd(), null, true).then(() => _())
+    build(options.dir || process.cwd(), null, true).then(() => startBot())
   }
 
   // if (options.dev)
