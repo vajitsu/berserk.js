@@ -91,14 +91,17 @@ importers:
 
   apps/website:
     specifiers:
+      '@builder.io/partytown': 0.7.2
       '@mapbox/rehype-prism': 0.8.0
       '@mdx-js/mdx': 2.1.5
+      '@next/font': 13.0.5
       '@sapphire/shapeshift': 3.7.1
       '@types/hast': 2.3.4
       '@types/mapbox__rehype-prism': 0.8.0
       '@types/node': 18.11.9
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
+      classnames: 2.3.2
       contentlayer: 0.2.9
       eslint: 7.24.0
       eslint-config-next: 13.0.5
@@ -106,6 +109,7 @@ importers:
       hast: 1.0.0
       hastscript: 7.1.0
       lodash: ^4.17.21
+      nanoid: 4.0.0
       next: 13.0.5
       next-contentlayer: 0.2.9
       react: 18.2.0
@@ -128,10 +132,12 @@ importers:
     dependencies:
       '@mapbox/rehype-prism': 0.8.0
       '@mdx-js/mdx': 2.1.5
+      '@next/font': 13.0.5
       '@sapphire/shapeshift': 3.7.1
       '@types/node': 18.11.9
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
+      classnames: 2.3.2
       contentlayer: 0.2.9_esbuild@0.14.54
       eslint: 7.24.0
       eslint-config-next: 13.0.5_nfj6pkssl76eraaivqz3lh2aje
@@ -139,6 +145,7 @@ importers:
       hast: 1.0.0
       hastscript: 7.1.0
       lodash: 4.17.21
+      nanoid: 4.0.0
       next: 13.0.5_biqbaboplfbrettd7655fr4n2y
       next-contentlayer: 0.2.9_4tibg6n32xijos2jdilxqjecvy
       react: 18.2.0
@@ -159,6 +166,7 @@ importers:
       typescript: 4.9.3
       unified: 10.1.2
     devDependencies:
+      '@builder.io/partytown': 0.7.2
       '@types/hast': 2.3.4
       '@types/mapbox__rehype-prism': 0.8.0
 
@@ -758,6 +766,11 @@ packages:
       tsutils: 3.21.0_typescript@4.9.3
     transitivePeerDependencies:
       - typescript
+    dev: true
+
+  /@builder.io/partytown/0.7.2:
+    resolution: {integrity: sha512-TmRHuN4gdsOJxBGsPPirJAMuXDm0o9cx9t5ltSson+F+K5ES3eNiBCxBGvSSkoEARvZ+kl1n7WVi+8qNyJdeAQ==}
+    hasBin: true
     dev: true
 
   /@changesets/apply-release-plan/6.1.2:
@@ -2206,6 +2219,10 @@ packages:
     resolution: {integrity: sha512-H9U9B1dFnCDmylDZ6/dYt95Ie1Iu+SLBMcO6rkIGIDcj5UK+DNyMiWm83xWBZ1gREM8cfp5Srv1g6wqf8pM4lw==}
     dependencies:
       glob: 7.1.7
+    dev: false
+
+  /@next/font/13.0.5:
+    resolution: {integrity: sha512-NrP4B8pxwerrkkuG/m7MQv0ks89Kk4Lc0kzbiRaYX+Xb0coDaw+I9T+g42aOHf8j8ta1vtKqb5XE1+troZ4CoQ==}
     dev: false
 
   /@next/swc-android-arm-eabi/13.0.4:
@@ -5301,6 +5318,10 @@ packages:
       isobject: 3.0.1
       static-extend: 0.1.2
     dev: true
+
+  /classnames/2.3.2:
+    resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
+    dev: false
 
   /clean-stack/2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
@@ -11612,6 +11633,12 @@ packages:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  /nanoid/4.0.0:
+    resolution: {integrity: sha512-IgBP8piMxe/gf73RTQx7hmnhwz0aaEXYakvqZyE302IXW3HyVNhdNGC+O2MwMAVhLEnvXlvKtGbtJf6wvHihCg==}
+    engines: {node: ^14 || ^16 || >=18}
+    hasBin: true
+    dev: false
 
   /nanomatch/1.2.13:
     resolution: {integrity: sha512-fpoe2T0RbHwBTBUOftAfBPaDEi06ufaUai0mE6Yn1kacc3SnTErfb/h+X94VXzI64rKFHYImXSvdwGGCmwOqCA==}
