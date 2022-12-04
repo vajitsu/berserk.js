@@ -23,4 +23,17 @@ The token should now appear under the username input area
 
 If you have already created a `jujutsu.config.js`, add the token to the `discord.token` property
 
+If not, create a `jujutsu.config.js` and add the following:
+
+```js:jujutsu.config.js
+/** @type {import('jujutsu').JujutsuConfig} */
+const jujutsuConfig = {
+  discord: {
+    token: 'your-token-goes-here'
+  }
+}
+
+module.exports = jujutsuConfig
+```
+
 _This page is still being written_ - [Contribute to this page](https://github.com/vajitsu/jujutsu.js/blob/canary/docs/getting-started.md)
