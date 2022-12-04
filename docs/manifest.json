@@ -5,11 +5,11 @@
       "heading": true,
       "routes": [
         {
-          "name": "Getting Started",
+          "title": "Getting Started",
           "path": "/docs/getting-started"
         },
         {
-          "name": "Installation",
+          "title": "Installation",
           "path": "/docs/installation"
         },
         {
