@@ -8,7 +8,7 @@ Welcome to the Jujutsu.js documentation!
 
 If you're new to Jujutsu.js, we recommend starting with the [learn course](/learn/basics/create-jujutsujs-app). The interactive course with quizzes will guide you through everything you need to know to use Jujutsu.js.
 
-If you have questions about anything related to Next.js, you're always welcome to ask our community on [GitHub Discussions](https://github.com/vajitsu/jujutsu.js/discussions).
+If you have questions about anything related to Jujutsu.js, you're always welcome to ask our community on [GitHub Discussions](https://github.com/vajitsu/jujutsu.js/discussions).
 
 ## Creating a Discord Application
 
