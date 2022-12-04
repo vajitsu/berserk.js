@@ -6,7 +6,7 @@
       "routes": [
         {
           "name": "About Jujutsu.js",
-          "path": "/foundations/about-jujutsujs"
+          "path": "/learn/foundations/about-jujutsujs"
         }
       ]
     }
