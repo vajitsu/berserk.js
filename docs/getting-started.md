@@ -12,6 +12,10 @@ description: Hello World
 2. Click on the `New Application` button
 3. Fill out the popup, then click "Create"
 
+Your Discord application has now been created!
+
+## Creating a Discord bot
+
 Now that a Discord application has been initialized, we need to create a Discord bot.
 
 1. Select the `Bot` tab on the sidebar
@@ -20,6 +24,8 @@ Now that a Discord application has been initialized, we need to create a Discord
 The token should now appear under the username input area
 
 > **Never** share the token with anybody
+
+## Implementing Discord Token
 
 If you have already created a `jujutsu.config.js`, add the token to the `discord.token` property
 
