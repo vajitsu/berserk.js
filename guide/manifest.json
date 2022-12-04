@@ -5,8 +5,8 @@
       "heading": true,
       "routes": [
         {
-          "name": "Learn Jujutsu.js",
-          "path": "/learn"
+          "name": "About Jujutsu.js",
+          "path": "/foundations/about-jujutsujs"
         }
       ]
     }
