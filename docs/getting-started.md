@@ -1,10 +1,14 @@
 ---
-description: Hello World
+description: Get started with Jujutsu.js in the official documentation, and learn more about all our features!
 ---
 
 # Getting Started
 
-> 🏗️ The `app` directory is currently in beta and is subject to change at any given time
+Welcome to the Jujutsu.js documentation!
+
+If you're new to Jujutsu.js, we recommend starting with the [learn course](/learn/basics/create-jujutsujs-app). The interactive course with quizzes will guide you through everything you need to know to use Jujutsu.js.
+
+If you have questions about anything related to Next.js, you're always welcome to ask our community on [GitHub Discussions](https://github.com/vercel/next.js/discussions).
 
 ## Creating a Discord Application
 
