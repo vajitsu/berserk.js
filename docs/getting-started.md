@@ -23,8 +23,6 @@ Now that a Discord application has been initialized, we need to create a Discord
 
 The token should now appear under the username input area
 
-> **Never** share the token with anybody
-
 ## Implementing Discord Token
 
 If you have already created a `jujutsu.config.js`, add the token to the `discord.token` property
@@ -41,5 +39,7 @@ const jujutsuConfig = {
 
 module.exports = jujutsuConfig
 ```
+
+> **Never** share the token with anybody. If you accidentally share your bot's token, immediately reset it in the Developer Portal. Make sure to update your token in your Jujutsu.js project.
 
 _This page is still being written_ - [Contribute to this page](https://github.com/vajitsu/jujutsu.js/blob/canary/docs/getting-started.md)
