@@ -13,8 +13,8 @@ If you have questions about anything related to Next.js, you're always welcome t
 ## Creating a Discord Application
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications) 
-2. Click on the `New Application` button
-3. Fill out the popup, then click "Create"
+2. Click on the `"New Application"` button
+3. Fill out the popup, then click `"Create"`
 
 Your Discord application has now been created!
 
@@ -25,11 +25,11 @@ Now that a Discord application has been initialized, we need to create a Discord
 1. Select the `Bot` tab on the sidebar
 2. Click the `Add Bot` and select the confirmation button in the popup
 
-The token should now appear under the username input area
+The token should now appear under the username input area.
 
 ## Implementing Discord Token
 
-If you have already created a `jujutsu.config.js`, add the token to the `discord.token` property
+If you have already created a `jujutsu.config.js`, add the token to the `discord.token` property.
 
 If not, create a `jujutsu.config.js` and add the following:
 
@@ -44,6 +44,4 @@ const jujutsuConfig = {
 module.exports = jujutsuConfig
 ```
 
-> **Never** share the token with anybody. If you accidentally share your bot's token, immediately reset it in the Developer Portal. Make sure to update your token in your Jujutsu.js project.
-
-_This page is still being written_ - [Contribute to this page](https://github.com/vajitsu/jujutsu.js/blob/canary/docs/getting-started.md)
+> **Never** share the token with anybody. If you accidentally share your bot's token, immediately reset it in the [`Discord Developer Portal`](https://discord.com/developers/applications) . Make sure to update your token in your Jujutsu.js project.
