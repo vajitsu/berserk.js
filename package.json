@@ -1,6 +1,6 @@
 {
   "name": "jujutsu-project",
-  "version": "0.0.0",
+  "version": "0.0.0-canary.0",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -22,6 +22,7 @@
     "prepublishOnly": "turbo run build",
     "publish-canary": "git checkout canary && git pull && lerna version prerelease --preid canary --force-publish && release --pre --skip-questions",
     "publish-stable": "lerna version --force-publish",
+    "publish": "lerna publish from-package",
     "lint-staged": "lint-staged",
     "version": "pnpm install && git add pnpm-lock.yaml",
     "prepare": "husky install"
