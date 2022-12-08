@@ -48,6 +48,21 @@ declare module 'jujutsu/dist/compiled/async-sema' {
   export = m
 }
 
+declare module 'jujutsu/dist/compiled/@swc/core' {
+  import m from '@swc/core'
+  export = m
+}
+
+declare module 'jujutsu/dist/compiled/dotenv' {
+  import m from 'dotenv'
+  export = m
+}
+
+declare module 'jujutsu/dist/compiled/dotenv-expand' {
+  import m from 'dotenv-expand'
+  export = m
+}
+
 declare module 'jujutsu/dist/compiled/arg/index.js' {
   function arg<T extends arg.Spec>(
     spec: T,

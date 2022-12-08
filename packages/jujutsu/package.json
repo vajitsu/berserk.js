@@ -35,9 +35,6 @@
     "@swc/helpers": "latest",
     "discord.js": "latest"
   },
-  "peerDependencies": {
-    "discord.js": "latest"
-  },
   "devDependencies": {
     "@napi-rs/triples": "1.1.0",
     "@next/swc-android-arm-eabi": "latest",
@@ -96,6 +93,7 @@
     "cross-spawn": "6.0.5",
     "devalue": "4.2.0",
     "discord-api-types": "^0.37.18",
+    "dotenv": "^16.0.3",
     "dotenv-expand": "9.0.0",
     "esm": "3.2.25",
     "events": "^3.3.0",

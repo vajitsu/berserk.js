@@ -69,11 +69,7 @@ export const installTemplate = async ({
   /**
    * Default dependencies.
    */
-  const dependencies = [
-    'discord.js',
-    'jujutsu',
-    `@next/swc-${triples[0].platformArchABI}`,
-  ]
+  const dependencies = ['discord.js', 'jujutsu']
   /**
    * TypeScript projects will have type definitions and other devDependencies.
    */

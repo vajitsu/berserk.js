@@ -23,7 +23,7 @@ SOFTWARE.
 */
 import chalk from '../../lib/chalk'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import gs from 'gradient-string'
+import gs from 'jujutsu/dist/compiled/gradient-string'
 
 export const prefixes = {
   jujutsu: process.stdout.isTTY

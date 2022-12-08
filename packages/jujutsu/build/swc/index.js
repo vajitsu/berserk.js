@@ -105,24 +105,7 @@ function loadNative() {
       bindings = require(`@next/swc/native/next-swc.${triple.platformArchABI}.node`)
       Log.info('Using locally built binary of @next/swc')
       break
-    } catch (e) {
-      const packageManager = getPkgManager()
-      const isOnline = getOnline()
-      const devDependencies = []
-      const pkg = `@next/swc-${triple.platformArchABI}`
-      if (checkPackageExists(pkg)) {
-        Log.info(
-          `Attempting to install ${chalk.bold(pkg)} for your operating system`
-        )
-        try {
-          install(process.cwd(), [pkg], {
-            packageManager,
-            isOnline,
-            devDependencies,
-          })
-        } catch {}
-      }
-    }
+    } catch (e) {}
   }
 
   if (!bindings) {

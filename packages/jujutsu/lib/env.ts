@@ -24,8 +24,8 @@ SOFTWARE.
 /* eslint-disable import/no-extraneous-dependencies */
 import * as fs from 'fs'
 import * as path from 'path'
-import * as dotenv from 'dotenv'
-import { expand as dotenvExpand } from 'dotenv-expand'
+import * as dotenv from 'jujutsu/dist/compiled/dotenv'
+import { expand as dotenvExpand } from 'jujutsu/dist/compiled/dotenv-expand'
 
 export type Env = { [key: string]: string | undefined }
 export type LoadedEnvFiles = Array<{
