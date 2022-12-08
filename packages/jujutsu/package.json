@@ -1,6 +1,6 @@
 {
   "name": "jujutsu",
-  "version": "0.0.1-canary.0",
+  "version": "0.0.1-canary.1",
   "description": "The Discord.js Framework",
   "main": "./dist/client/jujutsu.js",
   "license": "MIT",
@@ -32,10 +32,14 @@
     ]
   },
   "dependencies": {
-    "@types/ws": "8.2.0",
+    "@swc/helpers": "latest",
     "discord.js": "latest"
   },
   "peerDependencies": {
+    "discord.js": "latest"
+  },
+  "devDependencies": {
+    "@napi-rs/triples": "1.1.0",
     "@next/swc-android-arm-eabi": "latest",
     "@next/swc-android-arm64": "latest",
     "@next/swc-darwin-arm64": "latest",
@@ -49,14 +53,9 @@
     "@next/swc-win32-arm64-msvc": "latest",
     "@next/swc-win32-ia32-msvc": "latest",
     "@next/swc-win32-x64-msvc": "latest",
-    "discord.js": "latest"
-  },
-  "devDependencies": {
-    "@napi-rs/triples": "1.1.0",
     "@sapphire/shapeshift": "3.7.1-next.1c11147.0",
     "@segment/ajv-human-errors": "2.1.2",
     "@swc/core": "1.3.17",
-    "@swc/helpers": "0.4.14",
     "@swc/plugin-transform-imports": "1.5.25",
     "@taskr/clear": "1.1.0",
     "@taskr/esnext": "1.1.0",
@@ -75,10 +74,11 @@
     "@types/title": "3.4.1",
     "@types/uuid": "^8.3.4",
     "@types/watchpack": "^2.4.0",
+    "@types/ws": "8.2.0",
     "@vercel/ncc": "0.34.0",
     "@vercel/nft": "0.22.1",
     "ajv": "8.11.0",
-    "arg": "^5.0.2",
+    "arg": "4.1.0",
     "async-retry": "1.3.1",
     "axios": "^1.1.3",
     "builtin-modules": "3.3.0",
@@ -115,7 +115,7 @@
     "mkdirp": "^1.0.4",
     "module": "1.2.5",
     "ms": "2.1.3",
-    "nanoid": "4.0.0",
+    "nanoid": "3.1.32",
     "next": "13.0.4",
     "node-cache": "^5.1.2",
     "node-fetch": "3.3.0",
