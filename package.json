@@ -8,6 +8,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
+    "create-jujutsu-app": "node --trace-deprecation --enable-source-maps packages/create-jujutsu-app/dist/index.js",
     "jujutsu": "node --trace-deprecation --enable-source-maps packages/jujutsu/dist/bin/jujutsu",
     "lint-typescript": "turbo run typescript",
     "lint-eslint": "eslint . --ext js,jsx,ts,tsx --max-warnings=0 --config .eslintrc.json --no-eslintrc",

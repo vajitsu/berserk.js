@@ -27,6 +27,11 @@ import { patchIncorrectLockfile } from '../../lib/patch-incorrect-lockfile'
 import { getParserOptions } from './options'
 import * as Log from '../output/log'
 import { platform, arch } from 'os'
+import { getPkgManager } from '../../lib/helpers/get-pkg-manager'
+import { getOnline } from '../../lib/helpers/get-online'
+import { install } from '../../lib/helpers/install'
+import { checkPackageExists } from 'check-package-exists'
+import chalk from 'jujutsu/dist/compiled/chalk'
 
 const ArchName = arch()
 const PlatformName = platform()
@@ -100,7 +105,24 @@ function loadNative() {
       bindings = require(`@next/swc/native/next-swc.${triple.platformArchABI}.node`)
       Log.info('Using locally built binary of @next/swc')
       break
-    } catch (e) {}
+    } catch (e) {
+      const packageManager = getPkgManager()
+      const isOnline = getOnline()
+      const devDependencies = []
+      const pkg = `@next/swc-${triple.platformArchABI}`
+      if (checkPackageExists(pkg)) {
+        Log.info(
+          `Attempting to install ${chalk.bold(pkg)} for your operating system`
+        )
+        try {
+          install(process.cwd(), [pkg], {
+            packageManager,
+            isOnline,
+            devDependencies,
+          })
+        } catch {}
+      }
+    }
   }
 
   if (!bindings) {
