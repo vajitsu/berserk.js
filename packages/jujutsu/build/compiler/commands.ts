@@ -10,6 +10,7 @@ import { escapeStringRegexp } from '../../lib/escape-regexp'
 import { isNumber } from 'jujutsu/dist/compiled/lodash'
 import findUp from 'jujutsu/dist/compiled/find-up'
 import { nanoid } from 'jujutsu/dist/compiled/nanoid'
+import { Module } from 'module'
 
 export default async function compileCommands(
   commands: Set<string>,
@@ -51,13 +52,28 @@ export default async function compileCommands(
     const packageJsonPath = await findUp('package.json', { cwd: dir })
     if (packageJsonPath) pkgJson = require(packageJsonPath)
 
+    const nodeModules = Module.builtinModules
+      .filter((mod) => !!require(mod))
+      .map((mod) => {
+        try {
+          const m = require(`node:${mod}`)
+          if (!m) return mod
+          return `node:${mod}`
+        } catch {
+          return mod
+        }
+      })
+
     const bundled = await spack({
       externalModules:
         pkgJson && pkgJson.dependencies
-          ? Object.keys(pkgJson.dependencies)
-              .filter((dep) => !dep.startsWith('@types'))
-              .filter((dep) => !!require(dep))
-          : [],
+          ? [
+              ...Object.keys(pkgJson.dependencies)
+                .filter((dep) => !dep.startsWith('@types'))
+                .filter((dep) => !!require(dep)),
+              ...nodeModules,
+            ]
+          : [...nodeModules],
       mode: 'production',
       target: 'node',
       entry: command.absolutePath,

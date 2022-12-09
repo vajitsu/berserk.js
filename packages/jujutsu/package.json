@@ -11,7 +11,10 @@
   "files": [
     "dist",
     "utils.js",
-    "utils.d.ts"
+    "utils.d.ts",
+    "types/index.d.ts",
+    "types/global.d.ts",
+    "types/compiled.d.ts"
   ],
   "bin": {
     "jujutsu": "./dist/bin/jujutsu"
@@ -123,7 +126,6 @@
     "tsconfig": "*",
     "tsconfig-paths": "4.1.0",
     "tsec": "0.2.6",
-    "tsup": "6.5.0",
     "typescript": "latest",
     "uid-promise": "1.1.1",
     "undici": "^5.12.0",
