@@ -364,12 +364,6 @@ importers:
       watchpack: 2.4.0
       ws: 8.2.3
 
-  packages/jujutsu-swc:
-    specifiers:
-      '@napi-rs/triples': 1.1.0
-    dependencies:
-      '@napi-rs/triples': 1.1.0
-
 packages:
 
   /@ampproject/remapping/2.2.0:
@@ -1868,6 +1862,7 @@ packages:
 
   /@napi-rs/triples/1.1.0:
     resolution: {integrity: sha512-XQr74QaLeMiqhStEhLn1im9EOMnkypp7MZOwQhGzqp2Weu5eQJbpPxWxixxlYRKWPOmJjsk6qYfYH9kq43yc2w==}
+    dev: true
 
   /@next/env/13.0.4:
     resolution: {integrity: sha512-N5Z3bdxBzoxrC5bwykDFITzdWuwDteOdZ+7nxixY+I1XpRX8/iQYbw2wuXMdqdfBGm2NNUpAqg8YF2e4oAC2UQ==}
