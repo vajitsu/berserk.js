@@ -24,7 +24,6 @@ SOFTWARE.
 import createStore from 'jujutsu/dist/compiled/unistore'
 import stripAnsi from 'jujutsu/dist/compiled/strip-ansi'
 import { flushAllTraces } from '../../trace'
-import { teardownCrashReporter, teardownTraceSubscriber } from '../swc'
 import * as Log from './log'
 
 export type OutputState =
@@ -114,8 +113,6 @@ store.subscribe((state) => {
     startTime = 0
     // Ensure traces are flushed after each compile in development mode
     flushAllTraces()
-    teardownTraceSubscriber()
-    teardownCrashReporter()
     return
   }
 
@@ -142,8 +139,6 @@ store.subscribe((state) => {
     Log.warn(state.warnings.join('\n\n'))
     // Ensure traces are flushed after each compile in development mode
     flushAllTraces()
-    teardownTraceSubscriber()
-    teardownCrashReporter()
     return
   }
 
@@ -159,6 +154,4 @@ store.subscribe((state) => {
   )
   // Ensure traces are flushed after each compile in development mode
   flushAllTraces()
-  teardownTraceSubscriber()
-  teardownCrashReporter()
 })

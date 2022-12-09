@@ -1,10 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import type { EventFileComplete as EventInfo } from '../index'
 import { join as pathJoin } from 'path'
-import { bundle as spack } from 'jujutsu/dist/compiled/@swc/core'
+import swc, { bundle as spack } from 'jujutsu/dist/compiled/@swc/core'
 import { mkdirp } from 'fs-extra'
 import { promises } from 'fs'
-import * as swc from '../swc'
 import { SERVER_DIRECTORY, SWC_CONFIG } from '../../lib/constants'
 import { LoadedEnvFiles, processEnv } from '../../lib/env'
 import { escapeStringRegexp } from '../../lib/escape-regexp'

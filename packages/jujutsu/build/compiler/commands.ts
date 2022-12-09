@@ -1,10 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import type { CommandFileComplete as CommandInfo } from '../index'
 import { join as pathJoin } from 'path'
-import { bundle as spack } from 'jujutsu/dist/compiled/@swc/core'
+import { bundle as spack, transform } from 'jujutsu/dist/compiled/@swc/core'
 import { mkdirp } from 'fs-extra'
 import { promises } from 'fs'
-import * as swc from '../swc'
 import { SERVER_DIRECTORY, SWC_CONFIG } from '../../lib/constants'
 import { LoadedEnvFiles, processEnv } from '../../lib/env'
 import { escapeStringRegexp } from '../../lib/escape-regexp'
@@ -89,7 +88,7 @@ export default async function compileCommands(
       ? bundled['command.ts'].code
       : Object.values(bundled)[0].code
 
-    const transformed = await swc.transform(
+    const transformed = await transform(
       code.concat(
         `exports.__name = "${
           command.name

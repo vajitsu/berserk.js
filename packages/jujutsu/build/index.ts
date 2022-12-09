@@ -10,6 +10,7 @@ import {
   PHASE_PRODUCTION_BUILD,
   SWC_CONFIG,
 } from '../lib/constants'
+import { transform } from 'jujutsu/dist/compiled/@swc/core'
 import compileCommands from './compiler/commands'
 import { findDirs } from '../lib/find-dirs'
 import { fileExists } from '../lib/file-exists'
@@ -24,13 +25,6 @@ import { promises } from 'fs'
 import path, { join as pathJoin } from 'path'
 import esm from 'esm'
 import ms from 'ms'
-
-import {
-  lockfilePatchPromise,
-  teardownTraceSubscriber,
-  teardownCrashReporter,
-  transform,
-} from './swc'
 import { isBoolean, isFunction } from 'jujutsu/dist/compiled/lodash'
 import {
   ChatInputCommandInteraction,
@@ -933,12 +927,7 @@ export default async function build(
     // eslint-disable-next-line no-sequences
     if (!dev) console.log(), console.log(jjGradient + thankYouMsg)
   } finally {
-    // Ensure we wait for lockfile patching if present
-    await lockfilePatchPromise.cur
-
     // Ensure all traces are flushed before finishing the command
     await flushAllTraces()
-    teardownTraceSubscriber()
-    teardownCrashReporter()
   }
 }
