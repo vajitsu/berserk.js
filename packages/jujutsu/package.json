@@ -10,6 +10,7 @@
   "types": "index.d.ts",
   "files": [
     "dist",
+    "index.d.ts",
     "utils.js",
     "utils.d.ts",
     "types/index.d.ts",
