@@ -154,7 +154,7 @@ export default class DevServer extends Server {
 
           if (tsconfigPaths.includes(fileName)) {
             if (fileName.endsWith('tsconfig.json')) {
-              enabledTypeScript = true
+              //enabledTypeScript = true
             }
             if (watchTimeChange) {
               tsconfigChange = true
@@ -170,7 +170,7 @@ export default class DevServer extends Server {
           }
 
           if (fileName.endsWith('.ts')) {
-            enabledTypeScript = true
+            //enabledTypeScript = true
           }
         }
 
