@@ -15,9 +15,6 @@
     "future/*.d.ts",
     "legacy/*.d.ts",
     "types/compiled.d.ts",
-    "tsup.config.ts",
-    "node_modules",
-    "builders",
-    "src"
+    "node_modules"
   ]
 }
