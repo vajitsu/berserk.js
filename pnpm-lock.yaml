@@ -238,7 +238,10 @@ importers:
     dependencies:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       '@jujutsu/discord': link:../jujutsu-discord
+=======
+>>>>>>> aa4814dba8fea08911dd7584b70f688be7a8aa15
 =======
 >>>>>>> aa4814dba8fea08911dd7584b70f688be7a8aa15
 =======
@@ -11389,13 +11392,7 @@ packages:
   /source-map/0.7.4:
     resolution: {integrity: sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==}
     engines: {node: '>= 8'}
-<<<<<<< HEAD
-=======
     dev: true
-<<<<<<< HEAD
->>>>>>> aa4814dba8fea08911dd7584b70f688be7a8aa15
-=======
->>>>>>> aa4814dba8fea08911dd7584b70f688be7a8aa15
 
   /spawndamnit/2.0.0:
     resolution: {integrity: sha512-j4JKEcncSjFlqIwU5L/rp2N5SIPsdxaRsIv678+TZxZ0SRDJTm8JrxJMjE/XuiEZNEir3S8l0Fa3Ke339WI4qA==}
