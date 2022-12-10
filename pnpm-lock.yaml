@@ -52,7 +52,6 @@ importers:
       '@babel/eslint-parser': 7.18.2_uxoojzahptggrua2tvdiqlh7xm
       '@babel/generator': 7.18.0
       '@changesets/cli': 2.25.2
-      '@napi-rs/cli': 2.13.2
       '@sapphire/shapeshift': 3.7.0
       '@swc/cli': 0.1.55_@swc+core@1.2.203
       '@swc/core': 1.2.203
@@ -239,7 +238,10 @@ importers:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       '@jujutsu/discord': link:../jujutsu-discord
+=======
+>>>>>>> aa4814dba8fea08911dd7584b70f688be7a8aa15
 =======
 >>>>>>> aa4814dba8fea08911dd7584b70f688be7a8aa15
 =======

@@ -36,7 +36,6 @@
     ]
   },
   "dependencies": {
-    "@jujutsu/discord": "workspace:*",
     "@swc/helpers": "latest",
     "discord.js": "latest"
   },
