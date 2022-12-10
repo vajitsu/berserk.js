@@ -1,16 +1,16 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import type { CommandFileComplete as CommandInfo } from '../index'
 import { join as pathJoin } from 'path'
-import { bundle as spack } from '@swc/core'
+import { bundle as spack, transform } from 'jujutsu/dist/compiled/@swc/core'
 import { mkdirp } from 'fs-extra'
 import { promises } from 'fs'
-import * as swc from '../swc'
 import { SERVER_DIRECTORY, SWC_CONFIG } from '../../lib/constants'
 import { LoadedEnvFiles, processEnv } from '../../lib/env'
 import { escapeStringRegexp } from '../../lib/escape-regexp'
 import { isNumber } from 'jujutsu/dist/compiled/lodash'
 import findUp from 'jujutsu/dist/compiled/find-up'
 import { nanoid } from 'jujutsu/dist/compiled/nanoid'
+import { Module } from 'module'
 
 export default async function compileCommands(
   commands: Set<string>,
@@ -52,13 +52,28 @@ export default async function compileCommands(
     const packageJsonPath = await findUp('package.json', { cwd: dir })
     if (packageJsonPath) pkgJson = require(packageJsonPath)
 
+    const nodeModules = Module.builtinModules
+      .filter((mod) => !!require(mod))
+      .map((mod) => {
+        try {
+          const m = require(`node:${mod}`)
+          if (!m) return mod
+          return `node:${mod}`
+        } catch {
+          return mod
+        }
+      })
+
     const bundled = await spack({
       externalModules:
         pkgJson && pkgJson.dependencies
-          ? Object.keys(pkgJson.dependencies)
-              .filter((dep) => !dep.startsWith('@types'))
-              .filter((dep) => !!require(dep))
-          : [],
+          ? [
+              ...Object.keys(pkgJson.dependencies)
+                .filter((dep) => !dep.startsWith('@types'))
+                .filter((dep) => !!require(dep)),
+              ...nodeModules,
+            ]
+          : [...nodeModules],
       mode: 'production',
       target: 'node',
       entry: command.absolutePath,
@@ -89,7 +104,7 @@ export default async function compileCommands(
       ? bundled['command.ts'].code
       : Object.values(bundled)[0].code
 
-    const transformed = await swc.transform(
+    const transformed = await transform(
       code.concat(
         `exports.__name = "${
           command.name

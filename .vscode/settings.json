@@ -11,8 +11,5 @@
     "node_modules": true,
     "*[!test]**/node_modules": true
   },
-  "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#ff0000"
-  },
   "editor.tabSize": 2
 }

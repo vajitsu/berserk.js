@@ -95,6 +95,34 @@ export async function ncc_gradient_string(task, opts) {
     .ncc({ packageName: 'gradient-string', externals })
     .target('compiled/gradient-string')
 }
+externals['dotenv'] = 'jujutsu/dist/compiled/dotenv'
+export async function ncc_dotenv(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('dotenv')))
+    .ncc({ packageName: 'dotenv', externals })
+    .target('compiled/dotenv')
+}
+externals['dotenv-expand'] = 'jujutsu/dist/compiled/dotenv-expand'
+export async function ncc_dotenv_expand(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('dotenv-expand')))
+    .ncc({ packageName: 'dotenv-expand', externals })
+    .target('compiled/dotenv-expand')
+}
+externals['esm'] = 'jujutsu/dist/compiled/esm'
+export async function ncc_esm(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('esm')))
+    .ncc({ packageName: 'esm', externals })
+    .target('compiled/esm')
+}
+externals['@swc/core'] = 'jujutsu/dist/compiled/@swc/core'
+export async function ncc_swc_core(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('@swc/core')))
+    .ncc({ packageName: '@swc/core', externals })
+    .target('compiled/@swc/core')
+}
 // eslint-disable-next-line camelcase
 externals['chalk'] = 'jujutsu/dist/compiled/chalk'
 export async function ncc_chalk(task, opts) {
@@ -506,6 +534,10 @@ export async function ncc(task, opts) {
     .clear('compiled')
     .parallel(
       [
+        'ncc_dotenv',
+        'ncc_dotenv_expand',
+        'ncc_esm',
+        'ncc_swc_core',
         'ncc_watchpack',
         'ncc_chalk',
         'ncc_node_fetch',

@@ -35,6 +35,5 @@ examples/**/.env*.local
 .turbo
 apps
 examples
-tsup.config.ts
-hyper.js
 packages/cli
+test.js

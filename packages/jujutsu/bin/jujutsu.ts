@@ -2,7 +2,7 @@
 /* Based on https://github.com/vercel/next.js/blob/canary/packages/next/bin/next.ts */
 import { commands } from '../lib/commands'
 import * as log from '../build/output/log'
-import arg from 'arg'
+import arg from 'jujutsu/dist/compiled/arg/index.js'
 ;['discord.js'].forEach((dependency) => {
   try {
     // When 'npm link' is used it checks the clone location. Not the project.

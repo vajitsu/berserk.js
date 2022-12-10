@@ -7,6 +7,7 @@ import Bot from '../../discord/bot'
 import { UnwrapPromise } from '../../lib/coalesced-function'
 import { PHASE_DEVELOPMENT_SERVER } from '../../lib/constants'
 import { loadEnvConfig } from '../../lib/env'
+import { fileExists } from '../../lib/file-exists'
 import { recursiveReadDir } from '../../lib/recursive-readdir'
 import { flushAllTraces, setGlobal } from '../../trace'
 import { JujutsuConfigComplete } from '../config-shared'
@@ -90,16 +91,17 @@ export default class DevServer extends Server {
         ''
       )
 
-      const appFiles = this.appDir
-        ? [
-            ...(await recursiveReadDir(this.appDir, regex_commands)).map(
-              (file) => pathJoin(this.dir, 'app', file)
-            ),
-            ...(await recursiveReadDir(this.appDir, regex_events)).map((file) =>
-              pathJoin(this.dir, 'app', file)
-            ),
-          ]
-        : []
+      const appFiles =
+        this.appDir && (await fileExists(this.appDir, 'directory'))
+          ? [
+              ...(await recursiveReadDir(this.appDir, regex_commands)).map(
+                (file) => pathJoin(this.dir, 'app', file)
+              ),
+              ...(await recursiveReadDir(this.appDir, regex_events)).map(
+                (file) => pathJoin(this.dir, 'app', file)
+              ),
+            ]
+          : []
       files.push(...appFiles)
 
       // tsconfig/jsonfig paths hot-reloading
@@ -154,7 +156,7 @@ export default class DevServer extends Server {
 
           if (tsconfigPaths.includes(fileName)) {
             if (fileName.endsWith('tsconfig.json')) {
-              enabledTypeScript = true
+              //enabledTypeScript = true
             }
             if (watchTimeChange) {
               tsconfigChange = true
@@ -170,7 +172,7 @@ export default class DevServer extends Server {
           }
 
           if (fileName.endsWith('.ts')) {
-            enabledTypeScript = true
+            //enabledTypeScript = true
           }
         }
 

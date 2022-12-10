@@ -1,4 +1,4 @@
-import ciEnvironment from 'ci-info'
+import ciEnvironment from 'jujutsu/dist/compiled/ci-info'
 
 const { isCI: _isCI, name: _name } = ciEnvironment
 

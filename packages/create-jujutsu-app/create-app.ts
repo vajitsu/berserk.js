@@ -227,8 +227,6 @@ export async function createApp({
 
   console.log(`${chalk.green('Success!')} Created ${appName} at ${appPath}`)
 
-  console.log(hasPackageJson)
-
   if (hasPackageJson) {
     console.log('Inside that directory, you can run several commands:')
     console.log()

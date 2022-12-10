@@ -12,11 +12,6 @@ import path from 'path'
 import startServer from '../client/lib/start-server'
 import loadConfig from '../client/config'
 import build from '../build'
-import {
-  lockfilePatchPromise,
-  teardownCrashReporter,
-  teardownTraceSubscriber,
-} from '../build/swc'
 import { flushAllTraces } from '../trace'
 
 let sessionStopHandled = false
@@ -159,11 +154,8 @@ const jujutsuDev: cliCommand = async (argv) => {
   const conf = await loadConfig(PHASE_DEVELOPMENT_SERVER, dir)
 
   await build(dir, null, true).finally(async () => {
-    // Execute here as this is where 'finally' is called
-    await lockfilePatchPromise.cur
+    // Ensure all traces are flushed before finishing the command
     await flushAllTraces()
-    teardownTraceSubscriber()
-    teardownCrashReporter()
 
     startServer(
       {

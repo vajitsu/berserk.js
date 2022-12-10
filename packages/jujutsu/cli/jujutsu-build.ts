@@ -5,7 +5,7 @@ import { printAndExit } from '../lib/utils'
 import isError from '../lib/is-error'
 import { existsSync } from 'fs'
 import build from '../build'
-import arg from 'arg'
+import arg from 'jujutsu/dist/compiled/arg/index.js'
 
 const jujutsuBuild: cliCommand = (argv) => {
   const validArgs: arg.Spec = {

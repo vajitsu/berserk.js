@@ -8,6 +8,14 @@ import chalk from 'chalk'
 
 import { GetTemplateFileArgs, InstallTemplateArgs } from './types'
 
+// @ts-ignore
+import { platformArchTriples } from 'jujutsu/dist/compiled/@napi-rs/triples'
+import { platform, arch } from 'os'
+
+const ArchName = arch()
+const PlatformName = platform()
+const triples = platformArchTriples[PlatformName][ArchName] || []
+
 /**
  * Get the file path for a given file in a template, e.g. "jujutsu.config.js".
  */
