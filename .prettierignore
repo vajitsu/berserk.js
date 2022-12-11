@@ -7,3 +7,4 @@ packages/jujutsu/compiled/**
 lerna.json
 pnpm-lock.yaml
 package.json
+packages/jujutsu-discord/target/**

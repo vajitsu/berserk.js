@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { JujutsuConfigComplete } from '../client/config-shared'
+import { JujutsuConfigComplete } from '../server/config-shared'
 import { trace, flushAllTraces, setGlobal } from '../trace'
 import { AppManifest, createAppManifest } from './entries'
 import { recursiveDelete } from '../lib/recursive-delete'
@@ -18,7 +18,7 @@ import * as ciEnvironment from '../lib/ci-info'
 import title from 'jujutsu/dist/compiled/title'
 import { isWriteable } from './is-writeable'
 import { loadEnvConfig } from '../lib/env'
-import loadConfig from '../client/config'
+import loadConfig from '../server/config'
 import isError from '../lib/is-error'
 import * as Log from './output/log'
 import { promises } from 'fs'

@@ -2,15 +2,15 @@
 import { getProjectDir } from '../lib/get-project-dir'
 import { CONFIG_FILES, PHASE_DEVELOPMENT_SERVER } from '../lib/constants'
 import arg from 'jujutsu/dist/compiled/arg/index.js'
-import { printAndExit } from '../client/lib/utils'
+import { printAndExit } from '../server/lib/utils'
 import { JujutsuConfig } from '../types'
 import { cliCommand } from '../lib/commands'
 import * as Log from '../build/output/log'
 import { existsSync, watchFile } from 'fs'
 import isError from '../lib/is-error'
 import path from 'path'
-import startServer from '../client/lib/start-server'
-import loadConfig from '../client/config'
+import startServer from '../server/lib/start-server'
+import loadConfig from '../server/config'
 import build from '../build'
 import { flushAllTraces } from '../trace'
 
@@ -75,7 +75,7 @@ const jujutsuDev: cliCommand = async (argv) => {
 
   async function validateJujutsuConfig() {
     const { defaultConfig } =
-      require('../client/config-shared') as typeof import('../client/config-shared')
+      require('../server/config-shared') as typeof import('../server/config-shared')
     const { interopDefault } =
       require('../lib/interop-default') as typeof import('../lib/interop-default')
 

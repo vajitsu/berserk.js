@@ -1,5 +1,5 @@
 import { Client, ClientOptions } from 'jujutsu/dist/compiled/discord.js'
-import { DiscordConfig } from '../client/config-shared'
+import { DiscordConfig } from '../server/config-shared'
 import SlashCommandManager from './lib/managers/slash-commands'
 import { EventEmitter } from 'jujutsu/dist/compiled/ws'
 import EventManager from './lib/managers/events'

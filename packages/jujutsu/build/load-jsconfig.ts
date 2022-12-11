@@ -23,7 +23,7 @@ SOFTWARE.
 */
 import path from 'path'
 import { fileExists } from '../lib/file-exists'
-import { JujutsuConfigComplete } from '../client/config-shared'
+import { JujutsuConfigComplete } from '../server/config-shared'
 import { getTypeScriptConfiguration } from '../lib/typescript/get-configuration'
 import * as Log from './output/log'
 import { readFileSync } from 'fs'

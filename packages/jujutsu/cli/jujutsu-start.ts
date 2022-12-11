@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 import arg from 'jujutsu/dist/compiled/arg/index.js'
-import startServer from '../client/lib/start-server'
+import startServer from '../server/lib/start-server'
 import isError from '../lib/is-error'
 import { getProjectDir } from '../lib/get-project-dir'
 import { cliCommand } from '../lib/commands'
 import { printAndExit } from '../lib/utils'
 import { PHASE_PRODUCTION_SERVER } from '../lib/constants'
-import loadConfig from '../client/config'
+import loadConfig from '../server/config'
 
 const jujutsuStart: cliCommand = async (argv) => {
   const validArgs: arg.Spec = {

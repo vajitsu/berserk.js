@@ -5,7 +5,7 @@ import childProcess from 'child_process'
 import chalk from 'jujutsu/dist/compiled/chalk'
 import arg from 'jujutsu/dist/compiled/arg/index.js'
 import fetch from 'jujutsu/dist/compiled/node-fetch'
-import { printAndExit } from '../client/lib/utils'
+import { printAndExit } from '../server/lib/utils'
 import { cliCommand } from '../lib/commands'
 import isError from '../lib/is-error'
 

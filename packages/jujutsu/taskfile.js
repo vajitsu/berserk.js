@@ -359,7 +359,7 @@ export async function ncc_segment_ajv_human_errors(task, opts) {
 
 // eslint-disable-next-line camelcase
 export async function compile_config_schema(task, opts) {
-  const { configSchema } = require('./dist/client/config-schema')
+  const { configSchema } = require('./dist/server/config-schema')
   // eslint-disable-next-line
   const Ajv = require('ajv')
   // eslint-disable-next-line
@@ -470,14 +470,6 @@ export async function jujutsubuild_esm(task, opts) {
     .swc('server', { dev: opts.dev, esm: true })
     .target('dist/esm/build')
 }
-
-export async function main(task, opts) {
-  await task
-    .source(opts.src || 'src/index.ts')
-    .swc('server', { dev: opts.dev })
-    .target('dist')
-}
-
 export async function server(task, opts) {
   await task
     .source(opts.src || 'server/**/*.+(js|ts|tsx)')
@@ -579,8 +571,8 @@ export async function compile(task, opts) {
     [
       'cli',
       'bin',
-      'client',
-      'client_esm',
+      'server',
+      'server_esm',
       'jujutsubuild',
       'jujutsubuild_esm',
       'lib',

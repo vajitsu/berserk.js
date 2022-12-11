@@ -11,11 +11,12 @@
   ],
   "scripts": {
     "artifacts": "napi artifacts",
-    "build": "napi build --platform --release --js false native",
+    "build:native": "napi build --platform --release --js false native",
     "build:debug": "napi build --platform",
     "prepublishOnly": "napi prepublish -t npm",
     "version": "napi version",
-    "build:bindings": "swc bindings.ts -o bindings.js"
+    "build:bindings": "swc bindings.ts -o bindings.js",
+    "build": "run-p build:native build:bindings"
   },
   "napi": {
     "name": "jujutsu-discord",
