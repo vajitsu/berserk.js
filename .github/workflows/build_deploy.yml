@@ -101,7 +101,7 @@ jobs:
           path: ./*
           key: ${{ github.sha }}-${{ github.run_number }}
 
-      - run: echo "::set-output name=DISCORD_CHANGE::$(node scripts/run-for-change.js --type jujutsu-discord --exec echo 'yup')"
+      - run: echo "::set-output name=DISCORD_CHANGE::$(node scripts/run-for-change.js --type discord-jujutsu --exec echo 'yup')"
         id: discord-change
 
       - run: echo ${{ steps.discord-change.outputs.DISCORD_CHANGE }}
