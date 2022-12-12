@@ -1,393 +1,379 @@
-import path from 'path'
-import { pathToFileURL } from 'url'
-import { platform, arch } from 'os'
-import { platformArchTriples } from 'next/dist/compiled/@napi-rs/triples'
-import * as Log from '../output/log'
-import { getParserOptions } from './options'
-import { patchIncorrectLockfile } from '../../lib/patch-incorrect-lockfile'
-import { version as nextVersion } from 'next/package.json'
-
-const ArchName = arch()
-const PlatformName = platform()
-const triples = platformArchTriples[PlatformName][ArchName] || []
-
-// Allow to specify an absolute path to the custom turbopack binary to load.
-// If one of env variables is set, `loadNative` will try to use any turbo-* interfaces from specified
-// binary instead. This will not affect existing swc's transform, or other interfaces. This is thin,
-// naive interface - `loadBindings` will not validate neither path nor the binary.
-//
-// Note these are internal flag: there's no stability, feature gaurentee.
-const __INTERNAL_CUSTOM_TURBOPACK_BINARY =
-  process.env.__INTERNAL_CUSTOM_TURBOPACK_BINARY
-const __INTERNAL_CUSTOM_TURBOPACK_BINDINGS =
-  process.env.__INTERNAL_CUSTOM_TURBOPACK_BINDINGS
-export const __isCustomTurbopackBinary = async () => {
-  if (
-    !!__INTERNAL_CUSTOM_TURBOPACK_BINARY &&
-    !!__INTERNAL_CUSTOM_TURBOPACK_BINDINGS
-  ) {
-    throw new Error('Cannot use TURBOPACK_BINARY and TURBOPACK_BINDINGS both')
-  }
-
-  return (
-    !!__INTERNAL_CUSTOM_TURBOPACK_BINARY ||
-    !!__INTERNAL_CUSTOM_TURBOPACK_BINDINGS
-  )
+/* eslint-disable no-shadow */
+/* eslint-disable no-func-assign */
+Object.defineProperty(exports, '__esModule', {
+  value: true,
+})
+function _export(target, all) {
+  for (var name in all)
+    Object.defineProperty(target, name, {
+      enumerable: true,
+      get: all[name],
+    })
 }
-
-let nativeBindings
-let wasmBindings
-let pendingBindings
-let swcTraceFlushGuard
-let swcCrashReporterFlushGuard
-export const lockfilePatchPromise = {}
-
-export async function loadBindings() {
-  if (pendingBindings) {
-    return pendingBindings
-  }
-  const isCustomTurbopack = await __isCustomTurbopackBinary()
-  pendingBindings = new Promise(async (resolve, reject) => {
-    if (!lockfilePatchPromise.cur) {
-      // always run lockfile check once so that it gets patched
-      // even if it doesn't fail to load locally
-      lockfilePatchPromise.cur = patchIncorrectLockfile(process.cwd()).catch(
-        console.error
-      )
-    }
-
-    let attempts = []
-
-    try {
-      return resolve(loadNative(isCustomTurbopack))
-    } catch (a) {
-      attempts = attempts.concat(a)
-    }
-
-    logLoadFailure(attempts, true)
-  })
-  return pendingBindings
-}
-
-function loadBindingsSync() {
-  let attempts = []
+_export(exports, {
+  lockfilePatchPromise: function () {
+    return lockfilePatchPromise
+  },
+  loadBindings: function () {
+    return loadBindings
+  },
+})
+var _os = require('os')
+var _triples = require('jujutsu/dist/compiled/@napi-rs/triples')
+var _log = /*#__PURE__*/ _interopRequireWildcard(
+  // eslint-disable-next-line import/no-extraneous-dependencies
+  require('jujutsu/dist/build/output/log')
+)
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
-    return loadNative()
-  } catch (a) {
-    attempts = attempts.concat(a)
+    var info = gen[key](arg)
+    var value = info.value
+  } catch (error) {
+    reject(error)
+    return
   }
-
-  // we can leverage the wasm bindings if they are already
-  // loaded
-  if (wasmBindings) {
-    return wasmBindings
+  if (info.done) {
+    resolve(value)
+  } else {
+    Promise.resolve(value).then(_next, _throw)
   }
-
-  logLoadFailure(attempts)
 }
-
-let loggingLoadFailure = false
-
-function logLoadFailure(attempts, triedWasm = false) {
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+      args = arguments
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args)
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'next', value)
+      }
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'throw', err)
+      }
+      _next(undefined)
+    })
+  }
+}
+function _getRequireWildcardCache(nodeInterop) {
+  if (typeof WeakMap !== 'function') return null
+  var cacheBabelInterop = new WeakMap()
+  var cacheNodeInterop = new WeakMap()
+  return (_getRequireWildcardCache = function (nodeInterop) {
+    return nodeInterop ? cacheNodeInterop : cacheBabelInterop
+  })(nodeInterop)
+}
+function _interopRequireWildcard(obj, nodeInterop) {
+  if (!nodeInterop && obj && obj.__esModule) {
+    return obj
+  }
+  if (obj === null || (typeof obj !== 'object' && typeof obj !== 'function')) {
+    return {
+      default: obj,
+    }
+  }
+  var cache = _getRequireWildcardCache(nodeInterop)
+  if (cache && cache.has(obj)) {
+    return cache.get(obj)
+  }
+  var newObj = {}
+  var hasPropertyDescriptor =
+    Object.defineProperty && Object.getOwnPropertyDescriptor
+  for (var key in obj) {
+    if (key !== 'default' && Object.prototype.hasOwnProperty.call(obj, key)) {
+      var desc = hasPropertyDescriptor
+        ? Object.getOwnPropertyDescriptor(obj, key)
+        : null
+      if (desc && (desc.get || desc.set)) {
+        Object.defineProperty(newObj, key, desc)
+      } else {
+        newObj[key] = obj[key]
+      }
+    }
+  }
+  newObj.default = obj
+  if (cache) {
+    cache.set(obj, newObj)
+  }
+  return newObj
+}
+var __generator =
+  (void 0 && (void 0).__generator) ||
+  function (thisArg, body) {
+    var f,
+      y,
+      t,
+      g,
+      _ = {
+        label: 0,
+        sent: function () {
+          if (t[0] & 1) throw t[1]
+          return t[1]
+        },
+        trys: [],
+        ops: [],
+      }
+    return (
+      (g = {
+        next: verb(0),
+        throw: verb(1),
+        return: verb(2),
+      }),
+      typeof Symbol === 'function' &&
+        (g[Symbol.iterator] = function () {
+          return this
+        }),
+      g
+    )
+    function verb(n) {
+      return function (v) {
+        return step([n, v])
+      }
+    }
+    function step(op) {
+      if (f) throw new TypeError('Generator is already executing.')
+      while (_)
+        try {
+          if (
+            ((f = 1),
+            y &&
+              (t =
+                op[0] & 2
+                  ? y['return']
+                  : op[0]
+                  ? y['throw'] || ((t = y['return']) && t.call(y), 0)
+                  : y.next) &&
+              !(t = t.call(y, op[1])).done)
+          )
+            return t
+          if (((y = 0), t)) op = [op[0] & 2, t.value]
+          switch (op[0]) {
+            case 0:
+            case 1:
+              t = op
+              break
+            case 4:
+              _.label++
+              return {
+                value: op[1],
+                done: false,
+              }
+            case 5:
+              _.label++
+              y = op[1]
+              op = [0]
+              continue
+            case 7:
+              op = _.ops.pop()
+              _.trys.pop()
+              continue
+            default:
+              if (
+                !((t = _.trys), (t = t.length > 0 && t[t.length - 1])) &&
+                (op[0] === 6 || op[0] === 2)
+              ) {
+                _ = 0
+                continue
+              }
+              if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                _.label = op[1]
+                break
+              }
+              if (op[0] === 6 && _.label < t[1]) {
+                _.label = t[1]
+                t = op
+                break
+              }
+              if (t && _.label < t[2]) {
+                _.label = t[2]
+                _.ops.push(op)
+                break
+              }
+              if (t[2]) _.ops.pop()
+              _.trys.pop()
+              continue
+          }
+          op = body.call(thisArg, _)
+        } catch (e) {
+          op = [6, e]
+          y = 0
+        } finally {
+          f = t = 0
+        }
+      if (op[0] & 5) throw op[1]
+      return {
+        value: op[0] ? op[1] : void 0,
+        done: true,
+      }
+    }
+  }
+var ArchName = (0, _os.arch)()
+var PlatformName = (0, _os.platform)()
+var triples = _triples.platformArchTriples[PlatformName][ArchName] || []
+var nativeBindings
+var pendingBindings
+var lockfilePatchPromise = {}
+var loggingLoadFailure = false
+function logLoadFailure(attempts) {
   // make sure we only emit the event and log the failure once
   if (loggingLoadFailure) return
   loggingLoadFailure = true
-
-  for (let attempt of attempts) {
-    Log.warn(attempt)
+  var _iteratorNormalCompletion = true,
+    _didIteratorError = false,
+    _iteratorError = undefined
+  try {
+    for (
+      var _iterator = attempts[Symbol.iterator](), _step;
+      !(_iteratorNormalCompletion = (_step = _iterator.next()).done);
+      _iteratorNormalCompletion = true
+    ) {
+      var attempt = _step.value
+      _log.warn(attempt)
+    }
+  } catch (err) {
+    _didIteratorError = true
+    _iteratorError = err
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return != null) {
+        _iterator.return()
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError
+      }
+    }
   }
 }
-
-export function loadNative(isCustomTurbopack = false) {
+function loadNative() {
   if (nativeBindings) {
     return nativeBindings
   }
-
-  let bindings
-  let attempts = []
-
-  for (const triple of triples) {
-    try {
-      bindings = require(`@jujutsu/discord/native/jujutsu-discord.${triple.platformArchABI}.node`)
-      Log.info('Using locally built binary of @jujutsu/discord')
-      break
-    } catch (e) {}
-  }
-
-  if (!bindings) {
-    for (const triple of triples) {
-      let pkg = `@jujutsu/discord-${triple.platformArchABI}`
+  var bindings
+  var attempts = []
+  var _iteratorNormalCompletion = true,
+    _didIteratorError = false,
+    _iteratorError = undefined
+  try {
+    for (
+      var _iterator = triples[Symbol.iterator](), _step;
+      !(_iteratorNormalCompletion = (_step = _iterator.next()).done);
+      _iteratorNormalCompletion = true
+    ) {
+      var triple = _step.value
       try {
-        bindings = require(pkg)
+        bindings = require('./native/jujutsu-discord.'.concat(
+          triple.platformArchABI,
+          '.node'
+        ))
+        _log.info('Using locally built binary of @jujutsu/discord')
         break
-      } catch (e) {
-        if (e?.code === 'MODULE_NOT_FOUND') {
-          attempts.push(`Attempted to load ${pkg}, but it was not installed`)
-        } else {
-          attempts.push(
-            `Attempted to load ${pkg}, but an error occurred: ${e.message ?? e}`
-          )
+      } catch (e) {}
+    }
+  } catch (err) {
+    _didIteratorError = true
+    _iteratorError = err
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return != null) {
+        _iterator.return()
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError
+      }
+    }
+  }
+  if (!bindings) {
+    var _iteratorNormalCompletion1 = true,
+      _didIteratorError1 = false,
+      _iteratorError1 = undefined
+    try {
+      for (
+        var _iterator1 = triples[Symbol.iterator](), _step1;
+        !(_iteratorNormalCompletion1 = (_step1 = _iterator1.next()).done);
+        _iteratorNormalCompletion1 = true
+      ) {
+        var triple1 = _step1.value
+        var pkg = '@jujutsu/discord-'.concat(triple1.platformArchABI)
+        try {
+          bindings = require(pkg)
+          break
+        } catch (e1) {
+          if (
+            (e1 === null || e1 === void 0 ? void 0 : e1.code) ===
+            'MODULE_NOT_FOUND'
+          ) {
+            attempts.push(
+              'Attempted to load '.concat(pkg, ', but it was not installed')
+            )
+          } else {
+            var _e_message
+            attempts.push(
+              'Attempted to load '
+                .concat(pkg, ', but an error occurred: ')
+                .concat(
+                  (_e_message = e1.message) !== null && _e_message !== void 0
+                    ? _e_message
+                    : e1
+                )
+            )
+          }
+        }
+      }
+    } catch (err) {
+      _didIteratorError1 = true
+      _iteratorError1 = err
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion1 && _iterator1.return != null) {
+          _iterator1.return()
+        }
+      } finally {
+        if (_didIteratorError1) {
+          throw _iteratorError1
         }
       }
     }
   }
-
-  return bindings
-
   if (bindings) {
-    // Initialize crash reporter, as earliest as possible from any point of import.
-    // The first-time import to next-swc is not predicatble in the import tree of next.js, which makes
-    // we can't rely on explicit manual initialization as similar to trace reporter.
-    if (!swcCrashReporterFlushGuard) {
-      // Crash reports in next-swc should be treated in the same way we treat telemetry to opt out.
-      /* TODO: temporarily disable initialization while confirming logistics.
-      let telemetry = new Telemetry({ distDir: process.cwd() })
-      if (telemetry.isEnabled) {
-        swcCrashReporterFlushGuard = bindings.initCrashReporter?.()
-      }*/
-    }
-
-    nativeBindings = {
-      isWasm: false,
-      transform(src, options) {
-        const isModule =
-          typeof src !== undefined &&
-          typeof src !== 'string' &&
-          !Buffer.isBuffer(src)
-        options = options || {}
-
-        if (options?.jsc?.parser) {
-          options.jsc.parser.syntax = options.jsc.parser.syntax ?? 'ecmascript'
-        }
-
-        return bindings.transform(
-          isModule ? JSON.stringify(src) : src,
-          isModule,
-          toBuffer(options)
-        )
-      },
-
-      transformSync(src, options) {
-        if (typeof src === undefined) {
-          throw new Error(
-            "transformSync doesn't implement reading the file from filesystem"
-          )
-        } else if (Buffer.isBuffer(src)) {
-          throw new Error(
-            "transformSync doesn't implement taking the source code as Buffer"
-          )
-        }
-        const isModule = typeof src !== 'string'
-        options = options || {}
-
-        if (options?.jsc?.parser) {
-          options.jsc.parser.syntax = options.jsc.parser.syntax ?? 'ecmascript'
-        }
-
-        return bindings.transformSync(
-          isModule ? JSON.stringify(src) : src,
-          isModule,
-          toBuffer(options)
-        )
-      },
-
-      minify(src, options) {
-        return bindings.minify(toBuffer(src), toBuffer(options ?? {}))
-      },
-
-      minifySync(src, options) {
-        return bindings.minifySync(toBuffer(src), toBuffer(options ?? {}))
-      },
-
-      parse(src, options) {
-        return bindings.parse(src, toBuffer(options ?? {}))
-      },
-
-      getTargetTriple: bindings.getTargetTriple,
-      initCustomTraceSubscriber: bindings.initCustomTraceSubscriber,
-      teardownTraceSubscriber: bindings.teardownTraceSubscriber,
-      teardownCrashReporter: bindings.teardownCrashReporter,
-      turbo: {
-        startDev: (options) => {
-          const devOptions = {
-            ...options,
-            noOpen: options.noOpen ?? true,
-          }
-
-          if (!isCustomTurbopack) {
-            bindings.startTurboDev(toBuffer(devOptions))
-          } else if (!!__INTERNAL_CUSTOM_TURBOPACK_BINARY) {
-            console.warn(
-              `Loading custom turbopack binary from ${__INTERNAL_CUSTOM_TURBOPACK_BINARY}`
-            )
-
-            return new Promise((resolve, reject) => {
-              const spawn = require('next/dist/compiled/cross-spawn')
-              const args = []
-
-              Object.entries(devOptions).forEach(([key, value]) => {
-                let cli_key = `--${key.replace(
-                  /[A-Z]/g,
-                  (m) => '-' + m.toLowerCase()
-                )}`
-                if (key === 'dir') {
-                  args.push(value)
-                } else if (typeof value === 'boolean' && value === true) {
-                  args.push(cli_key)
-                } else if (typeof value !== 'boolean' && !!value) {
-                  args.push(cli_key, value)
-                }
-              })
-
-              console.warn(`Running turbopack with args: [${args.join(' ')}]`)
-
-              const child = spawn(__INTERNAL_CUSTOM_TURBOPACK_BINARY, args, {
-                stdio: 'inherit',
-                env: {
-                  ...process.env,
-                },
-              })
-              child.on('message', (message) => {
-                console.log(message)
-              })
-              child.on('close', (code) => {
-                if (code !== 0) {
-                  reject({
-                    command: `${__INTERNAL_CUSTOM_TURBOPACK_BINARY} ${args.join(
-                      ' '
-                    )}`,
-                  })
-                  return
-                }
-                resolve(0)
-              })
-            })
-          } else if (!!__INTERNAL_CUSTOM_TURBOPACK_BINDINGS) {
-            console.warn(
-              `Loading custom turbopack bindings from ${__INTERNAL_CUSTOM_TURBOPACK_BINARY}`
-            )
-            console.warn(`Running turbopack with args: `, devOptions)
-
-            require(__INTERNAL_CUSTOM_TURBOPACK_BINDINGS).startDev(devOptions)
-          }
-        },
-        startTrace: (options = {}) =>
-          bindings.runTurboTracing(toBuffer({ exact: true, ...options })),
-      },
-      mdx: {
-        compile: (src, options) =>
-          bindings.mdxCompile(src, toBuffer(options ?? {})),
-        compileSync: (src, options) =>
-          bindings.mdxCompileSync(src, toBuffer(options ?? {})),
-      },
-    }
+    nativeBindings = bindings
     return nativeBindings
   }
-
   throw attempts
 }
-
-function toBuffer(t) {
-  return Buffer.from(JSON.stringify(t))
+function loadBindings() {
+  return _loadBindings.apply(this, arguments)
 }
-
-export async function isWasm() {
-  let bindings = await loadBindings()
-  return bindings.isWasm
-}
-
-export async function transform(src, options) {
-  let bindings = await loadBindings()
-  return bindings.transform(src, options)
-}
-
-export function transformSync(src, options) {
-  let bindings = loadBindingsSync()
-  return bindings.transformSync(src, options)
-}
-
-export async function minify(src, options) {
-  let bindings = await loadBindings()
-  return bindings.minify(src, options)
-}
-
-export function minifySync(src, options) {
-  let bindings = loadBindingsSync()
-  return bindings.minifySync(src, options)
-}
-
-export async function parse(src, options) {
-  let bindings = await loadBindings()
-  let parserOptions = getParserOptions(options)
-  return bindings.parse(src, parserOptions).then((astStr) => JSON.parse(astStr))
-}
-
-export function getBinaryMetadata() {
-  let bindings
-  try {
-    bindings = loadNative()
-  } catch (e) {
-    // Suppress exceptions, this fn allows to fail to load native bindings
-  }
-
-  return {
-    target: bindings?.getTargetTriple?.(),
-  }
-}
-
-/**
- * Initialize trace subscriber to emit traces.
- *
- */
-export const initCustomTraceSubscriber = (() => {
-  return (filename) => {
-    if (!swcTraceFlushGuard) {
-      // Wasm binary doesn't support trace emission
-      let bindings = loadNative()
-      swcTraceFlushGuard = bindings.initCustomTraceSubscriber(filename)
-    }
-  }
-})()
-
-/**
- * Teardown swc's trace subscriber if there's an initialized flush guard exists.
- *
- * This is workaround to amend behavior with process.exit
- * (https://github.com/vercel/next.js/blob/4db8c49cc31e4fc182391fae6903fb5ef4e8c66e/packages/next/bin/next.ts#L134=)
- * seems preventing napi's cleanup hook execution (https://github.com/swc-project/swc/blob/main/crates/node/src/util.rs#L48-L51=),
- *
- * instead parent process manually drops guard when process gets signal to exit.
- */
-export const teardownTraceSubscriber = (() => {
-  let flushed = false
-  return () => {
-    if (!flushed) {
-      flushed = true
-      try {
-        let bindings = loadNative()
-        if (swcTraceFlushGuard) {
-          bindings.teardownTraceSubscriber(swcTraceFlushGuard)
-        }
-      } catch (e) {
-        // Suppress exceptions, this fn allows to fail to load native bindings
+function _loadBindings() {
+  _loadBindings = _asyncToGenerator(function () {
+    return __generator(this, function (_state) {
+      if (pendingBindings) {
+        return [2, pendingBindings]
       }
-    }
-  }
-})()
+      pendingBindings = new Promise(
+        (function () {
+          var _ref = _asyncToGenerator(function (resolve, _reject) {
+            var attempts
+            return __generator(this, function (_state) {
+              attempts = []
+              try {
+                return [2, resolve(loadNative())]
+              } catch (a) {
+                attempts = attempts.concat(a)
+              }
+              logLoadFailure(attempts)
+              return [2]
+            })
+          })
+          return function (resolve, _reject) {
+            return _ref.apply(this, arguments)
+          }
+        })()
+      )
+      return [2, pendingBindings]
+    })
+  })
+  return _loadBindings.apply(this, arguments)
+}
 
-export const teardownCrashReporter = (() => {
-  let flushed = false
-  return () => {
-    if (!flushed) {
-      flushed = true
-      try {
-        let bindings = loadNative()
-        if (swcCrashReporterFlushGuard) {
-          bindings.teardownCrashReporter(swcCrashReporterFlushGuard)
-        }
-      } catch (e) {
-        // Suppress exceptions, this fn allows to fail to load native bindings
-      }
-    }
-  }
-})()
+//# sourceMappingURL=bindings.js.map

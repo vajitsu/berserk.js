@@ -28,7 +28,9 @@ import fs from 'fs-extra'
           )
         ).version === jujutsuVersion
       ) {
-        console.log(`@jujutsu/${pkg}@${jujutsuVersion} already installed skipping`)
+        console.log(
+          `@jujutsu/${pkg}@${jujutsuVersion} already installed skipping`
+        )
         return
       }
     }

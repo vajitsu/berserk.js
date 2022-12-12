@@ -1,8 +1,8 @@
 const nextDistPath =
-  /(next[\\/]dist[\\/]shared[\\/]lib)|(next[\\/]dist[\\/]client)|(next[\\/]dist[\\/]pages)/
+  /(jujutsu[\\/]dist[\\/]shared[\\/]lib)|(jujutsu[\\/]dist[\\/]client)|(jujutsu[\\/]dist[\\/]discord)/
 
 const regeneratorRuntimePath = require.resolve(
-  'next/dist/compiled/regenerator-runtime'
+  'jujutsu/dist/compiled/regenerator-runtime'
 )
 
 export function getParserOptions({ filename, jsConfig, ...rest }) {
@@ -122,25 +122,12 @@ function getBaseSWCOptions({
     // Disable css-in-js libs (without client-only integration) transform on server layer for server components
     ...(!isServerLayer && {
       emotion: getEmotionOptions(nextConfig, development),
-      styledComponents: getStyledComponentsOptions(nextConfig, development),
     }),
     serverComponents: hasServerComponents
       ? {
           isServer: !!isServerLayer,
         }
       : undefined,
-  }
-}
-
-function getStyledComponentsOptions(nextConfig, development) {
-  let styledComponentsOptions = nextConfig?.compiler?.styledComponents
-  if (!styledComponentsOptions) {
-    return null
-  }
-
-  return {
-    ...styledComponentsOptions,
-    displayName: styledComponentsOptions.displayName ?? Boolean(development),
   }
 }
 
@@ -169,48 +156,6 @@ function getEmotionOptions(nextConfig, development) {
     sourcemap: development
       ? nextConfig?.compiler?.emotion?.sourceMap ?? true
       : false,
-  }
-}
-
-export function getJestSWCOptions({
-  isServer,
-  filename,
-  esm,
-  nextConfig,
-  jsConfig,
-  pagesDir,
-  hasServerComponents,
-  // This is not passed yet as "paths" resolving needs a test first
-  // resolvedBaseUrl,
-}) {
-  let baseOptions = getBaseSWCOptions({
-    filename,
-    jest: true,
-    development: false,
-    hasReactRefresh: false,
-    globalWindow: !isServer,
-    nextConfig,
-    jsConfig,
-    hasServerComponents,
-    // resolvedBaseUrl,
-  })
-
-  const isNextDist = nextDistPath.test(filename)
-
-  return {
-    ...baseOptions,
-    env: {
-      targets: {
-        // Targets the current version of Node.js
-        node: process.versions.node,
-      },
-    },
-    module: {
-      type: esm && !isNextDist ? 'es6' : 'commonjs',
-    },
-    disableNextSsg: true,
-    disablePageConfig: true,
-    pagesDir,
   }
 }
 

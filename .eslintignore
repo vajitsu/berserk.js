@@ -1,0 +1,8 @@
+node_modules
+**/.jujutsu/**
+**/_jujutsu/**
+**/dist/**
+packages/jujutsu/compiled/**/*
+**/__tmp__/**
+packages/create-jujutsu-app/templates/**
+packages/jujutsu-discord/src/**
