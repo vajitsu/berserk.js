@@ -4,6 +4,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "license": "MIT",
+  "private": true,
   "files": [
     "index.js",
     "index.d.ts",
@@ -11,12 +12,11 @@
   ],
   "scripts": {
     "artifacts": "napi artifacts",
-    "build:native": "napi build --platform --release --js false native",
+    "build-native": "napi build --platform --release --js false native",
     "build:debug": "napi build --platform",
     "prepublishOnly": "napi prepublish -t npm",
     "version": "napi version",
-    "build:bindings": "swc bindings.ts -o bindings.js",
-    "build": "run-p build:native build:bindings"
+    "build:bindings": "swc bindings.ts -o bindings.js"
   },
   "napi": {
     "name": "jujutsu-discord",
