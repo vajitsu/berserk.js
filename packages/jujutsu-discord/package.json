@@ -15,8 +15,7 @@
     "build-native": "napi build --platform --release --js false native",
     "build:debug": "napi build --platform",
     "prepublishOnly": "napi prepublish -t npm",
-    "version": "napi version",
-    "build:bindings": "swc bindings.ts -o bindings.js"
+    "version": "napi version"
   },
   "napi": {
     "name": "jujutsu-discord",
