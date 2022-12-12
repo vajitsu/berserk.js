@@ -20,10 +20,6 @@ body:
       required: true
   - type: input
     attributes:
-      label: What browser are you using? (if relevant)
-      description: 'Please specify the exact version. For example: Chrome 100.0.4878.0'
-  - type: input
-    attributes:
       label: How are you deploying your application? (if relevant)
       description: 'For example: jujutsu start or Hosting Platform'
   - type: textarea

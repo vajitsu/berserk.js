@@ -107,7 +107,7 @@
     "nanoid": "3.1.32",
     "next": "13.0.4",
     "node-cache": "^5.1.2",
-    "node-fetch": "3.3.0",
+    "node-fetch": "2.6.7",
     "node-watch": "^0.7.3",
     "normalize-package-data": "5.0.0",
     "ora": "4.0.4",
