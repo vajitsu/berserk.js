@@ -1,5 +1,18 @@
 #![deny(clippy::all)]
 
+use std::fmt;
+
+#[derive(Debug)]
+pub struct JujutsuError;
+
+impl fmt::Display for JujutsuError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Jujutsu Error:")
+    }
+}
+
+impl std::error::Error for JujutsuError {}
+
 extern crate colored;
 use colored::*;
 
@@ -15,8 +28,7 @@ pub fn string_to_json(string: &str) -> SerdeResult<SerdeValue> {
 
 pub fn jitter() -> f64 {
     let mut rng = rand::thread_rng();
-    let random_number = rng.gen::<f64>();
-    random_number
+    rng.gen::<f64>()
 }
 
 pub fn websocket_url(api_version: u8, encoding: &str) -> std::string::String {
@@ -55,7 +67,7 @@ pub fn heartbeat_payload() -> serde_json::Value {
     payload
 }
 
-pub fn parse_payload(message: &tungstenite::Message) -> Result<SerdeValue, ()> {
+pub fn parse_payload(message: &tungstenite::Message) -> Result<SerdeValue, JujutsuError> {
     if message.is_text() {
         let mut message_json = string_to_json(
             message
@@ -78,7 +90,7 @@ pub fn parse_payload(message: &tungstenite::Message) -> Result<SerdeValue, ()> {
             let json = r#"{ "heartbeat": true, "ack": true }"#;
 
             Ok(string_to_json(json).expect("Error while parsing payload [op = 11]"))
-        } else if message_json["t"].is_null() != true {
+        } else if !message_json["t"].is_null() {
             message_json["d"]["_trace"].take();
 
             let event_name = message_json["t"]
@@ -105,12 +117,12 @@ pub fn parse_payload(message: &tungstenite::Message) -> Result<SerdeValue, ()> {
     }
 }
 
-pub fn log_error(message: &str) -> Result<(), ()> {
+pub fn log_error(message: &str) -> Result<(), JujutsuError> {
     println!("{} - {}", "error".red(), message);
     Ok(())
 }
 
-pub fn log_info(message: &str) -> Result<(), ()> {
+pub fn log_info(message: &str) -> Result<(), JujutsuError> {
     println!("{} - {}", "info".cyan(), message);
     Ok(())
 }
