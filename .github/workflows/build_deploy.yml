@@ -135,7 +135,6 @@ jobs:
           cargo clippy --all -- -D warnings
         working-directory: packages/jujutsu-discord
 
-  # Build binaries for publishing
   build-native:
     strategy:
       fail-fast: false

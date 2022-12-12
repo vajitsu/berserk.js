@@ -40,7 +40,7 @@ async function main() {
 
   let changedFilesOutput = ''
   const isCanary =
-    branchName.trim() === 'canary' && remoteUrl.includes('vercel/next.js')
+    branchName.trim() === 'canary' && remoteUrl.includes('vajitsu/jujutsu.js')
 
   try {
     await exec('git fetch origin canary')
