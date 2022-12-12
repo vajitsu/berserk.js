@@ -156,7 +156,7 @@ jobs:
           - host: windows-latest
             build: |
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" "pnpm@${PNPM_VERSION}"
-              turbo run build-native-no-plugin -- --release --target i686-pc-windows-msvc
+              turbo run build-native -- --release --target i686-pc-windows-msvc
             target: 'i686-pc-windows-msvc'
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-gnu'
@@ -213,7 +213,7 @@ jobs:
               sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf -y
             build: |
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi
-              turbo run build-native-no-plugin -- --release --target armv7-unknown-linux-gnueabihf
+              turbo run build-native -- --release --target armv7-unknown-linux-gnueabihf
               arm-linux-gnueabihf-strip packages/jujutsu-discord/native/jujutsu-discord.*.node
           - host: ubuntu-latest
             target: aarch64-linux-android
@@ -243,7 +243,7 @@ jobs:
               chmod 777 "${ANDROID_NDK_LATEST_HOME}/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/${CLANG_VERSION}/lib/linux/arm/libgcc.a"
               echo "INPUT(-lunwind)" > "${ANDROID_NDK_LATEST_HOME}/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/${CLANG_VERSION}/lib/linux/arm/libgcc.a"
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" "pnpm@${PNPM_VERSION}"
-              turbo run build-native-no-plugin -- --release --target armv7-linux-androideabi
+              turbo run build-native -- --release --target armv7-linux-androideabi
               ${ANDROID_NDK_LATEST_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip packages/jujutsu-discord/native/jujutsu-discord.*.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-musl'
@@ -262,7 +262,7 @@ jobs:
             target: 'aarch64-pc-windows-msvc'
             build: |
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" "pnpm@${PNPM_VERSION}"
-              turbo run build-native-no-plugin -- --release --target aarch64-pc-windows-msvc --cargo-flags=--no-default-features
+              turbo run build-native -- --release --target aarch64-pc-windows-msvc --cargo-flags=--no-default-features
     if: ${{ needs.build.outputs.isRelease == 'true' || (needs.build.outputs.discordChange == 'yup' && needs.build.outputs.turboToken != 'empty') }}
     needs: build
     name: stable - ${{ matrix.settings.target }} - node@16
