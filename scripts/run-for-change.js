@@ -15,7 +15,7 @@ const CHANGE_ITEM_GROUPS = {
     'CODE_OF_CONDUCT.md',
     'readme.md',
   ],
-  'jujutsu-discord': [
+  'discord-jujutsu': [
     'packages/jujutsu-discord',
     'scripts/normalize-version-bump.js',
   ],
