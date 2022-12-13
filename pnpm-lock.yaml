@@ -134,6 +134,7 @@ importers:
 
   packages/jujutsu:
     specifiers:
+      '@jujutsu/discord-win32-x64-msvc': 0.0.1-canary.4
       '@napi-rs/triples': 1.1.0
       '@sapphire/shapeshift': 3.7.1
       '@segment/ajv-human-errors': 2.1.2
@@ -235,6 +236,8 @@ importers:
     dependencies:
       '@swc/helpers': 0.4.14
       discord.js: 14.7.1
+    optionalDependencies:
+      '@jujutsu/discord-win32-x64-msvc': 0.0.1-canary.4
     devDependencies:
       '@napi-rs/triples': 1.1.0
       '@sapphire/shapeshift': 3.7.1
@@ -335,6 +338,7 @@ importers:
 
   packages/jujutsu-discord:
     specifiers:
+      '@jujutsu/discord-win32-x64-msvc': 0.0.1-canary.4
       '@napi-rs/cli': 2.12.0
       '@napi-rs/triples': 1.1.0
       '@swc/cli': 0.1.55
@@ -344,6 +348,8 @@ importers:
       '@swc/cli': 0.1.55_@swc+core@1.3.22
       '@swc/core': 1.3.22
       regenerator-runtime: 0.13.11
+    optionalDependencies:
+      '@jujutsu/discord-win32-x64-msvc': 0.0.1-canary.4
     devDependencies:
       '@napi-rs/cli': 2.12.0
       '@napi-rs/triples': 1.1.0
@@ -965,6 +971,15 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
+
+  /@jujutsu/discord-win32-x64-msvc/0.0.1-canary.4:
+    resolution: {integrity: sha512-FRYM8gO257rQTX2NRBuTqYe9/XvYUgA2kMExRiImpnOtY0axSkIqgMiNbIXX3AAiTiq2+y6wsG+rEdg/clFXFA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
 
   /@lerna/add/4.0.0:
     resolution: {integrity: sha512-cpmAH1iS3k8JBxNvnMqrGTTjbY/ZAiKa1ChJzFevMYY3eeqbvhsBKnBcxjRXtdrJ6bd3dCQM+ZtK+0i682Fhng==}
