@@ -1,6 +1,6 @@
 {
   "name": "@jujutsu/discord",
-  "version": "0.0.1-canary.6",
+  "version": "0.0.1-canary.7",
   "main": "index.js",
   "types": "index.d.ts",
   "license": "MIT",
