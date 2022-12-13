@@ -69,7 +69,7 @@ jobs:
           restore-keys: |
             pnpm-store-
             pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
-      - run: pnpm install
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm run build
 
       - id: check-release
