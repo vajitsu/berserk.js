@@ -34,6 +34,10 @@ export interface ExperimentalConfig {
    * @see [SWC Minification](https://nextjs.org/docs/advanced-features/compiler#minification)
    */
   swcMinify?: boolean
+  /**
+   * Use the Jujutsu.js Discord library (Written in Rust)
+   */
+  discordRs?: boolean
 }
 
 export interface JujutsuConfig extends Record<string, any> {
@@ -85,6 +89,7 @@ export const defaultConfig: JujutsuConfig = {
     compress: true,
     swcMinify: true,
     appDir: false,
+    discordRs: true,
   },
 }
 

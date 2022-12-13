@@ -69,6 +69,9 @@ const configSchema = {
         appDir: {
           type: 'boolean',
         },
+        discordRs: {
+          type: 'boolean',
+        },
       },
       type: 'object',
     },

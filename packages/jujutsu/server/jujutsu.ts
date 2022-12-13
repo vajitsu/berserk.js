@@ -39,7 +39,7 @@ export class JujutsuServer {
 
   private async createBotServer(options: DevServerOptions): Promise<BotServer> {
     if (options.dev) {
-      const DevServer = require('./dev/next-dev-server').default
+      const DevServer = require('./dev/jujutsu-dev-server').default
       return new DevServer(options)
     }
     const BotImplementation = await getBotImpl()
