@@ -1,6 +1,6 @@
 {
   "name": "@jujutsu/discord",
-  "version": "0.0.1-canary.3",
+  "version": "0.0.1-canary.4",
   "main": "index.js",
   "types": "index.d.ts",
   "license": "MIT",
@@ -46,5 +46,20 @@
     "@swc/cli": "0.1.55",
     "@swc/core": "1.3.22",
     "regenerator-runtime": "0.13.11"
+  },
+  "optionalDependencies": {
+    "@jujutsu/discord-win32-x64-msvc": "0.0.1-canary.4",
+    "@jujutsu/discord-darwin-x64": "0.0.1-canary.4",
+    "@jujutsu/discord-linux-x64-gnu": "0.0.1-canary.4",
+    "@jujutsu/discord-win32-ia32-msvc": "0.0.1-canary.4",
+    "@jujutsu/discord-linux-arm64-gnu": "0.0.1-canary.4",
+    "@jujutsu/discord-linux-arm-gnueabihf": "0.0.1-canary.4",
+    "@jujutsu/discord-darwin-arm64": "0.0.1-canary.4",
+    "@jujutsu/discord-android-arm64": "0.0.1-canary.4",
+    "@jujutsu/discord-android-arm-eabi": "0.0.1-canary.4",
+    "@jujutsu/discord-freebsd-x64": "0.0.1-canary.4",
+    "@jujutsu/discord-linux-x64-musl": "0.0.1-canary.4",
+    "@jujutsu/discord-linux-arm64-musl": "0.0.1-canary.4",
+    "@jujutsu/discord-win32-arm64-msvc": "0.0.1-canary.4"
   }
 }

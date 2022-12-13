@@ -1,0 +1,21 @@
+{
+  "name": "@jujutsu/discord-linux-arm64-musl",
+  "version": "0.0.1-canary.4",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "libc": [
+    "musl"
+  ],
+  "main": "jujutsu-discord.linux-arm64-musl.node",
+  "files": [
+    "jujutsu-discord.linux-arm64-musl.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
