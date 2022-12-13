@@ -22,7 +22,6 @@ importers:
       arg: ^5.0.2
       async-sema: ^3.1.1
       chalk: ^5.1.2
-      create-jujutsu-app: workspace:*
       discord.js: 14.6.0
       dotenv: ^16.0.3
       eslint: 7.24.0
@@ -30,7 +29,6 @@ importers:
       eslint-plugin-eslint-plugin: 4.3.0
       find-up: ^6.3.0
       husky: 8.0.0
-      jujutsu: workspace:*
       lerna: 4.0.0
       lint-staged: 10.1.7
       module: 1.2.5
@@ -45,9 +43,6 @@ importers:
       tsconfig-paths: ^4.1.0
       turbo: 1.6.3
       typescript: 4.9.3
-    dependencies:
-      create-jujutsu-app: link:packages/create-jujutsu-app
-      jujutsu: link:packages/jujutsu
     devDependencies:
       '@babel/core': 7.18.0
       '@babel/eslint-parser': 7.18.2_uxoojzahptggrua2tvdiqlh7xm
@@ -137,6 +132,7 @@ importers:
 
   packages/jujutsu:
     specifiers:
+      '@jujutsu/discord': workspace:*
       '@napi-rs/triples': 1.1.0
       '@sapphire/shapeshift': 3.7.1
       '@segment/ajv-human-errors': 2.1.2
@@ -239,6 +235,7 @@ importers:
       '@swc/helpers': 0.4.14
       discord.js: 14.7.1
     devDependencies:
+      '@jujutsu/discord': link:../jujutsu-discord
       '@napi-rs/triples': 1.1.0
       '@sapphire/shapeshift': 3.7.1
       '@segment/ajv-human-errors': 2.1.2_ajv@8.11.0
@@ -342,7 +339,6 @@ importers:
       '@napi-rs/triples': 1.1.0
       '@swc/cli': 0.1.55
       '@swc/core': 1.3.22
-      jujutsu: workspace:*
       regenerator-runtime: 0.13.11
     dependencies:
       '@swc/cli': 0.1.55_@swc+core@1.3.22
@@ -351,7 +347,6 @@ importers:
     devDependencies:
       '@napi-rs/cli': 2.12.0
       '@napi-rs/triples': 1.1.0
-      jujutsu: link:../jujutsu
 
 packages:
 
@@ -2663,7 +2658,7 @@ packages:
     dependencies:
       '@types/http-cache-semantics': 4.0.1
       '@types/keyv': 3.1.4
-      '@types/node': 18.11.9
+      '@types/node': 18.11.11
       '@types/responselike': 1.0.0
     dev: true
 
@@ -2748,7 +2743,7 @@ packages:
     resolution: {integrity: sha512-l6NQsDDyQUVeoTynNpC9uRvCUint/gSUXQA2euwmTuWGvPY5LSDUu6tkCtJB2SvGQlJQzLaKqcGZP4//7EDveA==}
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 18.11.9
+      '@types/node': 18.11.11
     dev: true
 
   /@types/graceful-fs/4.1.5:
