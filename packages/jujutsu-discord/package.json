@@ -48,18 +48,18 @@
     "regenerator-runtime": "0.13.11"
   },
   "optionalDependencies": {
-    "@jujutsu/discord-win32-x64-msvc": "0.0.1-canary.4",
-    "@jujutsu/discord-darwin-x64": "0.0.1-canary.4",
-    "@jujutsu/discord-linux-x64-gnu": "0.0.1-canary.4",
-    "@jujutsu/discord-win32-ia32-msvc": "0.0.1-canary.4",
-    "@jujutsu/discord-linux-arm64-gnu": "0.0.1-canary.4",
-    "@jujutsu/discord-linux-arm-gnueabihf": "0.0.1-canary.4",
-    "@jujutsu/discord-darwin-arm64": "0.0.1-canary.4",
-    "@jujutsu/discord-android-arm64": "0.0.1-canary.4",
     "@jujutsu/discord-android-arm-eabi": "0.0.1-canary.4",
+    "@jujutsu/discord-android-arm64": "0.0.1-canary.4",
+    "@jujutsu/discord-darwin-arm64": "0.0.1-canary.4",
+    "@jujutsu/discord-darwin-x64": "0.0.1-canary.4",
     "@jujutsu/discord-freebsd-x64": "0.0.1-canary.4",
-    "@jujutsu/discord-linux-x64-musl": "0.0.1-canary.4",
+    "@jujutsu/discord-linux-arm-gnueabihf": "0.0.1-canary.4",
+    "@jujutsu/discord-linux-arm64-gnu": "0.0.1-canary.4",
     "@jujutsu/discord-linux-arm64-musl": "0.0.1-canary.4",
-    "@jujutsu/discord-win32-arm64-msvc": "0.0.1-canary.4"
+    "@jujutsu/discord-linux-x64-gnu": "0.0.1-canary.4",
+    "@jujutsu/discord-linux-x64-musl": "0.0.1-canary.4",
+    "@jujutsu/discord-win32-arm64-msvc": "0.0.1-canary.4",
+    "@jujutsu/discord-win32-ia32-msvc": "0.0.1-canary.4",
+    "@jujutsu/discord-win32-x64-msvc": "0.0.1-canary.4"
   }
 }

@@ -132,7 +132,6 @@ importers:
 
   packages/jujutsu:
     specifiers:
-      '@jujutsu/discord': workspace:*
       '@napi-rs/triples': 1.1.0
       '@sapphire/shapeshift': 3.7.1
       '@segment/ajv-human-errors': 2.1.2
@@ -235,7 +234,6 @@ importers:
       '@swc/helpers': 0.4.14
       discord.js: 14.7.1
     devDependencies:
-      '@jujutsu/discord': link:../jujutsu-discord
       '@napi-rs/triples': 1.1.0
       '@sapphire/shapeshift': 3.7.1
       '@segment/ajv-human-errors': 2.1.2_ajv@8.11.0
