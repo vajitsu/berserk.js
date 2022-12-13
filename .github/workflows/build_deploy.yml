@@ -90,6 +90,26 @@ jobs:
           path: ./*
           key: ${{ github.sha }}-${{ github.run_number }}
 
+  lint:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          check-latest: true
+
+      - run: npm i -g pnpm@${PNPM_VERSION}
+
+      - uses: actions/cache@v3
+        id: restore-build
+        with:
+          path: ./*
+          key: ${{ github.sha }}-${{ github.run_number }}
+      - run: ./scripts/check-manifests.js
+      - run: pnpm lint
+
   rust-check:
     runs-on: ubuntu-latest
     needs: build

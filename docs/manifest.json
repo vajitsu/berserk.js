@@ -6,15 +6,15 @@
       "routes": [
         {
           "title": "Getting Started",
-          "path": "/docs/getting-started"
+          "path": "/docs/getting-started.md"
         },
         {
           "title": "Installation",
-          "path": "/docs/installation"
+          "path": "/docs/installation.md"
         },
         {
           "title": "FAQ",
-          "path": "/docs/faq"
+          "path": "/docs/faq.md"
         }
       ]
     }
