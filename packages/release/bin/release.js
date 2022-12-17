@@ -443,16 +443,6 @@ const checkReleaseStatus = async () => {
 }
 
 const main = async () => {
-  const update = await checkForUpdate(pkg)
-
-  if (update) {
-    console.log(
-      `${chalk.bgRed(
-        'UPDATE AVAILABLE'
-      )} The latest version of \`release\` is ${update.latest}`
-    )
-  }
-
   const bumpType = args.sub
   const argAmount = bumpType.length
 
