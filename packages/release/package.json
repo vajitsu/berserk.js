@@ -1,6 +1,6 @@
 {
   "name": "release",
-  "version": "0.0.1-canary.7",
+  "version": "0.0.1-canary.8",
   "description": "Generate changelogs with a single command",
   "private": true,
   "files": [
@@ -19,9 +19,6 @@
   "license": "MIT",
   "bin": {
     "release": "./bin/release.js"
-  },
-  "devDependencies": {
-    "@vercel/git-hooks": "latest"
   },
   "dependencies": {
     "@octokit/rest": "15.2.6",
