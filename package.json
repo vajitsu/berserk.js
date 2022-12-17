@@ -64,7 +64,7 @@
     "ora": "6.1.2",
     "path": "^0.12.7",
     "prettier": "^2.7.1",
-    "release": "6.3.1",
+    "release": "workspace:*",
     "shell-quote": "1.7.3",
     "taskr": "1.1.0",
     "tsconfig-paths": "^4.1.0",

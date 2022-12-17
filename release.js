@@ -6,7 +6,6 @@ const sectionLabelMap = {
 }
 
 const fallbackSection = 'Misc Changes'
-
 // --------------------------------------------------
 
 const prNumberRegex = /\(#([-0-9]+)\)$/
