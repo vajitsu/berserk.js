@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import type { EventFileComplete as EventInfo } from '../index'
 import { join as pathJoin } from 'path'
-import swc, { bundle as spack } from 'jujutsu/dist/compiled/@swc/core'
+import swc, { bundle as spack } from '@swc/core'
 import { mkdirp } from 'fs-extra'
 import { promises } from 'fs'
 import { SERVER_DIRECTORY, SWC_CONFIG } from '../../lib/constants'
@@ -50,6 +50,8 @@ export default async function compileEvents(
     let pkgJson
     const packageJsonPath = await findUp('package.json', { cwd: dir })
     if (packageJsonPath) pkgJson = require(packageJsonPath)
+
+    process.traceDeprecation = false
 
     const nodeModules = Module.builtinModules
       .filter((mod) => !!require(mod))

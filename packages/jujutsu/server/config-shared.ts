@@ -89,7 +89,7 @@ export const defaultConfig: JujutsuConfig = {
     compress: true,
     swcMinify: true,
     appDir: false,
-    discordRs: true,
+    discordRs: false,
   },
 }
 

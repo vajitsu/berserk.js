@@ -2,7 +2,7 @@
   "name": "jujutsu",
   "version": "0.0.1-canary.7",
   "description": "The Discord.js Framework",
-  "main": "./dist/client/jujutsu.js",
+  "main": "./dist/server/jujutsu.js",
   "license": "MIT",
   "repository": "vajitsu/jujutsu.js",
   "bugs": "https://github.com/vajitsu/jujutsu.js/issues",
@@ -32,10 +32,12 @@
   "taskr": {
     "requires": [
       "./taskfile-ncc.js",
-      "./taskfile-swc.js"
+      "./taskfile-swc.js",
+      "./taskfile-watch.js"
     ]
   },
   "dependencies": {
+    "@swc/core": "latest",
     "@swc/helpers": "latest",
     "discord.js": "latest"
   },
@@ -47,7 +49,6 @@
     "@swc/plugin-transform-imports": "1.5.25",
     "@taskr/clear": "1.1.0",
     "@taskr/esnext": "1.1.0",
-    "@taskr/watch": "1.1.0",
     "@types/ci-info": "2.0.0",
     "@types/cross-spawn": "6.0.0",
     "@types/esm": "3.2.0",
@@ -139,20 +140,5 @@
   },
   "engines": {
     "node": ">=14.6.0"
-  },
-  "optionalDependencies": {
-    "@jujutsu/discord-android-arm-eabi": "0.0.1-canary.4",
-    "@jujutsu/discord-android-arm64": "0.0.1-canary.4",
-    "@jujutsu/discord-darwin-arm64": "0.0.1-canary.4",
-    "@jujutsu/discord-darwin-x64": "0.0.1-canary.4",
-    "@jujutsu/discord-freebsd-x64": "0.0.1-canary.4",
-    "@jujutsu/discord-linux-arm-gnueabihf": "0.0.1-canary.4",
-    "@jujutsu/discord-linux-arm64-gnu": "0.0.1-canary.4",
-    "@jujutsu/discord-linux-arm64-musl": "0.0.1-canary.4",
-    "@jujutsu/discord-linux-x64-gnu": "0.0.1-canary.4",
-    "@jujutsu/discord-linux-x64-musl": "0.0.1-canary.4",
-    "@jujutsu/discord-win32-arm64-msvc": "0.0.1-canary.4",
-    "@jujutsu/discord-win32-ia32-msvc": "0.0.1-canary.4",
-    "@jujutsu/discord-win32-x64-msvc": "0.0.1-canary.4"
   }
 }
