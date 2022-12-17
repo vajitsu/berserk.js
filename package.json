@@ -22,7 +22,7 @@
     "types": "lerna run types --stream",
     "typescript": "turbo run typescript",
     "prepublishOnly": "turbo run build",
-    "publish-canary": "git checkout canary && git pull && lerna version prerelease --preid canary --force-publish && release --pre --skip-questions",
+    "publish-canary": "git checkout canary && git pull && lerna version prerelease --preid canary --force-publish && pnpm release --pre --skip-questions",
     "publish-stable": "lerna version --force-publish",
     "publish-pkgs": "lerna publish from-package",
     "lint-staged": "lint-staged",
