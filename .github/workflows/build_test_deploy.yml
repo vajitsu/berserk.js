@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize]
 
-name: Build and deploy
+name: Build, test, and deploy
 
 env:
   NAPI_CLI_VERSION: 2.12.0
