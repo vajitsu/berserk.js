@@ -4,7 +4,6 @@
 const path = require('path')
 const execa = require('execa')
 const { Sema } = require('async-sema')
-const { execSync } = require('child_process')
 const { readJson, readdir } = require('fs-extra')
 
 const cwd = process.cwd()
@@ -13,9 +12,9 @@ const cwd = process.cwd()
   let isCanary = true
 
   try {
-    const tagOutput = execSync(
-      `node ${path.join(__dirname, 'check-is-release.js')}`
-    ).toString()
+    const tagOutput = require('child_process')
+      .execSync(`node ${path.join(__dirname, 'check-is-release.js')}`)
+      .toString('utf8')
     console.log(tagOutput)
 
     if (tagOutput.trim().startsWith('v')) {
@@ -28,6 +27,7 @@ const cwd = process.cwd()
       console.log('Nothing to publish, exiting...')
       return
     }
+
     throw err
   }
   console.log(`Publishing ${isCanary ? 'canary' : 'stable'}`)
