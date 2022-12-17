@@ -310,6 +310,8 @@ const orderCommits = async (commits, tags, exists) => {
     changelog = 'Initial release'
   }
 
+  console.log(changelog)
+
   // Apply the `release.js` file or the one that
   // was specified using the `--hook` flag
   const filtered = await applyHook(flags.hook, changelog, {
