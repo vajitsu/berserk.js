@@ -126,17 +126,19 @@ function getList(options) {
   const rev = options && options.rev
   const fmt = '--pretty="%d;%H;%ci" --decorate=short'
   const cmd = rev
-    ? `git log --simplify-by-decoration ${fmt} ${rev}`
+    ? `git log --simplify-by-decoration ${fmt} -- ${rev}`
     : `git log --no-walk --tags ${fmt}`
 
-  console.log(cmd + 'apdokaopdkapd')
+  console.log(cmd)
 
-  return runCommand(cmd).then((output) => {
-    const lines = output.split('\n')
-    const tags = flatten(lines.map(parseLine))
+  const output = runCommand(cmd)
 
-    return filterByRange(tags, range).sort(compareCommit)
-  })
+  console.log(output)
+
+  const lines = output.split('\n')
+  const tags = flatten(lines.map(parseLine))
+
+  return filterByRange(tags, range).sort(compareCommit)
 }
 
 /**
@@ -148,7 +150,8 @@ function getList(options) {
  * @return {Promise<Commit,Error>}
  */
 function getLastVersion(options) {
-  return getList(options).then((list) => list[0])
+  const list = getList(options)
+  return list[0]
 }
 
 module.exports = {
