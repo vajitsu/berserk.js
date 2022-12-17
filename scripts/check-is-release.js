@@ -6,7 +6,7 @@ const checkIsRelease = async () => {
   // parse only the last string which should be version if
   // it's a publish commit
   const commitMsg = execSync(
-    `git log -n 1 --pretty='format:%B'${commitId ? ` ${commitId}` : ''}`
+    `git log -n 1 --pretty=%B${commitId ? ` ${commitId}` : ''}`
   )
     .toString()
     .trim()
