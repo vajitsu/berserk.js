@@ -1,7 +1,3 @@
-# https://github.com/github/issue-labeler#basic-examples
-
-# Should match  the list "Which area(s) of Next.js are affected?" in:
-# https://github.com/vercel/next.js/blob/canary/.github/ISSUE_TEMPLATE/1.bug_report.yml
 'area: app':
   - 'App directory (appDir: true)'
 'area: create-jujutsu-app':
