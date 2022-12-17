@@ -310,7 +310,7 @@ const orderCommits = async (commits, tags, exists) => {
     changelog = 'Initial release'
   }
 
-  console.log(changelog)
+  console.log(changelog || 'A')
 
   // Apply the `release.js` file or the one that
   // was specified using the `--hook` flag
@@ -323,7 +323,7 @@ const orderCommits = async (commits, tags, exists) => {
     authors: credits,
   })
 
-  console.log(filtered)
+  console.log(filtered || 'B')
 
   // Upload changelog to GitHub Releases
   createRelease(tags[0], filtered, exists)
