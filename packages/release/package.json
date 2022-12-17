@@ -1,6 +1,6 @@
 {
   "name": "release",
-  "version": "6.3.1",
+  "version": "0.0.1-canary.7",
   "description": "Generate changelogs with a single command",
   "private": true,
   "files": [
