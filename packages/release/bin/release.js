@@ -321,6 +321,8 @@ const orderCommits = async (commits, tags, exists) => {
     authors: credits,
   })
 
+  console.log(filtered)
+
   // Upload changelog to GitHub Releases
   createRelease(tags[0], filtered, exists)
 }
