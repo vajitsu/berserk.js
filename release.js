@@ -160,7 +160,5 @@ module.exports = async (markdown, metadata) => {
   const sections = await groupByLabels(commits.all, github)
   const changelog = buildChangelog(sections, authors)
 
-  console.log(changelog)
-
   return changelog
 }
