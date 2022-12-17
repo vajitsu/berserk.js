@@ -310,8 +310,6 @@ const orderCommits = async (commits, tags, exists) => {
     changelog = 'Initial release'
   }
 
-  console.log(changelog || 'A')
-
   // Apply the `release.js` file or the one that
   // was specified using the `--hook` flag
   const filtered = await applyHook(flags.hook, changelog, {
@@ -322,8 +320,6 @@ const orderCommits = async (commits, tags, exists) => {
     groupedCommits: grouped,
     authors: credits,
   })
-
-  console.log(filtered || 'B')
 
   // Upload changelog to GitHub Releases
   createRelease(tags[0], filtered, exists)

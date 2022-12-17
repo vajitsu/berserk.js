@@ -174,7 +174,7 @@ module.exports = async (
 
   // Remove newlines from the end
   return {
-    changelog: text.trimRight() || null,
+    changelog: text.trimEnd() || null,
     credits,
   }
 }
