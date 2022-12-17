@@ -30,91 +30,80 @@ export default async function startServer(
   options: JujutsuServerOptions,
   debug = false
 ) {
-  if (
-    options?.conf?.experimental &&
-    typeof options.conf.experimental.discordRs === 'boolean' &&
-    !options.conf?.experimental?.discordRs
-  ) {
-    const events = new EventEmitter()
+  const events = new EventEmitter()
 
-    events.once('ready', (client: Client) => {
-      Log.ready(`Bot is located at ${client.user?.tag}`)
-    })
+  events.once('ready', (client: Client) => {
+    Log.ready(`Bot is located at ${client.user?.tag}`)
+  })
 
-    const instance = new bot(
-      {
-        ...(options.conf?.discord as DiscordConfig),
-        quiet: options.quiet !== undefined ? options.quiet : false,
-      },
-      events,
-      options.dev || false,
-      debug
-    )
+  const instance = new bot(
+    {
+      ...(options.conf?.discord as DiscordConfig),
+      quiet: options.quiet !== undefined ? options.quiet : false,
+    },
+    events,
+    options.dev || false,
+    debug
+  )
 
-    const distDir = join(
-      options.dir || process.cwd(),
-      options.conf?.distDir || '.jujutsu'
-    )
+  const distDir = join(
+    options.dir || process.cwd(),
+    options.conf?.distDir || '.jujutsu'
+  )
 
-    const buildDir = join(distDir, SERVER_DIRECTORY)
+  const buildDir = join(distDir, SERVER_DIRECTORY)
 
-    const startBot = () => {
-      const files = recursiveReadDirSync(buildDir).map((f) => ({
-        type: identifyBundle(f, buildDir),
-        absolute: join(join(buildDir, f)),
+  const startBot = () => {
+    const files = recursiveReadDirSync(buildDir).map((f) => ({
+      type: identifyBundle(f, buildDir),
+      absolute: join(join(buildDir, f)),
+    }))
+
+    const event_files = files
+      .filter((file) => file.type === 'event')
+      .map((f) => ({
+        mod: require(relative(__dirname, f.absolute)),
+        absolute: f.absolute,
+      }))
+      .map((f) => ({
+        name: f.mod.__name,
+        ...interopForEvent(f.mod),
+        absolutePath: f.absolute,
       }))
 
-      const event_files = files
-        .filter((file) => file.type === 'event')
-        .map((f) => ({
-          mod: require(relative(__dirname, f.absolute)),
-          absolute: f.absolute,
-        }))
-        .map((f) => ({
-          name: f.mod.__name,
-          ...interopForEvent(f.mod),
-          absolutePath: f.absolute,
-        }))
+    const command_files = files
+      .filter((file) => file.type === 'command')
+      .map((f) => ({
+        mod: require(relative(__dirname, f.absolute)),
+        absolute: f.absolute,
+      }))
+      .map((f) => ({
+        name: f.mod.__name,
+        ...interopForCommand(f.mod),
+        absolutePath: f.absolute,
+      }))
 
-      const command_files = files
-        .filter((file) => file.type === 'command')
-        .map((f) => ({
-          mod: require(relative(__dirname, f.absolute)),
-          absolute: f.absolute,
-        }))
-        .map((f) => ({
-          name: f.mod.__name,
-          ...interopForCommand(f.mod),
-          absolutePath: f.absolute,
-        }))
+    for (let file of command_files)
+      instance.slashCommandManager.addCommand(file)
+    for (let file of event_files) instance.eventManager.registerEvent(file)
 
-      for (let file of command_files)
-        instance.slashCommandManager.addCommand(file)
-      for (let file of event_files) instance.eventManager.registerEvent(file)
+    if (!options.quiet) instance.hookServerEvents()
 
-      if (!options.quiet) instance.hookServerEvents()
-
-      if (options.dev || options.isJujutsuDevCommand) {
-        const devServer = new JujutsuDevServer(
-          options as DevServerOptions,
-          instance
-        )
-        devServer.prepare()
-        instance.init()
-      } else {
-        instance.init()
-      }
-    }
-
-    if (await exists(buildDir)) {
-      startBot()
+    if (options.dev || options.isJujutsuDevCommand) {
+      const devServer = new JujutsuDevServer(
+        options as DevServerOptions,
+        instance
+      )
+      devServer.prepare()
+      instance.init()
     } else {
-      build(options.dir || process.cwd(), null, true).then(() => startBot())
+      instance.init()
     }
-  } else if (
-    options?.conf?.experimental &&
-    typeof options.conf.experimental.discordRs === 'boolean' &&
-    options.conf.experimental.discordRs
-  ) {
+  }
+
+  if (await exists(buildDir)) {
+    startBot()
+  } else {
+    build(options.dir || process.cwd(), null, true).then(() => startBot())
   }
 }

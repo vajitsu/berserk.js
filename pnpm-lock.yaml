@@ -331,9 +331,6 @@ importers:
       watchpack: 2.4.0
       ws: 8.2.3
 
-  packages/jujutsu-discord:
-    specifiers: {}
-
   packages/release:
     specifiers:
       '@octokit/rest': 15.2.6
@@ -2649,7 +2646,7 @@ packages:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 18.11.11
+      '@types/node': 18.11.16
     dev: true
 
   /@types/glob/8.0.0:
