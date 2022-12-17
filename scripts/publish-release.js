@@ -6,6 +6,9 @@ const execa = require('execa')
 const { Sema } = require('async-sema')
 const { readJson, readdir } = require('fs-extra')
 
+const dotenv = require('dotenv')
+dotenv.config()
+
 const cwd = process.cwd()
 
 ;(async function () {
