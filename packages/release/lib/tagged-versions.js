@@ -24,14 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-/**
- * Query git for semantic version tag.
- *
- * @typedef {{tag: string, version: string, hash: string, date: Date}} Commit
- */
-
-'use strict'
-
 const semver = require('semver')
 
 const tagRegex = /tag:\s*([^,)]+)/g
@@ -155,12 +147,7 @@ function getList(options) {
     ? `git log --simplify-by-decoration ${fmt} -- ${rev}`
     : `git log --no-walk --tags ${fmt}`
 
-  console.log(cmd)
-
   const output = runCommand(cmd)
-
-  console.log(output)
-
   const lines = output.split('\n')
   const tags = flatten(lines.map(parseLine))
 
