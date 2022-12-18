@@ -14,8 +14,11 @@ const CHANGE_ITEM_GROUPS = {
     'contributing',
     'CODE_OF_CONDUCT.md',
     'readme.md',
+    '.github/ISSUE_TEMPLATE',
+    '.github/labeler.json',
+    '.github/pull_request_template.md',
   ],
-  'discord-jujutsu': [
+  'jujutsu-discord': [
     'packages/jujutsu-discord',
     'scripts/normalize-version-bump.js',
   ],

@@ -29,6 +29,7 @@ importers:
       eslint-plugin-eslint-plugin: 4.3.0
       find-up: ^6.3.0
       husky: 8.0.0
+      jujutsu: workspace:0.0.1-canary.12
       lerna: 4.0.0
       lint-staged: 10.1.7
       module: 1.2.5
@@ -70,6 +71,7 @@ importers:
       eslint-plugin-eslint-plugin: 4.3.0_eslint@7.24.0
       find-up: 6.3.0
       husky: 8.0.0
+      jujutsu: link:packages/jujutsu
       lerna: 4.0.0
       lint-staged: 10.1.7
       module: 1.2.5
@@ -14471,7 +14473,7 @@ packages:
       '@types/concat-stream': 2.0.0
       '@types/debug': 4.1.7
       '@types/is-empty': 1.2.1
-      '@types/node': 18.11.11
+      '@types/node': 18.11.16
       '@types/unist': 2.0.6
       concat-stream: 2.0.0
       debug: 4.3.4
