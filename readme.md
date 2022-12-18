@@ -1,1 +1,1 @@
-packages/beserk/readme.md
+packages/berserk/readme.md
