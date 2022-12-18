@@ -2,7 +2,7 @@
 
 set -e
 
-cd packages/jujutsu
+cd packages/berserk
 
 pnpm run ncc-compiled
 

@@ -1,1 +1,1 @@
-packages/jujutsu/readme.md
+packages/beserk/readme.md

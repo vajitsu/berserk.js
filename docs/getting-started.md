@@ -1,14 +1,14 @@
 ---
-description: Get started with Jujutsu.js in the official documentation, and learn more about all our features!
+description: Get started with Beserk.js in the official documentation, and learn more about all our features!
 ---
 
 # Getting Started
 
-Welcome to the Jujutsu.js documentation!
+Welcome to the Beserk.js documentation!
 
-If you're new to Jujutsu.js, we recommend starting with the [learn course](/learn/basics/create-jujutsujs-app). The interactive course with quizzes will guide you through everything you need to know to use Jujutsu.js.
+If you're new to Beserk.js, we recommend starting with the [learn course](/learn/basics/create-jujutsujs-app). The interactive course with quizzes will guide you through everything you need to know to use Beserk.js.
 
-If you have questions about anything related to Jujutsu.js, you're always welcome to ask our community on [GitHub Discussions](https://github.com/vajitsu/jujutsu.js/discussions).
+If you have questions about anything related to Beserk.js, you're always welcome to ask our community on [GitHub Discussions](https://github.com/vajitsu/berserk.js/discussions).
 
 ## Creating a Discord Application
 
@@ -29,12 +29,12 @@ The token should now appear under the username input area.
 
 ## Implementing Discord Token
 
-If you have already created a `jujutsu.config.js`, add the token to the `discord.token` property.
+If you have already created a `berserk.config.js`, add the token to the `discord.token` property.
 
-If not, create a `jujutsu.config.js` and add the following:
+If not, create a `berserk.config.js` and add the following:
 
-```js:jujutsu.config.js
-/** @type {import('jujutsu').JujutsuConfig} */
+```js:berserk.config.js
+/** @type {import('berserk').JujutsuConfig} */
 const jujutsuConfig = {
   discord: {
     token: 'your-token-goes-here'
@@ -44,4 +44,4 @@ const jujutsuConfig = {
 module.exports = jujutsuConfig
 ```
 
-> **Never** share the token with anybody. If you accidentally share your bot's token, immediately reset it in the [`Discord Developer Portal`](https://discord.com/developers/applications) . Make sure to update your token in your Jujutsu.js project.
+> **Never** share the token with anybody. If you accidentally share your bot's token, immediately reset it in the [`Discord Developer Portal`](https://discord.com/developers/applications) . Make sure to update your token in your Beserk.js project.

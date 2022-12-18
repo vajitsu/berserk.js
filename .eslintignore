@@ -1,8 +1,7 @@
 node_modules
-**/.jujutsu/**
-**/_jujutsu/**
+**/.berserk/**
+**/_berserk/**
 **/dist/**
-packages/jujutsu/compiled/**/*
+packages/berserk/compiled/**/*
 **/__tmp__/**
-packages/create-jujutsu-app/templates/**
-packages/jujutsu-discord/src/**
+packages/create-berserk-app/templates/**
