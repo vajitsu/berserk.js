@@ -1,13 +1,13 @@
-import type { BeserkConfig, BeserkConfigComplete } from './config-shared'
+import type { BerserkConfig, BerserkConfigComplete } from './config-shared'
 import { setConfig } from '../lib/runtime-config'
 
 export interface Options {
   /**
    * Object containing the configuration berserk.config.js
    */
-  conf: BeserkConfig
+  conf: BerserkConfig
   /**
-   * Tells if Beserk.js is running in dev mode
+   * Tells if Berserk.js is running in dev mode
    */
   dev?: boolean
   /**
@@ -15,7 +15,7 @@ export interface Options {
    */
   dir?: string
   /**
-   * Tells if Beserk.js is running in a Serverless platform
+   * Tells if Berserk.js is running in a Serverless platform
    */
   minimalMode?: boolean
   /**
@@ -31,7 +31,7 @@ export interface Options {
 export default abstract class Server<ServerOptions extends Options = Options> {
   protected dir: string
   protected quiet: boolean
-  protected jujutsuConfig: BeserkConfigComplete
+  protected berserkConfig: BerserkConfigComplete
   protected distDir: string
   protected hasAppDir: boolean
   protected minimalMode: boolean
@@ -63,20 +63,20 @@ export default abstract class Server<ServerOptions extends Options = Options> {
 
     // TODO: should conf be normalized to prevent missing
     // values from causing issues as this can be user provided
-    this.jujutsuConfig = conf as BeserkConfigComplete
+    this.berserkConfig = conf as BerserkConfigComplete
     this.distDir =
       process.env.JUJUTSU_RUNTIME === 'edge'
-        ? this.jujutsuConfig.distDir
-        : require('path').join(this.dir, this.jujutsuConfig.distDir)
+        ? this.berserkConfig.distDir
+        : require('path').join(this.dir, this.berserkConfig.distDir)
 
     // Only serverRuntimeConfig needs the default
     // publicRuntimeConfig gets it's default in client/index.js
-    const { serverRuntimeConfig = {}, publicRuntimeConfig } = this.jujutsuConfig
+    const { serverRuntimeConfig = {}, publicRuntimeConfig } = this.berserkConfig
 
     this.minimalMode = minimalMode || !!process.env.JUJUTSU_PRIVATE_MINIMAL_MODE
 
     this.hasAppDir = true
-    // !!this.jujutsuConfig.experimental.appDir && this.getHasAppDir(dev)
+    // !!this.berserkConfig.experimental.appDir && this.getHasAppDir(dev)
 
     // Initialize berserk/config with the environment configuration
     setConfig({

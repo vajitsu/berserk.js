@@ -1,6 +1,6 @@
 node_modules
 **/.berserk/**
-**/_jujutsu/**
+**/_berserk/**
 **/dist/**
 packages/berserk/compiled/**
 **/__tmp__/**

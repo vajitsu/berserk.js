@@ -1,6 +1,6 @@
 # Create Jujutsu App
 
-The easiest way to get started with Beserk.js is by using `create-berserk-app`. This CLI tool enables you to quickly start building a new Beserk.js application, with everything set up for you. To get started, use the following command:
+The easiest way to get started with Berserk.js is by using `create-berserk-app`. This CLI tool enables you to quickly start building a new Berserk.js application, with everything set up for you. To get started, use the following command:
 
 ### Interactive
 
@@ -52,7 +52,7 @@ Options:
   -e, --example [name]|[github-url]
 
     An example to bootstrap the app with. You can use an example name
-    from the official Beserk.js repo or a GitHub URL. The URL can use
+    from the official Berserk.js repo or a GitHub URL. The URL can use
     any branch and/or subdirectory
 
   --example-path <path-to-example>
@@ -65,10 +65,10 @@ Options:
 
 ### Why use Create Jujutsu App?
 
-`create-berserk-app` allows you to create a new Beserk.js app within seconds. It is officially maintained by the creators of Beserk.js, and includes a number of benefits:
+`create-berserk-app` allows you to create a new Berserk.js app within seconds. It is officially maintained by the creators of Berserk.js, and includes a number of benefits:
 
 - **Interactive Experience**: Running `npx create-berserk-app@latest` (with no arguments) launches an interactive experience that guides you through setting up a project.
 - **Zero Dependencies**: Initializing a project is as quick as one second. Create Jujutsu App has zero dependencies.
 - **Offline Support**: Create Jujutsu App will automatically detect if you're offline and bootstrap your project using your local package cache.
-- **Support for Examples**: Create Jujutsu App can bootstrap your application using an example from the Beserk.js examples collection (e.g. `npx create-berserk-app --example api-routes`).
-- **Tested**: The package is part of the Beserk.js monorepo and tested using the same integration test suite as Beserk.js itself, ensuring it works as expected with every release.
+- **Support for Examples**: Create Jujutsu App can bootstrap your application using an example from the Berserk.js examples collection (e.g. `npx create-berserk-app --example api-routes`).
+- **Tested**: The package is part of the Berserk.js monorepo and tested using the same integration test suite as Berserk.js itself, ensuring it works as expected with every release.

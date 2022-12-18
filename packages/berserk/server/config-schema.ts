@@ -1,4 +1,4 @@
-import { BeserkConfig } from './config'
+import { BerserkConfig } from './config'
 import type { JSONSchemaType } from 'ajv'
 
 const configSchema = {
@@ -73,7 +73,7 @@ const configSchema = {
       type: 'object',
     },
   },
-} as JSONSchemaType<BeserkConfig>
+} as JSONSchemaType<BerserkConfig>
 
 // module.exports is used to get around an export bug with TypeScript
 // and the Ajv automatic typing

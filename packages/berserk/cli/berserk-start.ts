@@ -35,7 +35,7 @@ const jujutsuStart: cliCommand = async (argv) => {
         The application should be compiled with \`berserk build\` first.
       Usage
         $ berserk start <dir>
-      <dir> represents the directory of the Beserk.js application.
+      <dir> represents the directory of the Berserk.js application.
       If no directory is provided, the current directory will be used.
       Options
         --help, -h      Displays this message

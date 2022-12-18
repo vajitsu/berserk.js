@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { BeserkConfigComplete } from '../server/config-shared'
+import { BerserkConfigComplete } from '../server/config-shared'
 import { trace, flushAllTraces, setGlobal } from '../trace'
 import { AppManifest, createAppManifest } from './entries'
 import { recursiveDelete } from '../lib/recursive-delete'
@@ -210,7 +210,7 @@ export default async function build(
         .traceChild('load-dotenv')
         .traceFn(() => loadEnvConfig(dir, dev, Log))
 
-      const config: BeserkConfigComplete = await jujutsuBuildSpan
+      const config: BerserkConfigComplete = await jujutsuBuildSpan
         .traceChild('load-berserk-config')
         .traceAsyncFn(() => loadConfig(PHASE_PRODUCTION_BUILD, dir, conf))
 

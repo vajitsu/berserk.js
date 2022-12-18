@@ -1,5 +1,5 @@
 // @ts-ignore This path is generated at build time and conflicts otherwise
-import { JujutsuConfig } from '../dist/server/config'
+import { BerserkConfig } from '../dist/server/config'
 import { ChatInputCommandInteraction as DiscordJsInteraction } from 'discord.js'
 
 // eslint-disable-next-line no-shadow
@@ -51,4 +51,4 @@ interface JujutsuClient {
   }
 }
 
-export { JujutsuConfig, JujutsuClient, DiscordJsInteraction }
+export { BerserkConfig, JujutsuClient, DiscordJsInteraction }

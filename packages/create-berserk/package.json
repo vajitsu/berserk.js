@@ -1,21 +1,21 @@
 {
-  "name": "create-berserk-app",
+  "name": "create-berserk",
   "version": "0.0.1-canary.12",
   "keywords": [
     "discord",
     "berserk",
     "berserk.js"
   ],
-  "description": "Create Beserk.js-powered Discord bots with one command",
+  "description": "Create Berserk.js-powered Discord bots with one command",
   "repository": {
     "type": "git",
     "url": "https://github.com/vajitsu/berserk.js",
-    "directory": "packages/create-berserk-app"
+    "directory": "packages/create-berserk"
   },
-  "author": "Beserk.js Team <support@vajitsu.com>",
+  "author": "Berserk.js Team <support@vajitsu.com>",
   "license": "MIT",
   "bin": {
-    "create-berserk-app": "./dist/index.js"
+    "create-berserk": "./dist/index.js"
   },
   "files": [
     "dist"

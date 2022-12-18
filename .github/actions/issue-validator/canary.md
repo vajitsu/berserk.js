@@ -2,21 +2,21 @@ Please verify that your issue can be recreated with `berserk@canary`.
 
 ### **Why was this issue marked with the `please verify canary` label?**
 
-We noticed the provided reproduction was using an older version of Beserk.js, instead of `canary`.
+We noticed the provided reproduction was using an older version of Berserk.js, instead of `canary`.
 
-The canary version of Beserk.js ships daily and includes all features and fixes that have not been released to the stable version yet. You can think of canary as a _public beta_. Some issues may already be fixed in the canary version, so please verify that your issue reproduces by running `npm install berserk@canary` and test it in your project, using your reproduction steps.
+The canary version of Berserk.js ships daily and includes all features and fixes that have not been released to the stable version yet. You can think of canary as a _public beta_. Some issues may already be fixed in the canary version, so please verify that your issue reproduces by running `npm install berserk@canary` and test it in your project, using your reproduction steps.
 
 If the issue does not reproduce with the `canary` version, then it has already been fixed and this issue can be closed.
 
 ### **How can I quickly verify if my issue has been fixed in `canary`?**
 
-The safest way is to install `berserk@canary` in your project and test it, but you can also search through [closed Beserk.js issues](https://github.com/vercel/berserk.js/issues?q=is%3Aissue+is%3Aclosed) for duplicates or check the [Beserk.js releases](https://github.com/vercel/berserk.js/releases).
+The safest way is to install `berserk@canary` in your project and test it, but you can also search through [closed Berserk.js issues](https://github.com/vercel/berserk.js/issues?q=is%3Aissue+is%3Aclosed) for duplicates or check the [Berserk.js releases](https://github.com/vercel/berserk.js/releases).
 
 ### **My issue has been open for a long time, why do I need to verify `canary` now?**
 
-Beserk.js does not backport bug fixes to older versions of Beserk.js. Instead, we are trying to introduce only a minimal amount of breaking changes between major releases.
+Berserk.js does not backport bug fixes to older versions of Berserk.js. Instead, we are trying to introduce only a minimal amount of breaking changes between major releases.
 
-### **What happens if I don't verify against the canary version of Beserk.js?**
+### **What happens if I don't verify against the canary version of Berserk.js?**
 
 An issue with the `please verify canary` that receives no meaningful activity (e.g. new comments that acknowledge verification against `canary`) will be automatically closed and locked after 30 days.
 
@@ -28,7 +28,7 @@ Anyone experiencing the same issue is welcome to provide a minimal reproduction 
 
 ### **I think my reproduction is good enough, why aren't you looking into it quicker?**
 
-We look into every Beserk.js issue and constantly monitor open issues for new comments.
+We look into every Berserk.js issue and constantly monitor open issues for new comments.
 
 However, sometimes we might miss one or two due to the popularity/high traffic of the repository. We apologize, and kindly ask you to refrain from tagging core maintainers, as that will usually not result in increased priority.
 
@@ -37,4 +37,4 @@ Upvoting issues to show your interest will help us prioritize and address them a
 ### **Useful Resources**
 
 - [How to create a Minimal, Complete, and Verifiable example](https://stackoverflow.com/help/mcve)
-- [Reporting a Beserk.js bug](https://github.com/vajitsu/berserk.js/blob/canary/.github/ISSUE_TEMPLATE/1.bug_report.yml)
+- [Reporting a Berserk.js bug](https://github.com/vajitsu/berserk.js/blob/canary/.github/ISSUE_TEMPLATE/1.bug_report.yml)

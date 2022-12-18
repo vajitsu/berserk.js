@@ -1,5 +1,5 @@
 name: Bug Report
-description: Create a bug report for the Beserk.js core
+description: Create a bug report for the Berserk.js core
 labels: ['template: bug']
 body:
   - type: markdown
@@ -8,9 +8,9 @@ body:
   - type: checkboxes
     attributes:
       label: Verify canary release
-      description: '`berserk@canary` is the canary version of Beserk.js that ships daily. It includes all features and fixes that have not been released to the stable version yet. Think of canary as a public beta. Some issues may already be fixed in the canary version, so please verify that your issue reproduces before opening a new issue.'
+      description: '`berserk@canary` is the canary version of Berserk.js that ships daily. It includes all features and fixes that have not been released to the stable version yet. Think of canary as a public beta. Some issues may already be fixed in the canary version, so please verify that your issue reproduces before opening a new issue.'
       options:
-        - label: I verified that the issue exists in the latest Beserk.js canary release
+        - label: I verified that the issue exists in the latest Berserk.js canary release
           required: true
   - type: textarea
     attributes:

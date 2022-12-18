@@ -1,5 +1,5 @@
 **/.berserk/**
-**/_jujutsu/**
+**/_berserk/**
 **/dist/**
 packages/berserk/compiled/**/*
 lerna.json

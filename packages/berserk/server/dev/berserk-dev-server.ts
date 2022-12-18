@@ -11,7 +11,7 @@ import { loadEnvConfig } from '../../lib/env'
 import { fileExists } from '../../lib/file-exists'
 import { recursiveReadDir } from '../../lib/recursive-readdir'
 import { flushAllTraces, setGlobal } from '../../trace'
-import { BeserkConfigComplete } from '../config-shared'
+import { BerserkConfigComplete } from '../config-shared'
 import Server from '../berserk-server'
 import { DevServerOptions } from '../lib/options'
 import startServer from '../lib/start-server'
@@ -29,7 +29,7 @@ export default class DevServer extends Server {
   protected distDir: string
   protected dir: string
   protected quiet: boolean
-  protected jujutsuConfig: BeserkConfigComplete
+  protected berserkConfig: BerserkConfigComplete
 
   protected loadEnvConfig({
     dev,
@@ -49,8 +49,8 @@ export default class DevServer extends Server {
     this.dev = dev
     this.quiet = quiet
     this.dir = dir
-    this.jujutsuConfig = conf as BeserkConfigComplete
-    this.distDir = require('path').join(this.dir, this.jujutsuConfig.distDir)
+    this.berserkConfig = conf as BerserkConfigComplete
+    this.distDir = require('path').join(this.dir, this.berserkConfig.distDir)
     this.appDir = require('path').join(this.dir, 'app')
 
     this.devReady = new Promise((resolve) => {
@@ -84,11 +84,11 @@ export default class DevServer extends Server {
       files.push(...envFiles)
 
       const regex_commands = new RegExp(
-        `^command\\.(?:${this.jujutsuConfig.commandExtensions.join('|')})$`,
+        `^command\\.(?:${this.berserkConfig.commandExtensions.join('|')})$`,
         ''
       )
       const regex_events = new RegExp(
-        `^event\\.(?:${this.jujutsuConfig.eventExtensions.join('|')})$`,
+        `^event\\.(?:${this.berserkConfig.eventExtensions.join('|')})$`,
         ''
       )
 
@@ -188,7 +188,7 @@ export default class DevServer extends Server {
           if (tsconfigChange) {
             try {
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              tsconfigResult = await loadJsConfig(this.dir, this.jujutsuConfig)
+              tsconfigResult = await loadJsConfig(this.dir, this.berserkConfig)
             } catch (_) {
               /* do we want to log if there are syntax errors in tsconfig  while editing? */
             }

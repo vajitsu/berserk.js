@@ -32,7 +32,7 @@ const jujutsuBuild: cliCommand = (argv) => {
         Compiles the application for production deployment
       Usage
         $ berserk build <dir>
-      <dir> represents the directory of the Beserk.js application.
+      <dir> represents the directory of the Berserk.js application.
       If no directory is provided, the current directory will be used.
     `,
       0

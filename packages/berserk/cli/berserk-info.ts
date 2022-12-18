@@ -55,7 +55,7 @@ const jujutsuInfo: cliCommand = async (argv) => {
     console.log(
       `
       Description
-        Prints relevant details about the current system which can be used to report Beserk.js bugs
+        Prints relevant details about the current system which can be used to report Berserk.js bugs
         
       Usage
         $ berserk info

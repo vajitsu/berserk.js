@@ -4,8 +4,8 @@
     "area: documentation": ["docs/**", "errors/**"],
     "area: create-berserk-app": ["packages/create-berserk-app/**"],
     "type: berserk": ["packages/berserk/**", "packages/berserk-discord/**"],
-    "created-by: Beserk.js team": [{ "type": "user", "pattern": "kiratsu" }],
-    "created-by: Beserk.js docs team": [
+    "created-by: Berserk.js team": [{ "type": "user", "pattern": "kiratsu" }],
+    "created-by: Berserk.js docs team": [
       { "type": "user", "pattern": "kiratsu" }
     ]
   }

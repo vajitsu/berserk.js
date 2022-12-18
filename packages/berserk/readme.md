@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <!-- <a aria-label="Beserk logo" href="https://berserk.vercel.app">
+  <!-- <a aria-label="Berserk logo" href="https://berserk.vercel.app">
     <img src="https://img.shields.io/badge/MADE%20BY%20VAJITSU-000000.svg?style=for-the-badge&logo=node&labelColor=000">
   </a> -->
   <a aria-label="NPM version" href="https://www.npmjs.com/package/berserk">

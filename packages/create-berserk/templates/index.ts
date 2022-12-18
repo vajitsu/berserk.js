@@ -20,7 +20,7 @@ export const getTemplateFile = ({
 }
 
 /**
- * Install a Beserk.js internal template to a given `root` directory.
+ * Install a Berserk.js internal template to a given `root` directory.
  */
 export const installTemplate = async ({
   appName,

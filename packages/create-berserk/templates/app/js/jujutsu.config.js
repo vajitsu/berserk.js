@@ -1,5 +1,5 @@
-/** @type {import('berserk').JujutsuConfig} */
-const jujutsuConfig = {
+/** @type {import('berserk').BerserkConfig} */
+const berserkConfig = {
   discord: {
     token: 'your-token-goes-here',
     options: {
@@ -11,4 +11,4 @@ const jujutsuConfig = {
   },
 }
 
-module.exports = jujutsuConfig
+module.exports = berserkConfig

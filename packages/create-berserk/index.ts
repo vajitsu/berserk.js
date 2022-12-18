@@ -61,7 +61,7 @@ const program = new Commander.Command(packageJson.name)
     '-e, --example [name]|[github-url]',
     `
   An example to bootstrap the app with. You can use an example name
-  from the official Beserk.js repo or a GitHub URL. The URL can use
+  from the official Berserk.js repo or a GitHub URL. The URL can use
   any branch and/or subdirectory
 `
   )

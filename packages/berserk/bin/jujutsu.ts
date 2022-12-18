@@ -10,7 +10,7 @@ import arg from 'berserk/dist/compiled/arg/index.js'
     require.resolve(dependency)
   } catch (err) {
     console.warn(
-      `The module '${dependency}' was not found. Beserk.js requires that you include it in 'dependencies' of your 'package.json'. To add it, run 'npm install ${dependency}'`
+      `The module '${dependency}' was not found. Berserk.js requires that you include it in 'dependencies' of your 'package.json'. To add it, run 'npm install ${dependency}'`
     )
   }
 })
@@ -33,7 +33,7 @@ const args = arg(
 )
 
 if (args['--version']) {
-  console.log(`Beserk.js v${process.env.__JUJUTSU_VERSION}`)
+  console.log(`Berserk.js v${process.env.__JUJUTSU_VERSION}`)
   process.exit(0)
 }
 

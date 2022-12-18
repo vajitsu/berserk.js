@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ClientOptions } from 'berserk/dist/compiled/discord.js'
 
-export type BeserkConfigComplete = Required<BeserkConfig> & {
+export type BerserkConfigComplete = Required<BerserkConfig> & {
   typescript: Required<TypeScriptConfig>
   configOrigin?: string
   configFile?: string
@@ -22,7 +22,7 @@ export interface DiscordConfig {
 
 export interface ExperimentalConfig {
   /**
-   * Enables use of the `app` directory in your Beserk.js application
+   * Enables use of the `app` directory in your Berserk.js application
    */
   appDir?: boolean
   /**
@@ -37,9 +37,9 @@ export interface ExperimentalConfig {
   swcMinify?: boolean
 }
 
-export interface BeserkConfig extends Record<string, any> {
+export interface BerserkConfig extends Record<string, any> {
   /**
-   * Beserk.js comes with built-in support for environment variables
+   * Berserk.js comes with built-in support for environment variables
    */
   env?: Record<string, string>
   /**
@@ -55,7 +55,7 @@ export interface BeserkConfig extends Record<string, any> {
    */
   distDir?: string
   /**
-   * The build output directory (defaults to `.berserk`) is now cleared by default except for the Beserk.js caches.
+   * The build output directory (defaults to `.berserk`) is now cleared by default except for the Berserk.js caches.
    */
   cleanDistDir?: boolean
   commandExtensions?: string[]
@@ -66,7 +66,7 @@ export interface BeserkConfig extends Record<string, any> {
   experimental?: ExperimentalConfig
 }
 
-export const defaultConfig: BeserkConfig = {
+export const defaultConfig: BerserkConfig = {
   env: {},
   typescript: {
     ignoreBuildErrors: false,
@@ -97,7 +97,7 @@ export async function normalizeConfig(phase: string, config: any) {
   return await config
 }
 
-export function validateConfig(userConfig: BeserkConfig): {
+export function validateConfig(userConfig: BerserkConfig): {
   errors?: Array<any> | null
 } {
   // eslint-disable-next-line import/no-extraneous-dependencies

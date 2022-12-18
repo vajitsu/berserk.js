@@ -7,11 +7,11 @@ import { CONFIG_FILES } from '../lib/constants'
 import {
   defaultConfig,
   normalizeConfig,
-  BeserkConfigComplete,
+  BerserkConfigComplete,
   validateConfig,
 } from './config-shared'
 
-export { BeserkConfig, normalizeConfig } from './config-shared'
+export { BerserkConfig, normalizeConfig } from './config-shared'
 
 function assignDefaults(_dir: string, userConfig: { [key: string]: any }) {
   const config = Object.keys(userConfig).reduce<{ [key: string]: any }>(
@@ -25,7 +25,7 @@ function assignDefaults(_dir: string, userConfig: { [key: string]: any }) {
       if (key === 'discord') {
         if (value === undefined) {
           throw new Error(
-            `Missing "discord" object in Beserk.js configuration file. This is required for your application.`
+            `Missing "discord" object in Berserk.js configuration file. This is required for your application.`
           )
         }
       }
@@ -121,11 +121,11 @@ export default async function loadConfig(
   dir: string,
   customConfig?: object | null,
   rawConfig?: boolean
-): Promise<BeserkConfigComplete> {
+): Promise<BerserkConfigComplete> {
   let configFileName = 'berserk.config.js'
 
   if (customConfig) {
-    return assignDefaults(dir, customConfig) as BeserkConfigComplete
+    return assignDefaults(dir, customConfig) as BerserkConfigComplete
   }
 
   const path = await findUp(CONFIG_FILES, { cwd: dir })
@@ -184,7 +184,7 @@ export default async function loadConfig(
       configFile: path,
       configFileName,
       ...userConfig,
-    }) as BeserkConfigComplete
+    }) as BerserkConfigComplete
     return completeConfig
   } else {
     const configBaseName = basename(CONFIG_FILES[0], extname(CONFIG_FILES[0]))
@@ -211,7 +211,7 @@ export default async function loadConfig(
   const completeConfig = assignDefaults(
     dir,
     defaultConfig
-  ) as BeserkConfigComplete
+  ) as BerserkConfigComplete
   completeConfig.configFileName = configFileName
   return completeConfig
 }

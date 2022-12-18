@@ -5,7 +5,7 @@ export type SlashCommandError = {
   other: Error
 }
 
-export type JujutsuConfig = {
+export type BerserkConfig = {
   distDir: string
   env?: string[]
   discord: DiscordConfig

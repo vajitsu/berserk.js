@@ -4,7 +4,7 @@ import { CONFIG_FILES, PHASE_DEVELOPMENT_SERVER } from '../lib/constants'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import arg from 'berserk/dist/compiled/arg/index.js'
 import { printAndExit } from '../server/lib/utils'
-import { JujutsuConfig } from '../types'
+import { BerserkConfig } from '../types'
 import { cliCommand } from '../lib/commands'
 import * as Log from '../build/output/log'
 import { existsSync, watchFile } from 'fs'
@@ -81,12 +81,12 @@ const jujutsuDev: cliCommand = async (argv) => {
       require('../lib/interop-default') as typeof import('../lib/interop-default')
 
     let hasNonDefaultConfig
-    let rawJujutsuConfig: JujutsuConfig = {}
+    let rawJujutsuConfig: BerserkConfig = {}
 
     try {
       rawJujutsuConfig = interopDefault(
         await loadConfig(PHASE_DEVELOPMENT_SERVER, dir, undefined, true)
-      ) as JujutsuConfig
+      ) as BerserkConfig
 
       if (typeof rawJujutsuConfig === 'function') {
         rawJujutsuConfig = (rawJujutsuConfig as any)(PHASE_DEVELOPMENT_SERVER, {
@@ -148,7 +148,7 @@ const jujutsuDev: cliCommand = async (argv) => {
   //const
 
   //   startServer({
-  //     conf: findConfig<JujutsuConfig>(process.cwd(), 'berserk'),
+  //     conf: findConfig<BerserkConfig>(process.cwd(), 'berserk'),
   //     ...devServerOptions,
   //   })
 

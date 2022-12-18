@@ -23,7 +23,7 @@ SOFTWARE.
 */
 import path from 'path'
 import { fileExists } from '../lib/file-exists'
-import { BeserkConfigComplete } from '../server/config-shared'
+import { BerserkConfigComplete } from '../server/config-shared'
 import { getTypeScriptConfiguration } from '../lib/typescript/get-configuration'
 import * as Log from './output/log'
 import { readFileSync } from 'fs'
@@ -65,7 +65,7 @@ function parseJsonFile(filePath: string) {
 
 export default async function loadJsConfig(
   dir: string,
-  config: BeserkConfigComplete
+  config: BerserkConfigComplete
 ) {
   let typeScriptPath: string | undefined
   try {
