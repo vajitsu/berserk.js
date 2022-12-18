@@ -4,4 +4,4 @@ node_modules
 **/dist/**
 packages/berserk/compiled/**/*
 **/__tmp__/**
-packages/create-berserk-app/templates/**
+packages/create-berserk/templates/**
