@@ -1,5 +1,5 @@
 {
-  "name": "release",
+  "name": "@berserk/release",
   "version": "0.0.1-canary.12",
   "description": "Generate changelogs with a single command",
   "private": true,
@@ -7,7 +7,6 @@
     "bin",
     "lib"
   ],
-  "repository": "vercel/release",
   "keywords": [
     "github",
     "releases",
@@ -15,7 +14,6 @@
     "tags",
     "push"
   ],
-  "author": "leo",
   "license": "MIT",
   "bin": {
     "release": "./bin/release.js"

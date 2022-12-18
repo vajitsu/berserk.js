@@ -6,7 +6,7 @@ To be able to investigate, we need access to a reproduction to identify what tri
 
 To make sure the issue is resolved as quickly as possible, please make sure that the reproduction is as **minimal** as possible. This means that you should **remove unnecessary code, files, and dependencies** that do not contribute to the issue.
 
-Please test your reproduction against the latest version of Jujutsu.js (`jujutsu@canary`) to make sure your issue has not already been fixed.
+Please test your reproduction against the latest version of Beserk.js (`berserk@canary`) to make sure your issue has not already been fixed.
 
 ### **I added a link, why was it still marked?**
 
@@ -24,7 +24,7 @@ Anyone experiencing the same issue is welcome to provide a minimal reproduction 
 
 ### **I think my reproduction is good enough, why aren't you looking into it quicker?**
 
-We look into every Jujutsu.js issue and constantly monitor open issues for new comments.
+We look into every Beserk.js issue and constantly monitor open issues for new comments.
 
 However, sometimes we might miss one or two due to the popularity/high traffic of the repository. We apologize, and kindly ask you to refrain from tagging core maintainers, as that will usually not result in increased priority.
 
@@ -33,4 +33,4 @@ Upvoting issues to show your interest will help us prioritize and address them a
 ### **Useful Resources**
 
 - [How to create a Minimal, Complete, and Verifiable example](https://stackoverflow.com/help/mcve)
-- [Reporting a Jujutsu.js bug](https://github.com/vajitsu/jujutsu.js/blob/canary/.github/ISSUE_TEMPLATE/1.bug_report.yml)
+- [Reporting a Beserk.js bug](https://github.com/vajitsu/berserk.js/blob/canary/.github/ISSUE_TEMPLATE/1.bug_report.yml)

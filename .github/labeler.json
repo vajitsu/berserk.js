@@ -2,10 +2,10 @@
   "labels": {
     "area: examples": ["examples/**"],
     "area: documentation": ["docs/**", "errors/**"],
-    "area: create-jujutsu-app": ["packages/create-jujutsu-app/**"],
-    "type: jujutsu": ["packages/jujutsu/**", "packages/jujutsu-discord/**"],
-    "created-by: Jujutsu.js team": [{ "type": "user", "pattern": "kiratsu" }],
-    "created-by: Jujutsu.js docs team": [
+    "area: create-berserk-app": ["packages/create-berserk-app/**"],
+    "type: berserk": ["packages/berserk/**", "packages/berserk-discord/**"],
+    "created-by: Beserk.js team": [{ "type": "user", "pattern": "kiratsu" }],
+    "created-by: Beserk.js docs team": [
       { "type": "user", "pattern": "kiratsu" }
     ]
   }

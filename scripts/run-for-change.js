@@ -18,8 +18,8 @@ const CHANGE_ITEM_GROUPS = {
     '.github/labeler.json',
     '.github/pull_request_template.md',
   ],
-  'jujutsu-discord': [
-    'packages/jujutsu-discord',
+  'berserk-discord': [
+    'packages/berserk-discord',
     'scripts/normalize-version-bump.js',
   ],
 }
@@ -43,7 +43,7 @@ async function main() {
 
   let changedFilesOutput = ''
   const isCanary =
-    branchName.trim() === 'canary' && remoteUrl.includes('vajitsu/jujutsu.js')
+    branchName.trim() === 'canary' && remoteUrl.includes('vajitsu/berserk.js')
 
   try {
     await exec('git fetch origin canary')
