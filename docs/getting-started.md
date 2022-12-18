@@ -13,7 +13,7 @@ If you have questions about anything related to Berserk.js, you're always welcom
 ## Creating a Discord Application
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
-2. Click on the ` New Application` button
+2. Click on the `New Application` button
 3. Fill out the popup, then click `Create`
 
 Your Discord application has now been created!
