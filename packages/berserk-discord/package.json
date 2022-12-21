@@ -1,0 +1,50 @@
+{
+  "name": "@berserk/discord",
+  "version": "0.0.1-canary.12",
+  "main": "./dist/src/index.js",
+  "license": "MIT",
+  "repository": {
+    "url": "vajitsu/berserk.js",
+    "directory": "packages/berserk-discord"
+  },
+  "bugs": "https://github.com/vajitsu/berserk.js/issues",
+  "homepage": "https://berserk.sh/solutions/discord",
+  "types": "index.d.ts",
+  "files": [
+    "dist",
+    "index.d.ts",
+    "types/index.d.ts",
+    "types/global.d.ts",
+    "types/compiled.d.ts"
+  ],
+  "scripts": {
+    "dev": "taskr",
+    "release": "taskr release",
+    "build": "pnpm release && pnpm types",
+    "prepublishOnly": "cd ../../ && turbo run build",
+    "types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
+    "typescript": "tsec --noEmit",
+    "ncc-compiled": "ncc cache clean && taskr ncc"
+  },
+  "taskr": {
+    "requires": [
+      "./taskfile-ncc.js",
+      "./taskfile-swc.js",
+      "./taskfile-watch.js"
+    ]
+  },
+  "dependencies": {
+    "@swc/helpers": "latest"
+  },
+  "devDependencies": {
+    "@taskr/clear": "1.1.0",
+    "@taskr/esnext": "1.1.0",
+    "@types/node": "^18.11.9",
+    "@types/ws": "8.2.0",
+    "taskr": "1.1.0",
+    "ws": "8.2.3"
+  },
+  "engines": {
+    "node": ">=14.6.0"
+  }
+}
