@@ -9,7 +9,8 @@
        * Released under MIT license <https://lodash.com/license>
        * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
        * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-       */ ;(function () {
+       */
+      ;(function () {
         var r
         var n = '4.17.21'
         var a = 200

@@ -1,7 +1,6 @@
 ;(() => {
   var r = {
     535: (r, e, n) => {
-      'use strict'
       r = n.nmd(r)
       const t = n(54)
       const wrapAnsi16 = (r, e) =>
@@ -120,7 +119,6 @@
       })
     },
     148: (r, e, n) => {
-      'use strict'
       const t = n(379)
       const a = n(535)
       const o = n(220).stdout
@@ -299,7 +297,6 @@
       r.exports['default'] = r.exports
     },
     299: (r) => {
-      'use strict'
       const e =
         /(?:\\(u[a-f\d]{4}|x[a-f\d]{2}|.))|(?:\{(~)?(\w+(?:\([^)]*\))?(?:\.\w+(?:\([^)]*\))?)*)(?:[ \t]|(?=\r?\n)))|(\})|((?:.|[\r\n\f])+?)/gi
       const n = /(?:^|\.)(\w+)(?:\(([^)]*)\))?/g
@@ -1257,7 +1254,6 @@
       }
     },
     251: (r) => {
-      'use strict'
       r.exports = {
         aliceblue: [240, 248, 255],
         antiquewhite: [250, 235, 215],
@@ -1410,7 +1406,6 @@
       }
     },
     379: (r) => {
-      'use strict'
       var e = /[|\\{}()[\]^$+*?.]/g
       r.exports = function (r) {
         if (typeof r !== 'string') {
@@ -1420,7 +1415,6 @@
       }
     },
     343: (r) => {
-      'use strict'
       r.exports = (r, e) => {
         e = e || process.argv
         const n = r.startsWith('-') ? '' : r.length === 1 ? '-' : '--'
@@ -1430,7 +1424,6 @@
       }
     },
     220: (r, e, n) => {
-      'use strict'
       const t = n(37)
       const a = n(343)
       const o = process.env
@@ -1536,7 +1529,6 @@
       }
     },
     37: (r) => {
-      'use strict'
       r.exports = require('os')
     },
   }

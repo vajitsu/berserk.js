@@ -3,5 +3,7 @@ node_modules
 **/_berserk/**
 **/dist/**
 packages/berserk/compiled/**/*
+packages/berserk-discord-js/compiled/**/*
+packages/berserk-discord-rs/compiled/**/*
 **/__tmp__/**
 packages/create-berserk/templates/**

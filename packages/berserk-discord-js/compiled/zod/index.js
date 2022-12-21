@@ -1,5 +1,4 @@
 ;(() => {
-  'use strict'
   var e = {
     529: (e, t, s) => {
       Object.defineProperty(t, '__esModule', { value: true })
