@@ -44,6 +44,7 @@ const cwd = process.cwd()
   const publish = async (pkg, retry = 0) => {
     try {
       await publishSema.acquire()
+      // @ts-ignore
       await execa(
         `npm`,
         [
