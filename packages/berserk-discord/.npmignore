@@ -1,0 +1,11 @@
+src/
+.turbo/
+.prettierignore
+tsconfig.json
+tsup.config.ts
+spack.config.js
+*.log
+.swrc
+*.toml
+license.md
+*.yaml
