@@ -1,6 +1,6 @@
-**/.jujutsu/**
-**/_jujutsu/**
+**/.berserk/**
+**/_berserk/**
 **/dist/**
-packages/jujutsu/compiled/**/*
+packages/berserk/compiled/**/*
 lerna.json
 pnpm-lock.yaml

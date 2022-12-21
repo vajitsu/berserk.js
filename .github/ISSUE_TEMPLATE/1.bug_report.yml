@@ -1,27 +1,27 @@
 name: Bug Report
-description: Create a bug report for the Jujutsu.js core
+description: Create a bug report for the Berserk.js core
 labels: ['template: bug']
 body:
   - type: markdown
     attributes:
-      value: If you leave out sections there is a high likelihood it will be moved to the GitHub Discussions ["Help" section](https://github.com/vajitsu/jujutsu.js/discussions/categories/help).
+      value: If you leave out sections there is a high likelihood it will be moved to the GitHub Discussions ["Help" section](https://github.com/vajitsu/berserk.js/discussions/categories/help).
   - type: checkboxes
     attributes:
       label: Verify canary release
-      description: '`jujutsu@canary` is the canary version of Jujutsu.js that ships daily. It includes all features and fixes that have not been released to the stable version yet. Think of canary as a public beta. Some issues may already be fixed in the canary version, so please verify that your issue reproduces before opening a new issue.'
+      description: '`berserk@canary` is the canary version of Berserk.js that ships daily. It includes all features and fixes that have not been released to the stable version yet. Think of canary as a public beta. Some issues may already be fixed in the canary version, so please verify that your issue reproduces before opening a new issue.'
       options:
-        - label: I verified that the issue exists in the latest Jujutsu.js canary release
+        - label: I verified that the issue exists in the latest Berserk.js canary release
           required: true
   - type: textarea
     attributes:
       label: Provide environment information
-      description: Please run `jujutsu info` in the root directory of your project and paste the results. You might need to use `npx --no-install jujutsu info` if jujutsu is not in the current PATH.
+      description: Please run `berserk info` in the root directory of your project and paste the results. You might need to use `npx --no-install berserk info` if berserk is not in the current PATH.
     validations:
       required: true
   - type: input
     attributes:
       label: How are you deploying your application? (if relevant)
-      description: 'For example: jujutsu start or Hosting Platform'
+      description: 'For example: berserk start or Hosting Platform'
   - type: textarea
     attributes:
       label: Describe the Bug

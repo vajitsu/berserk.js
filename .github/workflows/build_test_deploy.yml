@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # we build a dev binary for use in CI so skip downloading
-      # canary jujutsu-discord binaries in the monorepo
+      # canary berserk-discord binaries in the monorepo
       JUJUTSU_SKIP_NATIVE_POSTINSTALL: 1
       TURBO_TEAM: 'vajitsu'
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -49,7 +49,7 @@ jobs:
 
       - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
 
-      - run: echo "::set-output name=DISCORD_CHANGE::$(node scripts/run-for-change.js --type discord-jujutsu --exec echo 'yup')"
+      - run: echo "::set-output name=DISCORD_CHANGE::$(node scripts/run-for-change.js --type berserk-discord --exec echo 'yup')"
         id: discord-change
 
       - run: echo "::set-output name=TURBO_TOKEN::$(echo ${TURBO_TOKEN:-empty})"
@@ -57,7 +57,7 @@ jobs:
 
       - run: echo ${{steps.discord-change.outputs.DISCORD_CHANGE}}
 
-      - run: npm i -g turbo@${{ env.TURBO_VERSION }} pnpm@${PNPM_VERSION}
+      - run: npm i -g turbo@${{ env.TURBO_VERSION }} pnpm@${{ env.PNPM_VERSION }}
 
       - id: get-store-path
         run: echo ::set-output name=STORE_PATH::$(pnpm store path)
