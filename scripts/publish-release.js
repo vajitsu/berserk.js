@@ -8,7 +8,6 @@ const { readJson, readdir } = require('fs-extra')
 
 const cwd = process.cwd()
 
-process.env.NPM_TOKEN = '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'
 ;(async function () {
   let isCanary = true
 
