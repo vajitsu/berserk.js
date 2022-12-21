@@ -1,6 +1,6 @@
 {
   "name": "@berserk/discord-js",
-  "version": "0.0.1-canary.12",
+  "version": "1.0.0-canary.1",
   "license": "MIT",
   "private": true,
   "repository": {

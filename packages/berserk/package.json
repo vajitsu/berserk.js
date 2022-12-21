@@ -1,6 +1,6 @@
 {
   "name": "berserk",
-  "version": "0.0.1-canary.12",
+  "version": "1.0.0-canary.1",
   "description": "The Discord Framework",
   "main": "./dist/server/berserk.js",
   "license": "MIT",
