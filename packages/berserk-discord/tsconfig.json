@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig-tsec.json",
+  "compilerOptions": {
+    "strict": true,
+    "module": "esnext",
+    "target": "ES2017",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "stripInternal": true,
+    "skipLibCheck": true
+  },
+  "exclude": ["dist", "./*.d.ts", "types/compiled.d.ts", "node_modules"]
+}
