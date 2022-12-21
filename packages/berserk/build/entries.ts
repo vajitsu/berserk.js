@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { DISCORD_EVENTS } from '../lib/constants'
-import { join } from 'path'
+import { join, sep } from 'path'
 import { recursiveReadDir } from '../lib/recursive-readdir'
 import { isCommandName } from './utils'
 import { camelCase } from 'berserk/dist/compiled/lodash'
@@ -75,30 +75,30 @@ export async function createAppManifest({
   let app_commands =
     appDir && isAppDirEnabled
       ? (await recursiveReadDir(appDir, regex_commands)).map((path) =>
-          path.startsWith('\\') ? path.substring(1) : path
+          path.startsWith(sep) ? path.substring(1) : path
         )
       : []
   let app_events =
     appDir && isAppDirEnabled
       ? (await recursiveReadDir(appDir, regex_events)).map((path) =>
-          path.startsWith('\\') ? path.substring(1) : path
+          path.startsWith(sep) ? path.substring(1) : path
         )
       : []
   let commands_dir = commandsDir
     ? (await recursiveReadDir(commandsDir, regex_commands_dir)).map((path) =>
-        path.startsWith('\\') ? path.substring(1) : path
+        path.startsWith(sep) ? path.substring(1) : path
       )
     : []
   let events_dir = eventsDir
     ? (await recursiveReadDir(eventsDir, regex_events_dir)).map((path) =>
-        path.startsWith('\\') ? path.substring(1) : path
+        path.startsWith(sep) ? path.substring(1) : path
       )
     : []
 
   let _validAppCommands = app_commands
     .map((path) => ({
       path: join('app', path),
-      name: path.substring(0, path.lastIndexOf('\\')),
+      name: path.substring(0, path.lastIndexOf(sep)),
     }))
     .filter(
       (curr) =>
@@ -116,24 +116,24 @@ export async function createAppManifest({
     .filter((path) =>
       subCommandsEnabled && path.path.match(/\\/g)?.length === 3 ? true : false
     )
-    .filter((f) => isCommandName(f.path.split('\\')[1]))
+    .filter((f) => isCommandName(f.path.split(sep)[1]))
     .map((f) => ({
       ...f,
-      name: f.name.split('\\')[f.name.split('\\').length - 1],
-      parent: f.path.split('\\')[1],
+      name: f.name.split(sep)[f.name.split(sep).length - 1],
+      parent: f.path.split(sep)[1],
     }))
 
   const validCommands = commands_dir
     .filter((path) => {
       const sl = path.match(/\\/g)
       if (sl && sl.length >= 1) {
-        return regex_commands.test(path.split('\\')[1])
+        return regex_commands.test(path.split(sep)[1])
       } else return true
     })
     .map((path) => ({
       path: join('commands', path),
       name: path
-        .split('\\')[0]
+        .split(sep)[0]
         .replace(new RegExp(`\\.(?:${commandExtensions.join('|')})$`), ''),
     }))
     .filter((path) => !isFileEmpty(path.path))
@@ -141,7 +141,7 @@ export async function createAppManifest({
   const validAppEvents = app_events
     .map((path) => ({
       path: join('app', path),
-      name: path.substring(0, path.lastIndexOf('\\')),
+      name: path.substring(0, path.lastIndexOf(sep)),
     }))
     .map((path) => ({
       ...path,
@@ -154,14 +154,14 @@ export async function createAppManifest({
     .filter((path) => {
       const sl = path.match(/\\/g)
       if (sl && sl.length >= 1) {
-        return regex_events.test(path.split('\\')[1])
+        return regex_events.test(path.split(sep)[1])
       } else return true
     })
     .map((path) => {
       return {
         path: join('events', path),
         name: path
-          .split('\\')[0]
+          .split(sep)[0]
           .replace(new RegExp(`\\.(?:${eventExtensions.join('|')})$`), ''),
       }
     })

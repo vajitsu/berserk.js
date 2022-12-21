@@ -38,13 +38,9 @@
     "@swc/cli": "0.1.55",
     "@swc/core": "1.2.203",
     "@swc/helpers": "0.4.14",
-    "@taskr/clear": "1.1.0",
-    "@taskr/esnext": "1.1.0",
-    "@taskr/watch": "1.1.0",
     "@typescript-eslint/eslint-plugin": "4.29.1",
     "@typescript-eslint/parser": "4.29.1",
     "@vercel/ncc": "0.36.0",
-    "alex": "11.0.0",
     "arg": "^5.0.2",
     "async-sema": "^3.1.1",
     "berserk": "workspace:*",
@@ -66,8 +62,9 @@
     "prettier": "^2.7.1",
     "shell-quote": "1.7.3",
     "tsconfig-paths": "^4.1.1",
+    "tsec": "0.2.6",
     "turbo": "1.6.3",
-    "typescript": "4.9.3"
+    "typescript": "next"
   },
   "packageManager": "pnpm@7.3.0",
   "engines": {
