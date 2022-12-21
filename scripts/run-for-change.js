@@ -19,7 +19,8 @@ const CHANGE_ITEM_GROUPS = {
     '.github/pull_request_template.md',
   ],
   'berserk-discord': [
-    'packages/berserk-discord',
+    'packages/berserk-discord-js',
+    'packages/berserk-discord-rs',
     'scripts/normalize-version-bump.js',
   ],
 }
