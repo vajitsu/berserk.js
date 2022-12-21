@@ -1,10 +1,10 @@
 'area: app':
   - 'App directory (appDir: true)'
-'area: create-jujutsu-app':
-  - 'CLI (create-jujutsu-app)'
+'area: create-berserk-app':
+  - 'CLI (create-berserk-app)'
 'area: package manager':
   - 'Package manager (npm, pnpm, Yarn)'
-'area: SWC Minify':
+'area: SWC minify':
   - 'SWC minifier (swcMinify: true)'
 'area: SWC transforms':
   - 'SWC transpilation'

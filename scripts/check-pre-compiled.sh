@@ -2,11 +2,17 @@
 
 set -e
 
-cd packages/jujutsu
+cd packages/berserk
 
 pnpm run ncc-compiled
 
 cd ../../
+
+cd packages/berserk-discord
+
+pnpm run ncc-compiled
+
+cd ../..
 
 # Make sure to exit with 1 if there are changes after running ncc-compiled
 # step to ensure we get any changes committed

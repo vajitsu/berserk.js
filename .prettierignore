@@ -1,10 +1,10 @@
 node_modules
-**/.jujutsu/**
-**/_jujutsu/**
+**/.berserk/**
+**/_berserk/**
 **/dist/**
-packages/jujutsu/compiled/**
+packages/berserk/compiled/**
 **/__tmp__/**
 lerna.json
 pnpm-lock.yaml
 package.json
-packages/jujutsu-discord/target/**
+packages/berserk-discord/target/**
