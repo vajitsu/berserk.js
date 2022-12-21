@@ -2,11 +2,9 @@
   "labels": {
     "area: examples": ["examples/**"],
     "area: documentation": ["docs/**", "errors/**"],
-    "area: create-berserk-app": ["packages/create-berserk-app/**"],
-    "type: berserk": ["packages/berserk/**", "packages/berserk-discord/**"],
-    "created-by: Berserk.js team": [{ "type": "user", "pattern": "kiratsu" }],
-    "created-by: Berserk.js docs team": [
-      { "type": "user", "pattern": "kiratsu" }
-    ]
+    "area: create-berserk": ["packages/create-berserk/**"],
+    "type: berserk": ["packages/berserk/**", "packages/berserk-discord-js/**"],
+    "created-by: Berserk.js team": [{ "type": "user", "pattern": "kijv" }],
+    "created-by: Berserk.js docs team": [{ "type": "user", "pattern": "kijv" }]
   }
 }
