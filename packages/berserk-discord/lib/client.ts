@@ -8,8 +8,8 @@ import {
 } from './gateway'
 import { prefixes } from './log'
 import { print_and_exit, unpack } from './utils'
-import { z } from '@berserk/discord-js/dist/compiled/zod'
-import { EventEmitter, WebSocket } from '@berserk/discord-js/dist/compiled/ws'
+import { z } from '@berserk/discord/dist/compiled/zod'
+import { EventEmitter, WebSocket } from '@berserk/discord/dist/compiled/ws'
 
 interface client_options {
   intents: number[]

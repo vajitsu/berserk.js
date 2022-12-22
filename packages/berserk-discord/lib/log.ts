@@ -1,4 +1,4 @@
-import chalk from '@berserk/discord-js/dist/compiled/chalk'
+import chalk from '@berserk/discord/dist/compiled/chalk'
 
 export const prefixes = {
   error: chalk.red('error') + ' -',

@@ -8,7 +8,7 @@ const externals = {
 }
 
 // eslint-disable-next-line camelcase
-externals['ws'] = '@berserk/discord-js/dist/compiled/ws'
+externals['ws'] = '@berserk/discord/dist/compiled/ws'
 export async function ncc_ws(task, opts) {
   await task
     .source(opts.src || relative(__dirname, require.resolve('ws')))
@@ -17,7 +17,7 @@ export async function ncc_ws(task, opts) {
 }
 
 // eslint-disable-next-line camelcase
-externals['erlpack'] = '@berserk/discord-js/dist/compiled/erlpack'
+externals['erlpack'] = '@berserk/discord/dist/compiled/erlpack'
 export async function ncc_erlpack(task, opts) {
   await task
     .source(opts.src || relative(__dirname, require.resolve('erlpack')))
@@ -26,7 +26,7 @@ export async function ncc_erlpack(task, opts) {
 }
 
 // eslint-disable-next-line camelcase
-externals['chalk'] = '@berserk/discord-js/dist/compiled/chalk'
+externals['chalk'] = '@berserk/discord/dist/compiled/chalk'
 export async function ncc_chalk(task, opts) {
   await task
     .source(opts.src || relative(__dirname, require.resolve('chalk')))
@@ -35,7 +35,7 @@ export async function ncc_chalk(task, opts) {
 }
 
 // eslint-disable-next-line camelcase
-externals['lodash'] = '@berserk/discord-js/dist/compiled/lodash'
+externals['lodash'] = '@berserk/discord/dist/compiled/lodash'
 export async function ncc_lodash(task, opts) {
   await task
     .source(opts.src || relative(__dirname, require.resolve('lodash')))
@@ -44,7 +44,7 @@ export async function ncc_lodash(task, opts) {
 }
 
 // eslint-disable-next-line camelcase
-externals['zod'] = '@berserk/discord-js/dist/compiled/zod'
+externals['zod'] = '@berserk/discord/dist/compiled/zod'
 export async function ncc_zod(task, opts) {
   await task
     .source(opts.src || relative(__dirname, require.resolve('zod')))
@@ -53,7 +53,7 @@ export async function ncc_zod(task, opts) {
 }
 
 // eslint-disable-next-line camelcase
-externals['title'] = '@berserk/discord-js/dist/compiled/title'
+externals['title'] = '@berserk/discord/dist/compiled/title'
 export async function ncc_title(task, opts) {
   await task
     .source(opts.src || relative(__dirname, require.resolve('title')))
