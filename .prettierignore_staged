@@ -1,6 +1,5 @@
 **/.berserk/**
 **/_berserk/**
-**/.next/**
 **/dist/**
 packages/berserk/compiled/**/*
 lerna.json
