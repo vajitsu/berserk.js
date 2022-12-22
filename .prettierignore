@@ -1,6 +1,7 @@
 node_modules
 **/.berserk/**
 **/_berserk/**
+**/.next/**
 **/dist/**
 packages/berserk/compiled/**
 **/__tmp__/**

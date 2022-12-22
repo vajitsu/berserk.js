@@ -33,9 +33,7 @@ examples/**/.env*.local
 # Other
 .hintrc
 .turbo
-apps
-examples
-packages/cli
 test.js
 my-app
 .env
+apps
