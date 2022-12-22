@@ -4,6 +4,7 @@ node_modules
 **/.next/**
 **/dist/**
 packages/berserk/compiled/**
+packages/berserk-discord/compiled/**
 **/__tmp__/**
 lerna.json
 pnpm-lock.yaml

@@ -93,6 +93,9 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    env:
+      TURBO_TEAM: 'vajitsu'
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
     needs: build
     steps:
       - name: Setup node
@@ -101,7 +104,7 @@ jobs:
           node-version: 16
           check-latest: true
 
-      - run: npm i -g pnpm@${PNPM_VERSION}
+      - run: npm i -g turbo@${{ env.TURBO_VERSION }} pnpm@${{ env.PNPM_VERSION }}
 
       - uses: actions/cache@v3
         id: restore-build
