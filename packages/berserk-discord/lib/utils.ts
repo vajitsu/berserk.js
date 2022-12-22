@@ -11,13 +11,12 @@ export function print_and_exit(message: string, code = 1) {
 export function unpack(buffer: Buffer) {
   return (
     buffer.length > 0 &&
-    require('@berserk/discord-js/dist/compiled/erlpack').unpack(buffer)
+    require('@berserk/discord/dist/compiled/erlpack').unpack(buffer)
   )
 }
 
 export function pack(subject: any) {
   return (
-    subject &&
-    require('@berserk/discord-js/dist/compiled/erlpack').pack(subject)
+    subject && require('@berserk/discord/dist/compiled/erlpack').pack(subject)
   )
 }

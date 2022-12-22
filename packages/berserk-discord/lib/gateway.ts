@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import WebSocket from '@berserk/discord-js/dist/compiled/ws'
-import lodash from '@berserk/discord-js/dist/compiled/lodash'
+import WebSocket from '@berserk/discord/dist/compiled/ws'
+import lodash from '@berserk/discord/dist/compiled/lodash'
 import { platform } from 'os'
 import { prefixes } from './log'
 import { stdout } from 'process'
