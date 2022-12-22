@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "app/*"
   ],
   "scripts": {
     "build": "turbo run build",
@@ -32,7 +33,6 @@
     "@babel/core": "7.18.0",
     "@babel/eslint-parser": "7.18.2",
     "@babel/generator": "7.18.0",
-    "@berserk/release": "workspace:*",
     "@changesets/cli": "^2.25.2",
     "@sapphire/shapeshift": "^3.7.0",
     "@swc/cli": "0.1.55",
@@ -44,8 +44,6 @@
     "@vercel/ncc": "0.36.0",
     "arg": "^5.0.2",
     "async-sema": "^3.1.1",
-    "berserk": "workspace:*",
-    "discord.js": "14.6.0",
     "dotenv": "^16.0.3",
     "eslint": "7.24.0",
     "eslint-plugin-eslint-plugin": "5.0.6",
@@ -58,7 +56,7 @@
     "lint-staged": "10.1.7",
     "mintlify": "1.2.0",
     "module": "1.2.5",
-    "next": "13.0.8-canary.0",
+    "next": "13.1.0",
     "node-notifier": "10.0.1",
     "npm-run-all": "4.1.5",
     "path": "^0.12.7",
