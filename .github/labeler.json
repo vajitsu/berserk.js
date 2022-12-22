@@ -3,7 +3,7 @@
     "area: examples": ["examples/**"],
     "area: documentation": ["docs/**", "errors/**"],
     "area: create-berserk": ["packages/create-berserk/**"],
-    "type: berserk": ["packages/berserk/**", "packages/berserk-discord-js/**"],
+    "type: berserk": ["packages/berserk/**", "packages/berserk-discord/**"],
     "created-by: Berserk.js team": [{ "type": "user", "pattern": "kijv" }],
     "created-by: Berserk.js docs team": [{ "type": "user", "pattern": "kijv" }]
   }
