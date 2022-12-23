@@ -7,12 +7,10 @@ import path from 'path'
 import Compiler from './compiler'
 import { findDirs } from '../lib/find-dirs'
 import { recursiveReadDir } from '../lib/recursive-readdir'
-import { printAndExit } from '../lib/utils'
 import isError from '../lib/is-error'
 import { isWriteable } from './is-writeable'
 import { recursiveDelete } from '../lib/recursive-delete'
 
-// TODO: Special bundling for development and when the `.berserk` directory is missing
 export async function coldStart({
   dir,
   distDir,
@@ -29,6 +27,7 @@ export async function coldStart({
     distDir,
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const coldStartResult = coldStartSpan.traceAsyncFn(async () => {
     const compiler = coldStartSpan
       .traceChild('load-swc-compiler')
@@ -67,24 +66,12 @@ export async function coldStart({
 
     const { commandsDir, eventsDir, appDir } = findDirs(dir, isAppDirEnabled)
 
-    const regex_commands = new RegExp(
-      `^[\\w\\-\\.\\ ]+\\.(?:${config.commandExtensions.join('|')})$`,
-      ''
-    )
-    const regex_events = new RegExp(
-      `^[\\w\\-\\.\\ ]+\\.(?:${config.eventExtensions.join('|')})$`,
-      ''
-    )
+    const regex_commands = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
+    const regex_events = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
 
-    const regex_app_event = new RegExp(
-      `^event\\.(?:${config.eventExtensions.join('|')})$`,
-      ''
-    )
+    const regex_app_event = new RegExp(`^event\\.(?:js|ts)$`, '')
 
-    const regex_app_command = new RegExp(
-      `^command\\.(?:${config.commandExtensions.join('|')})$`,
-      ''
-    )
+    const regex_app_command = new RegExp(`^command\\.(?:js|ts)$`, '')
 
     const files = {
       commands: commandsDir
@@ -117,104 +104,68 @@ export async function coldStart({
         : undefined,
     }
 
-    const transpilations = await coldStartSpan
-      .traceChild('transpile-all-files')
+    const chunks = await coldStartSpan
+      .traceChild('generate-chunks')
       .traceAsyncFn(async () => {
-        const commandTranspilations = files.commands
-          ? await compiler.transformFiles(
-              files.commands.map((file) => ({
-                path: file.path,
-                typescript: file.path.endsWith('.ts'),
-                type: file.type,
-              }))
-            )
-          : []
-        const eventTranspilations = files.events
-          ? await compiler.transformFiles(
-              files.events.map((file) => ({
-                path: file.path,
-                typescript: file.path.endsWith('.ts'),
-                type: file.type,
-              }))
-            )
-          : []
-        const appTranspilations = files.app
-          ? [
-              ...(await compiler.transformFiles(
-                files.app.commands.map((file) => ({
-                  path: file.path,
-                  typescript: file.path.endsWith('.ts'),
-                  type: file.type,
-                }))
-              )),
-              ...(await compiler.transformFiles(
-                files.app.events.map((file) => ({
-                  path: file.path,
-                  typescript: file.path.endsWith('.ts'),
-                  type: file.type,
-                }))
-              )),
-            ]
-          : []
-        return {
-          events: eventTranspilations,
-          commands: commandTranspilations,
-          app: appTranspilations,
+        const all = [...(files.events || []), ...(files.commands || [])]
+        const allChunks: {
+          code: string
+          path: string
+          type: 'event' | 'command' | 'app__command' | 'app__event'
+        }[] = []
+        for (let file of all) {
+          mkdirp(distDir)
+          const code = await compiler.bundle(file.path, dir, distDir)
+          allChunks.push({
+            path: file.path,
+            code: code.at(0) as string,
+            type: file.type as any,
+          })
         }
+        return allChunks
       })
 
-    const writtenTranspilations = await coldStartSpan
-      .traceChild('write-all-transpilatins')
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const writeChunks = await coldStartSpan
+      .traceChild('write-chunks')
       .traceAsyncFn(async () => {
-        const all = [
-          ...transpilations.commands,
-          ...transpilations.events,
-          ...transpilations.app,
-        ]
-        const filePaths: {
-          output: string
+        const information: {
           path: string
           origin: 'event' | 'command' | 'app__command' | 'app__event'
         }[] = []
-
-        for (let item of all) {
-          const origin: 'event' | 'command' | 'app__command' | 'app__event' =
-            item.type as any
-          const output = item.output.replace(
-            // eslint-disable-next-line no-useless-escape
-            /(?:require\(\"discord\.js\"\)|require\(\'discord\.js\'\)|require\(\`discord\.js\`\))/,
-            `require("berserk/dist/compiled/discord.js")`
-          )
+        for (let chunk of chunks) {
+          const fileName = chunk.path
+            .split(path.sep)
+            .at(-1)
+            ?.replace(/\.js$/, '.js')
+            .replace(/\.ts$/, '.js') as string
 
           let outDir = path.join(distDir, 'server')
-          if (origin === 'app__event' || origin === 'app__command')
-            outDir = path.join(outDir, 'app')
 
-          const out = path.join(outDir, item.name)
+          if (chunk.type.startsWith('app__')) outDir = path.join(outDir, 'app')
+
+          const outFile = path.join(outDir, fileName)
 
           await mkdirp(outDir)
-          await promises.writeFile(out, output, 'utf8')
+          await promises.writeFile(outFile, chunk.code, 'utf8')
 
-          filePaths.push({
-            output,
-            origin,
-            path: out,
+          information.push({
+            path: outFile,
+            origin: chunk.type,
           })
         }
-
-        return filePaths
+        return information
       })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const buildManifest = await coldStartSpan
       .traceChild('create-build-manifest')
       .traceAsyncFn(async () => {
-        const commands = writtenTranspilations.filter(
-          (t) => t.origin === 'command'
-        )
-        const events = writtenTranspilations.filter((t) => t.origin === 'event')
+        const commands = writeChunks.filter((t) => t.origin === 'command')
+        const events = writeChunks.filter((t) => t.origin === 'event')
 
         const build_manifest = {
+          dev: true,
           commands: Object.fromEntries(
             commands.map((i) => [
               i.path.split(path.sep).at(-1)?.replace(/\..*$/, ''),
@@ -240,12 +191,8 @@ export async function coldStart({
     const appBuildManifest = await coldStartSpan
       .traceChild('create-app-build-manifest')
       .traceAsyncFn(async () => {
-        const commands = writtenTranspilations.filter(
-          (t) => t.origin === 'app__command'
-        )
-        const events = writtenTranspilations.filter(
-          (t) => t.origin === 'app__event'
-        )
+        const commands = writeChunks.filter((t) => t.origin === 'app__command')
+        const events = writeChunks.filter((t) => t.origin === 'app__event')
 
         const app_build_manifest = {
           commands: Object.fromEntries(

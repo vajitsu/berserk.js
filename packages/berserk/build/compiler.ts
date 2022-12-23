@@ -1,19 +1,39 @@
 import { transform, transformSync, bundle, Config } from '@swc/core'
 import { config as spackConfig } from '@swc/core/spack'
-import { SWC_CONFIG } from '../lib/constants'
-import { promises } from 'fs-extra'
-// import { Module } from 'module'
-import path from 'path'
 import { builtinModules } from 'module'
+import { promises } from 'fs-extra'
+import path from 'path'
 
 export default class Compiler {
   private config: Config = {
-    ...SWC_CONFIG,
+    minify: true,
+    env: {
+      forceAllTransforms: true,
+      mode: 'usage',
+      targets: {
+        node: process.versions.node,
+      },
+    },
+    jsc: {
+      loose: true,
+      parser: {
+        syntax: 'typescript',
+      },
+      target: 'es5',
+      externalHelpers: true,
+    },
+    module: {
+      type: 'commonjs',
+      lazy: true,
+      noInterop: true,
+      strict: true,
+      strictMode: true,
+      ignoreDynamic: true,
+    },
   }
 
-  async transform(code: string, typescript = false) {
+  async transform(code: string) {
     let config = this.config
-    if (typescript) (config.jsc as any).parser.syntax = 'typescript'
 
     const out = await transform(code, { ...(config as Config) })
     return out
@@ -31,7 +51,7 @@ export default class Compiler {
     // Transform each file provided in argument 0
     for (let file of files) {
       const code = await promises.readFile(file.path)
-      const out = await this.transform(code.toString('utf8'), file.typescript)
+      const out = await this.transform(code.toString('utf8'))
       const fileName = file.path
         .split(path.sep)
         .at(-1)
@@ -54,31 +74,33 @@ export default class Compiler {
     return out
   }
 
-  async bundle(
-    entry: {
-      path: string
-      origin: 'command' | 'event'
-    },
-    distDir: string
-  ) {
-    const fileName = entry.path
+  async bundle(entry: string, dir: string, distDir: string) {
+    const packageJson = require(path.join(dir, 'package.json'))
+
+    const fileName = entry
       .split(path.sep)
       .at(-1)
-      ?.replace(/\..*$/, '.js') as string
+      ?.replace(/\..*$/, '') as string
+
+    const spackEntry = Object.fromEntries([[fileName, entry]])
+
+    const externalModules = [
+      ...builtinModules,
+      ...builtinModules.map((mod) => `node:${mod}`),
+    ]
+
+    if (packageJson.devDependencies)
+      externalModules.push(...Object.keys(packageJson.devDependencies))
+    if (packageJson.dependencies)
+      externalModules.push(...Object.keys(packageJson.dependencies))
 
     const out = await bundle(
       spackConfig({
-        externalModules: [
-          ...builtinModules,
-          ...builtinModules.map((mod) => `node:${mod}`),
-        ],
-        entry: {
-          index: entry.path,
-        },
+        externalModules,
+        entry: spackEntry,
         output: {
           path: distDir,
-          name: fileName,
-        },
+        } as any,
         options: this.config,
         module: {},
         mode: 'production',

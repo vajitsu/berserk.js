@@ -8,14 +8,6 @@ const configSchema = {
     cleanDistDir: {
       type: 'boolean',
     },
-    commandExtensions: {
-      minItems: 1,
-      type: 'array',
-    },
-    eventExtensions: {
-      minItems: 1,
-      type: 'array',
-    },
     distDir: {
       minLength: 1,
       type: 'string',

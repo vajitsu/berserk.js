@@ -77,8 +77,6 @@ export interface BerserkConfig extends Record<string, any> {
    * The build output directory (defaults to `.berserk`) is now cleared by default except for the Berserk.js caches.
    */
   cleanDistDir?: boolean
-  commandExtensions?: string[]
-  eventExtensions?: string[]
   /**
    * Enable experimental features. Note that all experimental features are subject to breaking changes in the future.
    */
@@ -93,8 +91,6 @@ export const defaultConfig: BerserkConfig = {
   },
   distDir: '.berserk',
   cleanDistDir: true,
-  commandExtensions: ['js', 'ts'],
-  eventExtensions: ['js', 'ts'],
   discord: {
     token: '',
     library: 'discord.js',

@@ -2,6 +2,8 @@ const { relative, join, dirname } = require('path')
 // eslint-disable-next-line import/no-extraneous-dependencies
 const fs = require('fs-extra')
 
+require('taskr')
+
 const externals = {
   'node-fetch': 'node-fetch',
   chokidar: 'chokidar',
@@ -115,13 +117,6 @@ export async function ncc_esm(task, opts) {
     .source(opts.src || relative(__dirname, require.resolve('esm')))
     .ncc({ packageName: 'esm', externals })
     .target('compiled/esm')
-}
-externals['@swc/core'] = 'berserk/dist/compiled/@swc/core'
-export async function ncc_swc_core(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('@swc/core')))
-    .ncc({ packageName: '@swc/core', externals })
-    .target('compiled/@swc/core')
 }
 // eslint-disable-next-line camelcase
 externals['chalk'] = 'berserk/dist/compiled/chalk'
