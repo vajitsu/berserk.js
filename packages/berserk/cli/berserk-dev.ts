@@ -12,7 +12,7 @@ import isError from '../lib/is-error'
 import path from 'path'
 import startServer from '../server/lib/start-server'
 import loadConfig from '../server/config'
-import build from '../build'
+import build from '../build/dev'
 import { flushAllTraces } from '../trace'
 
 let sessionStopHandled = false
@@ -154,32 +154,34 @@ const jujutsuDev: cliCommand = async (argv) => {
 
   const conf = await loadConfig(PHASE_DEVELOPMENT_SERVER, dir)
 
-  await build(dir, null, true).finally(async () => {
-    // Ensure all traces are flushed before finishing the command
-    await flushAllTraces()
+  return await build(dir)
 
-    startServer(
-      {
-        conf,
-        ...devServerOptions,
-        quiet: !!args['--quiet'],
-      },
-      !!args['--debug']
-    ).catch((err: any) => {
-      console.error(err)
-      process.exit(1)
-    })
-  })
+  // await build(dir, null, true).finally(async () => {
+  //   // Ensure all traces are flushed before finishing the command
+  //   await flushAllTraces()
 
-  for (const CONFIG_FILE of CONFIG_FILES) {
-    watchFile(path.join(dir, CONFIG_FILE), (cur: any, prev: any) => {
-      if (cur.size > 0 || prev.size > 0) {
-        console.log(
-          `\n> Found a change in ${CONFIG_FILE}. Restart the server to see the changes in effect.`
-        )
-      }
-    })
-  }
+  //   startServer(
+  //     {
+  //       conf,
+  //       ...devServerOptions,
+  //       quiet: !!args['--quiet'],
+  //     },
+  //     !!args['--debug']
+  //   ).catch((err: any) => {
+  //     console.error(err)
+  //     process.exit(1)
+  //   })
+  // })
+
+  // for (const CONFIG_FILE of CONFIG_FILES) {
+  //   watchFile(path.join(dir, CONFIG_FILE), (cur: any, prev: any) => {
+  //     if (cur.size > 0 || prev.size > 0) {
+  //       console.log(
+  //         `\n> Found a change in ${CONFIG_FILE}. Restart the server to see the changes in effect.`
+  //       )
+  //     }
+  //   })
+  // }
 }
 
 export { jujutsuDev }

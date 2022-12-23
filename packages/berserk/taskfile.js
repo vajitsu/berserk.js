@@ -528,7 +528,6 @@ export async function ncc(task, opts) {
       [
         'ncc_dotenv',
         'ncc_dotenv_expand',
-        'ncc_esm',
         'ncc_watchpack',
         'ncc_chalk',
         'ncc_node_fetch',

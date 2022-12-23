@@ -44,15 +44,15 @@ jobs:
         run: sudo ethtool -K eth0 tx off rx off
 
       - name: Check non-docs only change
-        run: echo "::set-output name=DOCS_CHANGE::$(node scripts/run-for-change.js --not --type docs --exec echo 'nope')"
+        run: echo "DOCS_CHANGE=$(node scripts/run-for-change.js --not --type docs --exec echo 'nope')" >> $GITHUB_OUTPUT
         id: docs-change
 
       - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
 
-      - run: echo "::set-output name=DISCORD_CHANGE::$(node scripts/run-for-change.js --type berserk-discord --exec echo 'yup')"
+      - run: echo "DISCORD_CHANGE=$(node scripts/run-for-change.js --type berserk-discord --exec echo 'yup')" >> $GITHUB_OUTPUT
         id: discord-change
 
-      - run: echo "::set-output name=TURBO_TOKEN::$(echo ${TURBO_TOKEN:-empty})"
+      - run: echo "TURBO_TOKEN=$(echo ${TURBO_TOKEN:-empty})" >> $GITHUB_OUTPUT
         id: turbo-token
 
       - run: echo ${{steps.discord-change.outputs.DISCORD_CHANGE}}
@@ -60,7 +60,7 @@ jobs:
       - run: npm i -g turbo@${{ env.TURBO_VERSION }} pnpm@${{ env.PNPM_VERSION }}
 
       - id: get-store-path
-        run: echo ::set-output name=STORE_PATH::$(pnpm store path)
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v3
         id: cache-pnpm-store
@@ -77,13 +77,13 @@ jobs:
         run: |
           if [[ $(node ./scripts/check-is-release.js 2> /dev/null || :) = v* ]];
             then
-              echo "::set-output name=IS_RELEASE::true"
+              echo "IS_RELEASE=true" >> $GITHUB_OUTPUT
             else
-              echo "::set-output name=IS_RELEASE::false"
+              echo "IS_RELEASE=false" >> $GITHUB_OUTPUT
           fi
       # We use week in the turbo cache key to keep the cache from infinitely growing
       - id: get-week
-        run: echo ::set-output name=WEEK::$(date +%U)
+        run: echo "WEEK=$(date +%U)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v3
         id: cache-build

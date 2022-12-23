@@ -31,7 +31,7 @@ export const SWC_CONFIG: SwcConfig = {
       exportDefaultFrom: true,
       decorators: false,
       decoratorsBeforeExport: false,
-      topLevelAwait: true,
+      topLevelAwait: false,
       importMeta: true,
     },
     experimental: {
@@ -40,13 +40,16 @@ export const SWC_CONFIG: SwcConfig = {
     minify: {
       compress: {
         unused: true,
+        dead_code: true,
+        unsafe: true,
+        arguments: true,
       },
     },
     transform: {},
     preserveAllComments: false,
-    target: 'es2020',
+    target: 'es5',
     loose: true,
-    externalHelpers: false,
+    externalHelpers: true,
     keepClassNames: true,
   },
   module: {

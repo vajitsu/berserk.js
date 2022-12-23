@@ -44,6 +44,10 @@ const configSchema = {
           minLength: 1,
           type: 'string',
         },
+        library: {
+          type: 'string',
+          default: 'discord.js',
+        },
         options: {
           type: 'object',
           additionalProperties: true,

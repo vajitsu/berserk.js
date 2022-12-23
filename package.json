@@ -9,7 +9,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "create-berserk-app": "node --trace-deprecation --enable-source-maps packages/create-berserk-app/dist/index.js",
+    "create-berserk": "node --trace-deprecation --enable-source-maps packages/create-berserk/dist/index.js",
     "berserk": "node --trace-deprecation --enable-source-maps packages/berserk/dist/bin/berserk",
     "lint-typescript": "turbo run typescript",
     "lint-eslint": "eslint . --ext js,jsx,ts,tsx --max-warnings=0 --config .eslintrc.json --no-eslintrc",

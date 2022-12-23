@@ -1,6 +1,5 @@
 // @ts-ignore This path is generated at build time and conflicts otherwise
 import { BerserkConfig } from '../dist/server/config'
-import { ChatInputCommandInteraction as DiscordJsInteraction } from 'discord.js'
 
 // eslint-disable-next-line no-shadow
 enum Partials {
@@ -51,4 +50,4 @@ interface JujutsuClient {
   }
 }
 
-export { BerserkConfig, JujutsuClient, DiscordJsInteraction }
+export { BerserkConfig, JujutsuClient }

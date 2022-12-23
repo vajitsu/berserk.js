@@ -10,7 +10,7 @@ import {
   PHASE_PRODUCTION_BUILD,
   SWC_CONFIG,
 } from '../lib/constants'
-import { transform } from 'berserk/dist/compiled/@swc/core'
+import { transform } from '@swc/core'
 import compileCommands from './compiler/commands'
 import { findDirs } from '../lib/find-dirs'
 import { fileExists } from '../lib/file-exists'
@@ -198,19 +198,19 @@ export default async function build(
     let start: [number, number] | undefined
     let end: number | undefined
 
-    const jujutsuBuildSpan = trace('berserk-build', undefined, {
-      version: process.env.__JUJUTSU_VERSION as string,
+    const berserkBuildSpan = trace('berserk-build', undefined, {
+      version: process.env.__BERSERK_VERSION as string,
     })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const buildResult = await jujutsuBuildSpan.traceAsyncFn(async () => {
+    const buildResult = await berserkBuildSpan.traceAsyncFn(async () => {
       start = process.hrtime()
       // attempt to load global env values so they are available in berserk.config.js
-      const { loadedEnvFiles } = jujutsuBuildSpan
+      const { loadedEnvFiles } = berserkBuildSpan
         .traceChild('load-dotenv')
         .traceFn(() => loadEnvConfig(dir, dev, Log))
 
-      const config: BerserkConfigComplete = await jujutsuBuildSpan
+      const config: BerserkConfigComplete = await berserkBuildSpan
         .traceChild('load-berserk-config')
         .traceAsyncFn(() => loadConfig(PHASE_PRODUCTION_BUILD, dir, conf))
 
@@ -218,7 +218,7 @@ export default async function build(
       setGlobal('phase', PHASE_PRODUCTION_BUILD)
       setGlobal('distDir', distDir)
 
-      const distDirCreated = await jujutsuBuildSpan
+      const distDirCreated = await berserkBuildSpan
         .traceChild('create-dist-dir')
         .traceAsyncFn(async () => {
           try {
@@ -267,7 +267,7 @@ export default async function build(
 
       let appManifest: AppManifestComplete | undefined
 
-      const appManifestUncomplete = await jujutsuBuildSpan
+      const appManifestUncomplete = await berserkBuildSpan
         .traceChild('generate-app-manifest')
         .traceAsyncFn(() =>
           createAppManifest({

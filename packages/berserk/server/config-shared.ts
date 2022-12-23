@@ -15,9 +15,28 @@ export interface TypeScriptConfig {
   tsconfigPath?: string
 }
 
+export interface BerserkDiscordConfig {
+  token?: string
+  library: '@berserk/discord'
+  options?: {
+    intents: number[]
+  }
+}
+
+export interface DiscordJsConfig {
+  token?: string
+  library: 'discord.js'
+  options?: ClientOptions
+}
+
 export interface DiscordConfig {
   token?: string
-  options?: ClientOptions
+  library: '@berserk/discord' | 'discord.js'
+  options?:
+    | {
+        intents: number[]
+      }
+    | ClientOptions
 }
 
 export interface ExperimentalConfig {
@@ -49,7 +68,7 @@ export interface BerserkConfig extends Record<string, any> {
   /**
    * Configure your Discord application
    */
-  discord?: DiscordConfig
+  discord?: DiscordJsConfig | BerserkDiscordConfig
   /**
    * Destination directory (defaults to `.berserk`)
    */
@@ -78,6 +97,7 @@ export const defaultConfig: BerserkConfig = {
   eventExtensions: ['js', 'ts'],
   discord: {
     token: '',
+    library: 'discord.js',
     options: {
       intents: [1],
     },

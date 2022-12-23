@@ -7,6 +7,11 @@ declare module 'berserk/dist/compiled/node-fetch' {
 
 declare module 'berserk/dist/compiled/undici' {}
 
+declare module 'berserk/dist/compiled/zlib' {
+  export function deflate(buf: Buffer): any
+  export function inflate(input: any): any
+}
+
 declare module 'berserk/dist/compiled/title' {
   import m from 'title'
   export = m

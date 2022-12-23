@@ -222,9 +222,7 @@ export default class DevServer extends Server {
   async prepare(): Promise<void> {
     setGlobal('distDir', this.distDir)
     setGlobal('phase', PHASE_DEVELOPMENT_SERVER)
-    setGlobal('bot', this.bot)
 
-    await this.startWatcher()
     await this.startWatcher()
     this.setDevReady!()
   }
