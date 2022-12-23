@@ -1,15 +1,15 @@
 <p align="center">
-  <a href="https://berserk.vercel.app">
+  <a href="https://berserk.sh">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://berserk.vercel.app">
-      <img src="https://berserk.vercel.app" height="128">
+      <source media="(prefers-color-scheme: dark)" srcset="https://berserk.sh">
+      <img src="https://berserk.sh" height="128">
     </picture>
   </a>
   <h1 align="center">Berserk</h1>
 </p>
 
 <p align="center">
-  <!-- <a aria-label="Berserk logo" href="https://berserk.vercel.app">
+  <!-- <a aria-label="Berserk logo" href="https://berserk.sh">
     <img src="https://img.shields.io/badge/MADE%20BY%20VAJITSU-000000.svg?style=for-the-badge&logo=node&labelColor=000">
   </a> -->
   <a aria-label="NPM version" href="https://www.npmjs.com/package/berserk">
@@ -22,4 +22,4 @@
 
 ## Documentation
 
-Visit [berserk.vercel.app/docs](https://berserk.vercel.app/docs) to view the full documentation.
+Visit [berserk.sh/docs](https://berserk.sh/docs) to view the full documentation.
