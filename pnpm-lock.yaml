@@ -51,6 +51,7 @@ importers:
       dotenv-expand: 9.0.0
       esm: 3.2.25
       events: ^3.3.0
+      fflate: 0.7.4
       find-cache-dir: 4.0.0
       find-up: 4.1.0
       form-data: 4.0.0
@@ -147,6 +148,7 @@ importers:
       dotenv-expand: 9.0.0
       esm: 3.2.25
       events: 3.3.0
+      fflate: 0.7.4
       find-cache-dir: 4.0.0
       find-up: 4.1.0
       form-data: 4.0.0
@@ -2716,6 +2718,10 @@ packages:
 
   /fast-levenshtein/2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
+    dev: true
+
+  /fflate/0.7.4:
+    resolution: {integrity: sha512-5u2V/CDW15QM1XbbgS+0DfPxVB+jUKhWEKuuFuHncbk3tEEqzmoXL+2KyOFuKGqOnmdIy0/davWF1CkuwtibCw==}
     dev: true
 
   /file-type/18.0.0:
