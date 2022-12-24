@@ -150,17 +150,17 @@ const berserkDev: cliCommand = async (argv) => {
   return await build(dir, true).finally(async () => {
     await flushAllTraces()
 
-    // startServer(
-    //   {
-    //     conf,
-    //     ...devServerOptions,
-    //     quiet: !!args['--quiet'],
-    //   },
-    //   !!args['--debug']
-    // ).catch((err: any) => {
-    //   console.error(err)
-    //   process.exit(1)
-    // })
+    startServer(
+      {
+        conf,
+        ...devServerOptions,
+        quiet: !!args['--quiet'],
+      },
+      !!args['--debug']
+    ).catch((err: any) => {
+      console.error(err)
+      process.exit(1)
+    })
 
     for (const CONFIG_FILE of CONFIG_FILES) {
       watchFile(path.join(dir, CONFIG_FILE), (cur: any, prev: any) => {

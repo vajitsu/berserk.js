@@ -21,6 +21,7 @@ import { isWriteable } from './is-writeable'
 import { recursiveDelete } from '../lib/recursive-delete'
 import { compressSync, decompressSync } from 'fflate'
 import * as Log from './output/log'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { nanoid } from 'berserk/dist/compiled/nanoid'
 
 export async function coldStart({

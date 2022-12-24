@@ -1,7 +1,7 @@
 import { join } from 'path'
 import { findDir } from '../lib/find-dirs'
 
-import BaseServer, { Options } from './base-server'
+import BaseServer from './base-server'
 import * as Log from '../build/output/log'
 import { loadEnvConfig } from '../lib/env'
 import { APP_PATHS_MANIFEST, SERVER_DIRECTORY } from '../lib/constants'

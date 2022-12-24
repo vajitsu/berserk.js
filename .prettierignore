@@ -5,6 +5,7 @@ node_modules
 **/dist/**
 packages/berserk/compiled/**
 packages/berserk-discord/compiled/**
+packages/precompiled/compiled/**
 **/__tmp__/**
 lerna.json
 pnpm-lock.yaml
