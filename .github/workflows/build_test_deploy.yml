@@ -18,7 +18,6 @@ jobs:
     env:
       # we build a dev binary for use in CI so skip downloading
       # canary berserk-discord binaries in the monorepo
-      JUJUTSU_SKIP_NATIVE_POSTINSTALL: 1
       TURBO_TEAM: 'vajitsu'
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
     outputs:

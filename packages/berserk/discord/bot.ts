@@ -5,7 +5,7 @@ import SlashCommandManager from './lib/managers/slash-commands'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { EventEmitter } from 'berserk/dist/compiled/ws'
 import EventManager from './lib/managers/events'
-import isError, { JujutsuError } from '../lib/is-error'
+import isError, { BerserkError } from '../lib/is-error'
 import * as Log from '../build/output/log'
 
 interface ExtendedConfig extends DiscordConfig {
@@ -40,7 +40,7 @@ export default class bot {
       this.events.emit('ready', this.client)
       await this.slashCommandManager.registerCommands()
     })
-    this.client.on('error', (e: JujutsuError) => {
+    this.client.on('error', (e: BerserkError) => {
       if (this.config.quiet) return void 0
       Log.error(e.type === 'init' ? e.message : e)
       if (this.dev) Log.wait('Waiting for changes')

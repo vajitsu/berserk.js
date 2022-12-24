@@ -12,7 +12,7 @@ import isError from '../lib/is-error'
 import path from 'path'
 import startServer from '../server/lib/start-server'
 import loadConfig from '../server/config'
-import build from '../build/dev'
+import build from '../build/index'
 import { flushAllTraces } from '../trace'
 
 let sessionStopHandled = false
@@ -25,7 +25,7 @@ const handleSessionStop = async () => {
 process.on('SIGINT', handleSessionStop)
 process.on('SIGTERM', handleSessionStop)
 
-const jujutsuDev: cliCommand = async (argv) => {
+const berserkDev: cliCommand = async (argv) => {
   const validArgs: arg.Spec = {
     // Types
     '--help': Boolean,
@@ -71,30 +71,30 @@ const jujutsuDev: cliCommand = async (argv) => {
   const devServerOptions = {
     dev: true,
     dir,
-    isJujutsuDevCommand: true,
+    isBerserkDevCommand: true,
   }
 
-  async function validateJujutsuConfig() {
+  async function validateBerserkConfig() {
     const { defaultConfig } =
       require('../server/config-shared') as typeof import('../server/config-shared')
     const { interopDefault } =
       require('../lib/interop-default') as typeof import('../lib/interop-default')
 
     let hasNonDefaultConfig
-    let rawJujutsuConfig: BerserkConfig = {}
+    let rawBerserkConfig: BerserkConfig = {}
 
     try {
-      rawJujutsuConfig = interopDefault(
+      rawBerserkConfig = interopDefault(
         await loadConfig(PHASE_DEVELOPMENT_SERVER, dir, undefined, true)
       ) as BerserkConfig
 
-      if (typeof rawJujutsuConfig === 'function') {
-        rawJujutsuConfig = (rawJujutsuConfig as any)(PHASE_DEVELOPMENT_SERVER, {
+      if (typeof rawBerserkConfig === 'function') {
+        rawBerserkConfig = (rawBerserkConfig as any)(PHASE_DEVELOPMENT_SERVER, {
           defaultConfig,
         })
       }
 
-      if (!rawJujutsuConfig.discord?.token)
+      if (!rawBerserkConfig.discord?.token)
         Log.error(`"discord.token" is required for your application to run.`)
 
       const checkUnsupportedCustomConfig = (
@@ -133,55 +133,45 @@ const jujutsuDev: cliCommand = async (argv) => {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      hasNonDefaultConfig = Object.keys(rawJujutsuConfig).some((key) =>
-        checkUnsupportedCustomConfig(key, rawJujutsuConfig, defaultConfig)
+      hasNonDefaultConfig = Object.keys(rawBerserkConfig).some((key) =>
+        checkUnsupportedCustomConfig(key, rawBerserkConfig, defaultConfig)
       )
     } catch (e) {
       console.error('Unexpected error occurred while checking config', e)
     }
 
-    return rawJujutsuConfig
+    return rawBerserkConfig
   }
 
-  validateJujutsuConfig()
-
-  //const
-
-  //   startServer({
-  //     conf: findConfig<BerserkConfig>(process.cwd(), 'berserk'),
-  //     ...devServerOptions,
-  //   })
+  validateBerserkConfig()
 
   const conf = await loadConfig(PHASE_DEVELOPMENT_SERVER, dir)
 
-  return await build(dir)
+  return await build(dir, true).finally(async () => {
+    await flushAllTraces()
 
-  // await build(dir, null, true).finally(async () => {
-  //   // Ensure all traces are flushed before finishing the command
-  //   await flushAllTraces()
+    // startServer(
+    //   {
+    //     conf,
+    //     ...devServerOptions,
+    //     quiet: !!args['--quiet'],
+    //   },
+    //   !!args['--debug']
+    // ).catch((err: any) => {
+    //   console.error(err)
+    //   process.exit(1)
+    // })
 
-  //   startServer(
-  //     {
-  //       conf,
-  //       ...devServerOptions,
-  //       quiet: !!args['--quiet'],
-  //     },
-  //     !!args['--debug']
-  //   ).catch((err: any) => {
-  //     console.error(err)
-  //     process.exit(1)
-  //   })
-  // })
-
-  // for (const CONFIG_FILE of CONFIG_FILES) {
-  //   watchFile(path.join(dir, CONFIG_FILE), (cur: any, prev: any) => {
-  //     if (cur.size > 0 || prev.size > 0) {
-  //       console.log(
-  //         `\n> Found a change in ${CONFIG_FILE}. Restart the server to see the changes in effect.`
-  //       )
-  //     }
-  //   })
-  // }
+    for (const CONFIG_FILE of CONFIG_FILES) {
+      watchFile(path.join(dir, CONFIG_FILE), (cur: any, prev: any) => {
+        if (cur.size > 0 || prev.size > 0) {
+          console.log(
+            `\n> Found a change in ${CONFIG_FILE}. Restart the server to see the changes in effect.`
+          )
+        }
+      })
+    }
+  })
 }
 
-export { jujutsuDev }
+export { berserkDev }

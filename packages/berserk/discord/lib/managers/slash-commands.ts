@@ -5,7 +5,7 @@ import {
   Routes,
   SlashCommandBuilder,
 } from 'berserk/dist/compiled/discord.js'
-import { CommandFileComplete } from '../../../build'
+import { CommandFileComplete } from '../../../build/legacy'
 import isError from '../../../lib/is-error'
 import bot from '../../bot'
 import * as Log from '../../../build/output/log'

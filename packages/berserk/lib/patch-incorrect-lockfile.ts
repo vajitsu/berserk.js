@@ -27,7 +27,7 @@ import * as Log from '../build/output/log'
 import findUp from 'berserk/dist/compiled/find-up'
 import { execSync } from 'child_process'
 // @ts-ignore no-json types
-import jujutsuPkgJson from 'berserk/package.json'
+import berserkPkgJson from 'berserk/package.json'
 import type { UnwrapPromise } from './coalesced-function'
 import { isCI } from './ci-info'
 
@@ -56,7 +56,7 @@ async function fetchPkgInfo(pkg: string) {
     )
   }
   const data = await res.json()
-  const versionData = data.versions[jujutsuPkgJson.version]
+  const versionData = data.versions[berserkPkgJson.version]
 
   return {
     os: versionData.os,
@@ -74,7 +74,7 @@ async function fetchPkgInfo(pkg: string) {
  * node_modules install instead of pulling fresh package data
  */
 export async function patchIncorrectLockfile(dir: string) {
-  if (process.env.JUJUTSU_IGNORE_INCORRECT_LOCKFILE) {
+  if (process.env.BERSERK_IGNORE_INCORRECT_LOCKFILE) {
     return
   }
   const lockfilePath = await findUp('package-lock.json', { cwd: dir })
@@ -93,14 +93,14 @@ export async function patchIncorrectLockfile(dir: string) {
 
   const lockfileParsed = JSON.parse(content)
   const lockfileVersion = parseInt(lockfileParsed?.lockfileVersion, 10)
-  const expectedSwcPkgs = Object.keys(jujutsuPkgJson.optionalDependencies || {})
+  const expectedSwcPkgs = Object.keys(berserkPkgJson.optionalDependencies || {})
 
   const patchDependency = (
     pkg: string,
     pkgData: UnwrapPromise<ReturnType<typeof fetchPkgInfo>>
   ) => {
     lockfileParsed.dependencies[pkg] = {
-      version: jujutsuPkgJson.version,
+      version: berserkPkgJson.version,
       resolved: pkgData.tarball,
       integrity: pkgData.integrity,
       optional: true,
@@ -112,7 +112,7 @@ export async function patchIncorrectLockfile(dir: string) {
     pkgData: UnwrapPromise<ReturnType<typeof fetchPkgInfo>>
   ) => {
     lockfileParsed.packages[pkg] = {
-      version: jujutsuPkgJson.version,
+      version: berserkPkgJson.version,
       resolved: pkgData.tarball,
       integrity: pkgData.integrity,
       cpu: pkgData.cpu,

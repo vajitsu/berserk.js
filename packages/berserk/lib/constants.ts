@@ -2,18 +2,6 @@
 import { Config as SwcConfig } from '@swc/core'
 import { Events as DiscordEvents } from 'berserk/dist/compiled/discord.js'
 import { s } from 'berserk/dist/compiled/@sapphire/shapeshift'
-import { builtinModules } from 'module'
-
-export const BUILT_IN_MODULES = builtinModules
-  .filter(
-    (mod) =>
-      !mod.startsWith('_http') &&
-      !mod.startsWith('_tls') &&
-      !mod.startsWith('_stream') &&
-      mod !== 'sys'
-  )
-  .map((mod) => 'node:'.concat(mod))
-  .filter((mod) => !!require(mod))
 
 export const DISCORD_EVENTS = Object.values(DiscordEvents) as string[]
 
@@ -66,7 +54,7 @@ export const CONFIG_FILES = ['berserk.config.js', 'berserk.config.mjs']
 export const PHASE_PRODUCTION_BUILD = 'phase-production-build'
 export const PHASE_PRODUCTION_SERVER = 'phase-production-server'
 export const PHASE_DEVELOPMENT_SERVER = 'phase-development-server'
-export const DOT_JUJUTSU_ALIAS = 'private-dot-berserk'
+export const DOT_BERSERK_ALIAS = 'private-dot-berserk'
 export const ROOT_DIR_ALIAS = 'private-berserk-root-dir'
 export const APP_DIR_ALIAS = 'private-berserk-app-dir'
 export const APP_PATHS_MANIFEST = 'app-paths-manifest.json'

@@ -35,19 +35,19 @@ enum GatewayIntentBits {
 
 type GatewayIntentsString = keyof typeof GatewayIntentBits
 
-interface JujutsuClientOptions {
+interface BerserkClientOptions {
   intents: Integer
   partials: Partials[]
   intents: BitField<GatewayIntentsString>
 }
 
-interface JujutsuClient {
+interface BerserkClient {
   new (options): {
     destroy(): void
     login(token: string): void
     events: EventEmitter
-    options: JujutsuClientOptions
+    options: BerserkClientOptions
   }
 }
 
-export { BerserkConfig, JujutsuClient }
+export { BerserkConfig, BerserkClient }

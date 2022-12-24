@@ -52,18 +52,18 @@ export const store = createStore<OutputState>({
 })
 
 let lastStore: OutputState = { appUrl: null, bindAddr: null, bootstrap: true }
-function hasStoreChanged(jujutsuStore: OutputState) {
+function hasStoreChanged(berserkStore: OutputState) {
   if (
     (
       [
-        ...new Set([...Object.keys(lastStore), ...Object.keys(jujutsuStore)]),
+        ...new Set([...Object.keys(lastStore), ...Object.keys(berserkStore)]),
       ] as Array<keyof OutputState>
-    ).every((key) => Object.is(lastStore[key], jujutsuStore[key]))
+    ).every((key) => Object.is(lastStore[key], berserkStore[key]))
   ) {
     return false
   }
 
-  lastStore = jujutsuStore
+  lastStore = berserkStore
   return true
 }
 
@@ -105,7 +105,7 @@ store.subscribe((state) => {
         for (const match of matches) {
           const prop = (match.split(']').shift() || '').slice(1)
           console.log(
-            `AMP bind syntax [${prop}]='' is not supported in JSX, use 'data-amp-bind-${prop}' instead. https://jujutsujs.org/docs/messages/amp-bind-jsx-alt`
+            `AMP bind syntax [${prop}]='' is not supported in JSX, use 'data-amp-bind-${prop}' instead. https://berserkjs.org/docs/messages/amp-bind-jsx-alt`
           )
         }
         return

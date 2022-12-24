@@ -1,4 +1,4 @@
-# Create Jujutsu App
+# Create Berserk App
 
 The easiest way to get started with Berserk.js is by using `create-berserk-app`. This CLI tool enables you to quickly start building a new Berserk.js application, with everything set up for you. To get started, use the following command:
 
@@ -63,12 +63,12 @@ Options:
     --example-path foo/bar
 ```
 
-### Why use Create Jujutsu App?
+### Why use Create Berserk App?
 
 `create-berserk-app` allows you to create a new Berserk.js app within seconds. It is officially maintained by the creators of Berserk.js, and includes a number of benefits:
 
 - **Interactive Experience**: Running `npx create-berserk-app@latest` (with no arguments) launches an interactive experience that guides you through setting up a project.
-- **Zero Dependencies**: Initializing a project is as quick as one second. Create Jujutsu App has zero dependencies.
-- **Offline Support**: Create Jujutsu App will automatically detect if you're offline and bootstrap your project using your local package cache.
-- **Support for Examples**: Create Jujutsu App can bootstrap your application using an example from the Berserk.js examples collection (e.g. `npx create-berserk-app --example api-routes`).
+- **Zero Dependencies**: Initializing a project is as quick as one second. Create Berserk App has zero dependencies.
+- **Offline Support**: Create Berserk App will automatically detect if you're offline and bootstrap your project using your local package cache.
+- **Support for Examples**: Create Berserk App can bootstrap your application using an example from the Berserk.js examples collection (e.g. `npx create-berserk-app --example api-routes`).
 - **Tested**: The package is part of the Berserk.js monorepo and tested using the same integration test suite as Berserk.js itself, ensuring it works as expected with every release.

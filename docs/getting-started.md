@@ -6,7 +6,7 @@ description: Get started with Berserk.js in the official documentation, and lear
 
 Welcome to the Berserk.js documentation!
 
-If you're new to Berserk.js, we recommend starting with the [learn course](/learn/basics/create-jujutsujs-app). The interactive course with quizzes will guide you through everything you need to know to use Berserk.js.
+If you're new to Berserk.js, we recommend starting with the [learn course](/learn/basics/create-berserkjs-app). The interactive course with quizzes will guide you through everything you need to know to use Berserk.js.
 
 If you have questions about anything related to Berserk.js, you're always welcome to ask our community on [GitHub Discussions](https://github.com/vajitsu/berserk.js/discussions).
 

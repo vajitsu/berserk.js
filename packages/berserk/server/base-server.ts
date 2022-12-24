@@ -11,7 +11,7 @@ export interface Options {
    */
   dev?: boolean
   /**
-   * Where the Jujutsu project is located
+   * Where the Berserk project is located
    */
   dir?: string
   /**
@@ -65,7 +65,7 @@ export default abstract class Server<ServerOptions extends Options = Options> {
     // values from causing issues as this can be user provided
     this.berserkConfig = conf as BerserkConfigComplete
     this.distDir =
-      process.env.JUJUTSU_RUNTIME === 'edge'
+      process.env.BERSERK_RUNTIME === 'edge'
         ? this.berserkConfig.distDir
         : require('path').join(this.dir, this.berserkConfig.distDir)
 
@@ -73,7 +73,7 @@ export default abstract class Server<ServerOptions extends Options = Options> {
     // publicRuntimeConfig gets it's default in client/index.js
     const { serverRuntimeConfig = {}, publicRuntimeConfig } = this.berserkConfig
 
-    this.minimalMode = minimalMode || !!process.env.JUJUTSU_PRIVATE_MINIMAL_MODE
+    this.minimalMode = minimalMode || !!process.env.BERSERK_PRIVATE_MINIMAL_MODE
 
     this.hasAppDir = true
     // !!this.berserkConfig.experimental.appDir && this.getHasAppDir(dev)

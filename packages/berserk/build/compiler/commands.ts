@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import type { CommandFileComplete as CommandInfo } from '../index'
+import type { CommandFileComplete as CommandInfo } from '../legacy'
 import { join as pathJoin } from 'path'
 import { bundle as spack, transform } from '@swc/core'
 import { mkdirp } from 'fs-extra'

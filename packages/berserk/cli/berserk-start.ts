@@ -10,7 +10,7 @@ import { printAndExit } from '../lib/utils'
 import { PHASE_PRODUCTION_SERVER } from '../lib/constants'
 import loadConfig from '../server/config'
 
-const jujutsuStart: cliCommand = async (argv) => {
+const berserkStart: cliCommand = async (argv) => {
   const validArgs: arg.Spec = {
     // Types
     '--help': Boolean,
@@ -59,4 +59,4 @@ const jujutsuStart: cliCommand = async (argv) => {
   })
 }
 
-export { jujutsuStart }
+export { berserkStart }

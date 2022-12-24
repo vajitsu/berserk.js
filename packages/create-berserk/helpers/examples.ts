@@ -29,11 +29,11 @@ export async function getRepoInfo(
   const filePath = examplePath ? examplePath.replace(/^\//, '') : file.join('/')
 
   if (
-    // Support repos whose entire purpose is to be a JujutsuJS example, e.g.
-    // https://github.com/:username/:my-cool-jujutsujs-example-repo-name.
+    // Support repos whose entire purpose is to be a BerserkJS example, e.g.
+    // https://github.com/:username/:my-cool-berserkjs-example-repo-name.
     t === undefined ||
     // Support GitHub URL that ends with a trailing slash, e.g.
-    // https://github.com/:username/:my-cool-jujutsujs-example-repo-name/
+    // https://github.com/:username/:my-cool-berserkjs-example-repo-name/
     // In this case "t" will be an empty string while the berserk part "_branch" will be undefined
     (t === '' && _branch === undefined)
   ) {

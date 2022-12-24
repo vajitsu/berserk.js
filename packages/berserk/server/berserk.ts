@@ -10,7 +10,7 @@ import { PHASE_PRODUCTION_SERVER } from '../lib/constants'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { EventEmitter } from 'berserk/dist/compiled/ws'
 
-export type JujutsuServerOptions = Partial<DevServerOptions>
+export type BerserkServerOptions = Partial<DevServerOptions>
 
 let BotImpl: typeof BotServer
 
@@ -21,12 +21,12 @@ const getBotImpl = async () => {
   return BotImpl
 }
 
-export class JujutsuServer {
+export class BerserkServer {
   private server?: BotServer
   private serverPromise?: Promise<BotServer>
-  public options: JujutsuServerOptions
+  public options: BerserkServerOptions
 
-  constructor(options: JujutsuServerOptions) {
+  constructor(options: BerserkServerOptions) {
     this.options = options
   }
 
@@ -70,7 +70,7 @@ export class JujutsuServer {
 }
 
 // This file is used for when users run `require('berserk')`
-function createServer(options: JujutsuServerOptions): JujutsuServer {
+function createServer(options: BerserkServerOptions): BerserkServer {
   // The package is used as a TypeScript plugin.
   if (
     options &&
@@ -85,7 +85,7 @@ function createServer(options: JujutsuServerOptions): JujutsuServer {
   }
 
   if (
-    !('isJujutsuDevCommand' in options) &&
+    !('isBerserkDevCommand' in options) &&
     process.env.NODE_ENV &&
     !['production', 'development', 'test'].includes(process.env.NODE_ENV)
   ) {
@@ -98,7 +98,7 @@ function createServer(options: JujutsuServerOptions): JujutsuServer {
     )
   }
 
-  return new JujutsuServer(options)
+  return new BerserkServer(options)
 }
 
 // Support commonjs `require('berserk')`

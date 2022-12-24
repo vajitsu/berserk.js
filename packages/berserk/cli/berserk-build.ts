@@ -8,7 +8,7 @@ import build from '../build'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import arg from 'berserk/dist/compiled/arg/index.js'
 
-const jujutsuBuild: cliCommand = (argv) => {
+const berserkBuild: cliCommand = async (argv) => {
   const validArgs: arg.Spec = {
     // Types
     '--help': Boolean,
@@ -45,7 +45,7 @@ const jujutsuBuild: cliCommand = (argv) => {
     printAndExit(`> No such directory exists as the project root: ${dir}`)
   }
 
-  return build(dir, null).catch((err) => {
+  return build(dir, false).catch((err) => {
     console.error('')
     if (
       isError(err) &&
@@ -62,4 +62,4 @@ const jujutsuBuild: cliCommand = (argv) => {
   })
 }
 
-export { jujutsuBuild }
+export { berserkBuild }

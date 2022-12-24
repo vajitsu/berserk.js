@@ -4,5 +4,5 @@ export interface DevServerOptions extends ServerOptions {
   /**
    * Tells of Berserk.js is running from the `next dev` command
    */
-  isJujutsuDevCommand?: boolean
+  isBerserkDevCommand?: boolean
 }

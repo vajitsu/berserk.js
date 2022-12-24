@@ -142,15 +142,15 @@ if ((typeof exports.default === 'function' || (typeof exports.default === 'objec
         })
       }
 
-      file.data = Buffer.from(setJujutsuVersion(output.code))
+      file.data = Buffer.from(setBerserkVersion(output.code))
     }
   )
 }
 
-function setJujutsuVersion(code) {
+function setBerserkVersion(code) {
   return code
     .replace(
-      /process\.env\.__JUJUTSU_VERSION/g,
+      /process\.env\.__BERSERK_VERSION/g,
       `"${require('./package.json').version}"`
     )
     .replace(

@@ -3,25 +3,14 @@ import { findDir } from '../lib/find-dirs'
 
 import BaseServer, { Options } from './base-server'
 import * as Log from '../build/output/log'
-import loadComponents from './load-components'
 import { loadEnvConfig } from '../lib/env'
 import { APP_PATHS_MANIFEST, SERVER_DIRECTORY } from '../lib/constants'
 import { AppManifest } from './require'
 
 export * from './base-server'
 
-export default class JujutsuNodeServer extends BaseServer {
+export default class BerserkNodeServer extends BaseServer {
   serverDistDir = join(this.distDir, SERVER_DIRECTORY)
-
-  constructor(options: Options) {
-    // Initialize super class
-    super(options)
-
-    if (!options.dev)
-      loadComponents({
-        distDir: this.distDir,
-      })
-  }
 
   protected loadEnvConfig({
     dev,

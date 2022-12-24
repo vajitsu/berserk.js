@@ -199,9 +199,9 @@ export default async function loadConfig(
     )
     if (nonJsPath?.length) {
       throw new Error(
-        `Configuring Jujutsu.js via '${basename(
+        `Configuring Berserk.js via '${basename(
           nonJsPath
-        )}' is not supported. Please replace the file with 'jujutsu.config.js' or 'jujutsu.config.mjs'.`
+        )}' is not supported. Please replace the file with 'berserk.config.js' or 'berserk.config.mjs'.`
       )
     }
   }

@@ -10,4 +10,4 @@ const isHeroku =
 export const isCI = isHeroku || _isCI
 export const name = isHeroku ? 'Heroku' : _name
 
-export const hasJujutsuSupport = Boolean(false)
+export const hasBerserkSupport = Boolean(false)

@@ -34,7 +34,7 @@ function getBinaryVersion(binaryName: string) {
   }
 }
 
-const jujutsuInfo: cliCommand = async (argv) => {
+const berserkInfo: cliCommand = async (argv) => {
   const validArgs: arg.Spec = {
     // Types
     '--help': Boolean,
@@ -117,4 +117,4 @@ const jujutsuInfo: cliCommand = async (argv) => {
   }
 }
 
-export { jujutsuInfo }
+export { berserkInfo }

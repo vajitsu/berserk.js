@@ -24,14 +24,14 @@ SOFTWARE.
 import { isPlainObject } from './is-plain-object'
 
 // We allow some additional attached properties for Errors
-export interface JujutsuError extends Error {
+export interface BerserkError extends Error {
   type?: string
   from?: string
   code?: string | number
   cancelled?: boolean
 }
 
-export default function isError(err: unknown): err is JujutsuError {
+export default function isError(err: unknown): err is BerserkError {
   return (
     typeof err === 'object' && err !== null && 'name' in err && 'message' in err
   )

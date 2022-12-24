@@ -8,9 +8,9 @@ import { Client } from 'berserk/dist/compiled/discord.js'
 import { recursiveReadDirSync } from './recursive-readdir-sync'
 import { join, relative } from 'path'
 import fs from 'fs-extra'
-import build, { interopForCommand, interopForEvent } from '../../build'
-import JujutsuDevServer from '../dev/berserk-dev-server'
-import { JujutsuServerOptions } from '../berserk'
+import build, { interopForCommand, interopForEvent } from '../../build/legacy'
+import BerserkDevServer from '../dev/berserk-dev-server'
+import { BerserkServerOptions } from '../berserk'
 import { SERVER_DIRECTORY } from '../../lib/constants'
 import { exists } from 'berserk/dist/compiled/find-up'
 
@@ -28,7 +28,7 @@ export function identifyBundle(path: string, dir: string) {
 }
 
 export default async function startServer(
-  options: JujutsuServerOptions,
+  options: BerserkServerOptions,
   debug = false
 ) {
   const events = new EventEmitter()
@@ -57,7 +57,7 @@ export default async function startServer(
   const startBot = () => {
     const files = recursiveReadDirSync(buildDir).map((f) => ({
       type: identifyBundle(f, buildDir),
-      absolute: join(join(buildDir, f)),
+      absolute: join(buildDir, f),
     }))
 
     const event_files = files
@@ -90,8 +90,8 @@ export default async function startServer(
 
     if (!options.quiet) instance.hookServerEvents()
 
-    if (options.dev || options.isJujutsuDevCommand) {
-      const devServer = new JujutsuDevServer(
+    if (options.dev || options.isBerserkDevCommand) {
+      const devServer = new BerserkDevServer(
         options as DevServerOptions,
         instance
       )

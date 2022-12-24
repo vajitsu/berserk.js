@@ -27,8 +27,8 @@ import gs from 'berserk/dist/compiled/gradient-string'
 
 export const prefixes = {
   berserk: process.stdout.isTTY
-    ? gs('red', 'blue')('JUJUTSU >>>')
-    : 'JUJUTSU >>>',
+    ? gs('red', 'blue')('BERSERK >>>')
+    : 'BERSERK >>>',
   error: chalk.red('error') + ' -',
   warn: chalk.yellow('warn') + ' -',
   event: chalk.magenta('event') + ' -',

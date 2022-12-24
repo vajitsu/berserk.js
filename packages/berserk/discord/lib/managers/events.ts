@@ -1,4 +1,4 @@
-import { EventFileComplete } from '../../../build'
+import { EventFileComplete } from '../../../build/legacy'
 import bot from '../../bot'
 
 export default class EventManager {

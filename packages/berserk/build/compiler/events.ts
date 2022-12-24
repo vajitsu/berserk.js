@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import type { EventFileComplete as EventInfo } from '../index'
+import type { EventFileComplete as EventInfo } from '../legacy'
 import { join as pathJoin } from 'path'
 import swc, { bundle as spack } from '@swc/core'
 import { mkdirp } from 'fs-extra'

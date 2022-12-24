@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2022 The Jujutsu Project Developers
+Copyright (c) 2022 The Berserk Project Developers
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
