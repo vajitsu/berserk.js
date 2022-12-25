@@ -36,5 +36,3 @@ examples/**/.env*.local
 test.js
 my-app
 .env
-apps
-packages/precompiled

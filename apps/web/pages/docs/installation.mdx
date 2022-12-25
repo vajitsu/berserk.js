@@ -1,6 +1,5 @@
----
-description: Hello World
----
+import { Tabs, Tab } from '../../components/tabs'
+import Callout from '../../components/callout'
 
 # Installation
 
@@ -9,37 +8,30 @@ description: Hello World
 First, make sure your development environment meets the following requirements:
 
 - [Node.js 14](https://nodejs.org/) or later.
-- MacOS, Windows (including WSL), and Linux are supported.
 
 ## Automatic Installation
 
 To automatically create a new Jujutsu.js project using the app directory:
 
-```bash:Terminal
-npx create-jujutsu-app@latest
-# or
-yarn create jujutsu-app
-# or
-pnpm create jujutsu-app
-```
-
-create-jujutsu-app now ships with TypeScript by default. See TypeScript for more information.
+<Tabs items={['npm', 'pnpm', 'yarn']} storageKey="selected-package-manager">
+  <Tab>```bash filename="Terminal" npx create-jujutsu-app@latest ```</Tab>
+  <Tab>```bash filename="Terminal" yarn create jujutsu-app ```</Tab>
+  <Tab>```bash filename="Terminal" pnpm create jujutsu-app ```</Tab>
+</Tabs>
 
 ## Manual Installation
 
 To create a new Jujutsu.js app, install the required packages:
 
-```bash:Terminal
-npm install jujutsu@latest discord.js@latest
-# or
-yarn add jujutsu@latest discord.js@latest
-# or
-pnpm update jujutsu@latest discord.js@latest
-```
+<Tabs items={['npm', 'pnpm', 'yarn']} storageKey="selected-package-manager">
+  <Tab>```bash filename="Terminal" npm install jujutsu@latest ```</Tab>
+  <Tab>```bash filename="Terminal" yarn add jujutsu@latest ```</Tab>
+  <Tab>```bash filename="Terminal" pnpm install jujutsu@latest ```</Tab>
+</Tabs>
 
 Open `package.json` and add the following `scripts`:
 
-```json:package.json
+```json filename="package.json"
 {
   "scripts": {
     "dev": "jujutsu dev",
@@ -59,13 +51,19 @@ Create an `command` folder and add a `hello.js` file. This will be added to your
 
 Add the following code to `hello.js`:
 
-```js:commands/hello.js
+```js filename="commands/hello.js"
 export const descripiton = 'Welcome to Jujutsu.js'
 
-export default function Command(interaction) {
-  interaction.reply("Hello, Jujutsu.js!")
+export default function Hello(interaction) {
+  interaction.reply('Hello, Jujutsu.js!')
 }
 ```
+
+<Callout type="info">
+  As you may have noticed, we write ESM code into a JavaScript file without
+  `type` in `package.json` marked as "module". This is because we treat all
+  JavaScript files in the `commands`, `events`, and `app` directory as a module.
+</Callout>
 
 > Good to know: If you forget to export `description`, Jujutsu.js will automatically assign a blank string to the `descriptuon` export for you when running the development server.
 

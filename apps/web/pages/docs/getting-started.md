@@ -6,8 +6,6 @@ description: Get started with Jujutsu.js in the official documentation, and lear
 
 Welcome to the Jujutsu.js documentation!
 
-If you're new to Jujutsu.js, we recommend starting with the [learn course](/learn/basics/create-jujutsu-appjs-app). The interactive course with quizzes will guide you through everything you need to know to use Jujutsu.js.
-
 If you have questions about anything related to Jujutsu.js, you're always welcome to ask our community on [GitHub Discussions](https://github.com/vajitsu/jujutsu.js/discussions).
 
 ## Creating a Discord Application
@@ -18,7 +16,7 @@ If you have questions about anything related to Jujutsu.js, you're always welcom
 
 Your Discord application has now been created!
 
-## Creating a Discord bot
+## Creating a Discord Bot
 
 Now that a Discord application has been initialized, we need to create a Discord bot.
 
@@ -33,12 +31,12 @@ If you have already created a `jujutsu.config.js`, add the token to the `discord
 
 If not, create a `jujutsu.config.js` and add the following:
 
-```js:jujutsu.config.js
+```js filename="jujutsu.config.js"
 /** @type {import('jujutsu').JujutsuConfig} */
 const jujutsuConfig = {
   discord: {
-    token: 'your-token-goes-here'
-  }
+    token: 'your-token-goes-here',
+  },
 }
 
 module.exports = jujutsuConfig
