@@ -13,28 +13,28 @@ First, make sure your development environment meets the following requirements:
 
 ## Automatic Installation
 
-To automatically create a new Berserk.js project using the app directory:
+To automatically create a new Jujutsu.js project using the app directory:
 
 ```bash:Terminal
-npx create-berserk-app@latest
+npx create-jujutsu-app@latest
 # or
-yarn create berserk-app
+yarn create jujutsu-app
 # or
-pnpm create berserk-app
+pnpm create jujutsu-app
 ```
 
-create-berserk-app now ships with TypeScript by default. See TypeScript for more information.
+create-jujutsu-app now ships with TypeScript by default. See TypeScript for more information.
 
 ## Manual Installation
 
-To create a new Berserk.js app, install the required packages:
+To create a new Jujutsu.js app, install the required packages:
 
 ```bash:Terminal
-npm install berserk@latest discord.js@latest
+npm install jujutsu@latest discord.js@latest
 # or
-yarn add berserk@latest discord.js@latest
+yarn add jujutsu@latest discord.js@latest
 # or
-pnpm update berserk@latest discord.js@latest
+pnpm update jujutsu@latest discord.js@latest
 ```
 
 Open `package.json` and add the following `scripts`:
@@ -42,32 +42,32 @@ Open `package.json` and add the following `scripts`:
 ```json:package.json
 {
   "scripts": {
-    "dev": "berserk dev",
-    "build": "berserk build",
-    "start": "berserk start"
+    "dev": "jujutsu dev",
+    "build": "jujutsu build",
+    "start": "jujutsu start"
   }
 }
 ```
 
 > These scripts refer to the different stages of developing an application:
 >
-> - `dev`: runs `berserk dev` to start Berserk.js in development mode.
-> - `build`: runs `berserk build` to build the application for production usage.
-> - `start`: runs `berserk start` to start a Berserk.js production server.
+> - `dev`: runs `jujutsu dev` to start Jujutsu.js in development mode.
+> - `build`: runs `jujutsu build` to build the application for production usage.
+> - `start`: runs `jujutsu start` to start a Jujutsu.js production server.
 
 Create an `command` folder and add a `hello.js` file. This will be added to your bot's slash commands.
 
 Add the following code to `hello.js`:
 
 ```js:commands/hello.js
-export const descripiton = 'Welcome to Berserk.js'
+export const descripiton = 'Welcome to Jujutsu.js'
 
 export default function Command(interaction) {
-  interaction.reply("Hello, Berserk.js!")
+  interaction.reply("Hello, Jujutsu.js!")
 }
 ```
 
-> Good to know: If you forget to export `description`, Berserk.js will automatically assign a blank string to the `descriptuon` export for you when running the development server.
+> Good to know: If you forget to export `description`, Jujutsu.js will automatically assign a blank string to the `descriptuon` export for you when running the development server.
 
 Running the Development Server
 
