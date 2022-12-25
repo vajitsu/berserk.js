@@ -74,7 +74,7 @@ async function fetchPkgInfo(pkg: string) {
  * node_modules install instead of pulling fresh package data
  */
 export async function patchIncorrectLockfile(dir: string) {
-  if (process.env.BERSERK_IGNORE_INCORRECT_LOCKFILE) {
+  if (process.env.JUJUTSU_IGNORE_INCORRECT_LOCKFILE) {
     return
   }
   const lockfilePath = await findUp('package-lock.json', { cwd: dir })

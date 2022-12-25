@@ -199,7 +199,7 @@ export default async function build(
     let end: number | undefined
 
     const jujutsuBuildSpan = trace('jujutsu-build', undefined, {
-      version: process.env.__BERSERK_VERSION as string,
+      version: process.env.__JUJUTSU_VERSION as string,
     })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -904,7 +904,7 @@ export default async function build(
     const jjGradient = `${chalk.bold(
       isTTY
         ? require('jujutsu/dist/compiled/gradient-string')('cyan', 'violet')(
-            '>>> BERSERK'
+            '>>> JUJUTSU'
           )
         : '>>> Ready for producition use'
     )} ${chalk.dim(`(alpha - built in ${ms(end as number)})`)}\n\n`

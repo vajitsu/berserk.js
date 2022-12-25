@@ -33,7 +33,7 @@ const args = arg(
 )
 
 if (args['--version']) {
-  console.log(`Jujutsu.js v${process.env.__BERSERK_VERSION}`)
+  console.log(`Jujutsu.js v${process.env.__JUJUTSU_VERSION}`)
   process.exit(0)
 }
 
@@ -86,7 +86,7 @@ if (process.env.NODE_ENV) {
 }
 
 ;(process.env as any).NODE_ENV = process.env.NODE_ENV || defaultEnv
-;(process.env as any).BERSERK_RUNTIME = 'nodejs'
+;(process.env as any).JUJUTSU_RUNTIME = 'nodejs'
 
 if (process.versions.pnp === '3') {
   const nodeVersionParts = process.versions.node

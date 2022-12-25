@@ -150,7 +150,7 @@ if ((typeof exports.default === 'function' || (typeof exports.default === 'objec
 function setJujutsuVersion(code) {
   return code
     .replace(
-      /process\.env\.__BERSERK_VERSION/g,
+      /process\.env\.__JUJUTSU_VERSION/g,
       `"${require('./package.json').version}"`
     )
     .replace(

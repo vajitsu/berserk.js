@@ -65,7 +65,7 @@ export default abstract class Server<ServerOptions extends Options = Options> {
     // values from causing issues as this can be user provided
     this.jujutsuConfig = conf as JujutsuConfigComplete
     this.distDir =
-      process.env.BERSERK_RUNTIME === 'edge'
+      process.env.JUJUTSU_RUNTIME === 'edge'
         ? this.jujutsuConfig.distDir
         : require('path').join(this.dir, this.jujutsuConfig.distDir)
 
@@ -73,7 +73,7 @@ export default abstract class Server<ServerOptions extends Options = Options> {
     // publicRuntimeConfig gets it's default in client/index.js
     const { serverRuntimeConfig = {}, publicRuntimeConfig } = this.jujutsuConfig
 
-    this.minimalMode = minimalMode || !!process.env.BERSERK_PRIVATE_MINIMAL_MODE
+    this.minimalMode = minimalMode || !!process.env.JUJUTSU_PRIVATE_MINIMAL_MODE
 
     this.hasAppDir = true
     // !!this.jujutsuConfig.experimental.appDir && this.getHasAppDir(dev)

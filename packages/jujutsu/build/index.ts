@@ -848,7 +848,7 @@ export default async function build(
 ) {
   try {
     const jujutsuBuildSpan = trace('jujutsu-build', undefined, {
-      version: process.env.__BERSERK_VERSION as string,
+      version: process.env.__JUJUTSU_VERSION as string,
     })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

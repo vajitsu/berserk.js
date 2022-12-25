@@ -56,13 +56,13 @@ export function processEnv(
   // only reload env when forceReload is specified
   if (
     !forceReload &&
-    (process.env.__BERSERK_PROCESSED_ENV || loadedEnvFiles.length === 0)
+    (process.env.__JUJUTSU_PROCESSED_ENV || loadedEnvFiles.length === 0)
   ) {
     return process.env as Env
   }
   // flag that we processed the environment values in case a serverless
   // function is re-used or we are running in `next start` mode
-  process.env.__BERSERK_PROCESSED_ENV = 'true'
+  process.env.__JUJUTSU_PROCESSED_ENV = 'true'
 
   const origEnv = Object.assign({}, initialEnv)
   const parsed: dotenv.DotenvParseOutput = {}

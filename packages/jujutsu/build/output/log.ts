@@ -27,8 +27,8 @@ import gs from 'jujutsu/dist/compiled/gradient-string'
 
 export const prefixes = {
   jujutsu: process.stdout.isTTY
-    ? gs('red', 'blue')('BERSERK >>>')
-    : 'BERSERK >>>',
+    ? gs('red', 'blue')('JUJUTSU >>>')
+    : 'JUJUTSU >>>',
   error: chalk.red('error') + ' -',
   warn: chalk.yellow('warn') + ' -',
   event: chalk.magenta('event') + ' -',
