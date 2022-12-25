@@ -59,7 +59,7 @@ export function findDirs(
       )
     }
     if (appDir != null && (commandsDir != null || eventsDir != null)) {
-      console.log(
+      Log.warn(
         '> The `app` directory is experimental. To enable, add `appDir: true` to your `jujutsu.config.js` configuration under `experimental`.'
       )
     }

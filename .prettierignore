@@ -5,7 +5,6 @@ node_modules
 **/dist/**
 packages/jujutsu/compiled/**
 packages/jujutsu-discord/compiled/**
-packages/precompiled/compiled/**
 **/__tmp__/**
 lerna.json
 pnpm-lock.yaml
