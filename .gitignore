@@ -1,6 +1,6 @@
 # build output
 dist
-.berserk
+.jujutsu
 
 # dependencies
 node_modules

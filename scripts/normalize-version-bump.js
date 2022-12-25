@@ -66,7 +66,7 @@ const writeJson = async (filePath, data) =>
 
   const rootPkgJsonPath = path.join(cwd, 'package.json')
   await writeJson(rootPkgJsonPath, {
-    name: 'berserkjs-project',
+    name: 'jujutsujs-project',
     version: '0.0.0',
     private: true,
     workspaces: ['packages/*'],

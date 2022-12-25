@@ -1,5 +1,5 @@
 {
-  "name": "berserk-project",
+  "name": "jujutsu-project",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
@@ -9,8 +9,8 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "create-berserk": "node --trace-deprecation --enable-source-maps packages/create-berserk/dist/index.js",
-    "berserk": "node --trace-deprecation --enable-source-maps packages/berserk/dist/bin/berserk",
+    "create-jujutsu-app": "node --trace-deprecation --enable-source-maps packages/create-jujutsu-app/dist/index.js",
+    "jujutsu": "node --trace-deprecation --enable-source-maps packages/jujutsu/dist/bin/jujutsu",
     "lint-typescript": "turbo run typescript",
     "lint-eslint": "eslint . --ext js,jsx,ts,tsx --max-warnings=0 --config .eslintrc.json --no-eslintrc",
     "lint-no-typescript": "run-p prettier-check lint-eslint",
@@ -46,7 +46,7 @@
     "alex": "11.0.0",
     "arg": "^5.0.2",
     "async-sema": "^3.1.1",
-    "berserk": "workspace:1.0.0-canary.2",
+    "jujutsu": "workspace:1.0.0-canary.0",
     "dotenv": "^16.0.3",
     "eslint": "7.24.0",
     "eslint-plugin-eslint-plugin": "5.0.6",

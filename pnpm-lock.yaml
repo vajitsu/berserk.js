@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 importers:
 
-  packages/berserk:
+  packages/jujutsu:
     specifiers:
       '@napi-rs/triples': 1.1.0
       '@sapphire/shapeshift': 3.7.1
