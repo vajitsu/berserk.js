@@ -87,18 +87,9 @@ export default class DevServer extends Server {
       ].map((file) => pathJoin(this.dir, file))
       files.push(...envFiles)
 
-<<<<<<< HEAD:packages/jujutsu/server/dev/berserk-dev-server.ts
       const regex_app = new RegExp(`^(?:command|event)\\.(?:js|ts)$`, '')
       const regex_commands_events = new RegExp(
         `^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`,
-=======
-      const regex_commands = new RegExp(
-        `^command\\.(?:${this.jujutsuConfig.commandExtensions.join('|')})$`,
-        ''
-      )
-      const regex_events = new RegExp(
-        `^event\\.(?:${this.jujutsuConfig.eventExtensions.join('|')})$`,
->>>>>>> origin/canary:packages/jujutsu/server/dev/jujutsu-dev-server.ts
         ''
       )
 
