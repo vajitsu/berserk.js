@@ -452,7 +452,7 @@ export async function lib_esm(task, opts) {
     .target('dist/esm/lib')
 }
 
-export async function berserkbuild(task, opts) {
+export async function jujutsubuild(task, opts) {
   await task
     .source(opts.src || 'build/**/*.+(js|ts|tsx)', {
       ignore: ['**/fixture/**', '**/tests/**', '**/jest/**'],
@@ -462,7 +462,7 @@ export async function berserkbuild(task, opts) {
 }
 
 // eslint-disable-next-line camelcase
-export async function berserkbuild_esm(task, opts) {
+export async function jujutsubuild_esm(task, opts) {
   await task
     .source(opts.src || 'build/**/*.+(js|ts|tsx)', {
       ignore: ['**/fixture/**', '**/tests/**', '**/jest/**'],
@@ -572,8 +572,8 @@ export async function compile(task, opts) {
       'bin',
       'server',
       'server_esm',
-      'berserkbuild',
-      'berserkbuild_esm',
+      'jujutsubuild',
+      'jujutsubuild_esm',
       'lib',
       'lib_esm',
       'trace',
@@ -590,8 +590,8 @@ export default async function (task) {
   await task.clear('dist')
   await task.start('build', opts)
   await task.watch('bin/*', 'bin', opts)
-  await task.watch('build/**/*.+(js|ts|tsx)', 'berserkbuild', opts)
-  await task.watch('build/**/*.+(js|ts|tsx)', 'berserkbuild_esm', opts)
+  await task.watch('build/**/*.+(js|ts|tsx)', 'jujutsubuild', opts)
+  await task.watch('build/**/*.+(js|ts|tsx)', 'jujutsubuild_esm', opts)
   await task.watch('lib/**/*.+(js|ts|tsx)', 'lib', opts)
   await task.watch('lib/**/*.+(js|ts|tsx)', 'lib_esm', opts)
   await task.watch('cli/**/*.+(js|ts|tsx)', 'cli', opts)
