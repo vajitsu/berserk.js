@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD:packages/create-jujutsu-app/package.json
   "name": "create-jujutsu-app",
-=======
-  "name": "create-jujutsu",
->>>>>>> origin/canary:packages/create-jujutsu/package.json
   "version": "1.0.0-canary.0",
   "keywords": [
     "discord",
@@ -14,20 +10,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/vajitsu/jujutsu.js",
-<<<<<<< HEAD:packages/create-jujutsu-app/package.json
     "directory": "packages/create-jujutsu-app"
-=======
-    "directory": "packages/create-jujutsu"
->>>>>>> origin/canary:packages/create-jujutsu/package.json
   },
   "author": "Jujutsu.js Team <support@vajitsu.com>",
   "license": "MIT",
   "bin": {
-<<<<<<< HEAD:packages/create-jujutsu-app/package.json
     "create-jujutsu-app": "./dist/index.js"
-=======
-    "create-jujutsu": "./dist/index.js"
->>>>>>> origin/canary:packages/create-jujutsu/package.json
   },
   "files": [
     "dist"
