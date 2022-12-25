@@ -2,13 +2,13 @@
 
 set -e
 
-cd packages/berserk
+cd packages/jujutsu
 
 pnpm run ncc-compiled
 
 cd ../../
 
-cd packages/berserk-discord
+cd packages/jujutsu-discord
 
 pnpm run ncc-compiled
 
