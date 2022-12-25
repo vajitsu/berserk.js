@@ -47,50 +47,6 @@ function assignDefaults(_dir: string, userConfig: { [key: string]: any }) {
         }
       }
 
-      if (key === 'commandExtensions') {
-        if (!Array.isArray(value)) {
-          throw new Error(
-            `Specified commandExtensions is not an array of strings, found "${value}". Please update this config or remove it.`
-          )
-        }
-
-        if (!value.length) {
-          throw new Error(
-            `Specified commandExtensions is an empty array. Please update it with the relevant extensions or remove it.`
-          )
-        }
-
-        value.forEach((ext) => {
-          if (typeof ext !== 'string') {
-            throw new Error(
-              `Specified commandExtensions   is not an array of strings, found "${ext}" of type "${typeof ext}". Please update this config or remove it.`
-            )
-          }
-        })
-      }
-
-      if (key === 'eventExtensions') {
-        if (!Array.isArray(value)) {
-          throw new Error(
-            `Specified eventExtensions is not an array of strings, found "${value}". Please update this config or remove it.`
-          )
-        }
-
-        if (!value.length) {
-          throw new Error(
-            `Specified eventExtensions is an empty array. Please update it with the relevant extensions or remove it.`
-          )
-        }
-
-        value.forEach((ext) => {
-          if (typeof ext !== 'string') {
-            throw new Error(
-              `Specified eventExtensions   is not an array of strings, found "${ext}" of type "${typeof ext}". Please update this config or remove it.`
-            )
-          }
-        })
-      }
-
       if (!!value && value.constructor === Object) {
         currentConfig[key] = {
           ...defaultConfig[key],
@@ -189,12 +145,7 @@ export default async function loadConfig(
   } else {
     const configBaseName = basename(CONFIG_FILES[0], extname(CONFIG_FILES[0]))
     const nonJsPath = findUp.sync(
-      [
-        `${configBaseName}.jsx`,
-        `${configBaseName}.ts`,
-        `${configBaseName}.tsx`,
-        `${configBaseName}.json`,
-      ],
+      [`${configBaseName}.ts`, `${configBaseName}.json`],
       { cwd: dir }
     )
     if (nonJsPath?.length) {

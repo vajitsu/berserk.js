@@ -17,6 +17,16 @@ declare module 'berserk/dist/compiled/title' {
   export = m
 }
 
+declare module 'berserk/dist/compiled/require-from-string' {
+  import m from 'require-from-string'
+  export = m
+}
+
+declare module 'berserk/dist/compiled/zod' {
+  import m from 'zod'
+  export = m
+}
+
 declare module 'berserk/dist/compiled/nanoid' {
   import m from 'nanoid'
   export = m

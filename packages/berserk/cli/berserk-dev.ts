@@ -12,7 +12,7 @@ import isError from '../lib/is-error'
 import path from 'path'
 import startServer from '../server/lib/start-server'
 import loadConfig from '../server/config'
-import build from '../build/index'
+import build from '../build'
 import { flushAllTraces } from '../trace'
 
 let sessionStopHandled = false

@@ -66,6 +66,14 @@ export async function ncc_jest_worker(task, opts) {
   await fs.remove(join(__dirname, 'compiled/jest-worker/out'))
 }
 // eslint-disable-next-line camelcase
+externals['zod'] = 'berserk/dist/compiled/zod'
+export async function ncc_zod(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('zod')))
+    .ncc({ packageName: 'zod', externals })
+    .target('compiled/zod')
+}
+// eslint-disable-next-line camelcase
 externals['nanoid'] = 'berserk/dist/compiled/nanoid'
 export async function ncc_nanoid(task, opts) {
   await task
@@ -331,6 +339,16 @@ export async function ncc_json5(task, opts) {
     .target('compiled/json5')
 }
 // eslint-disable-next-line camelcase
+externals['require-from-string'] = 'berserk/dist/compiled/require-from-string'
+export async function ncc_require_from_string(task, opts) {
+  await task
+    .source(
+      opts.src || relative(__dirname, require.resolve('require-from-string'))
+    )
+    .ncc({ packageName: 'require-from-string', externals })
+    .target('compiled/require-from-string')
+}
+// eslint-disable-next-line camelcase
 externals['ora'] = 'berserk/dist/compiled/ora'
 export async function ncc_ora(task, opts) {
   await task
@@ -521,6 +539,8 @@ export async function ncc(task, opts) {
     .clear('compiled')
     .parallel(
       [
+        'ncc_require_from_string',
+        'ncc_zod',
         'ncc_dotenv',
         'ncc_dotenv_expand',
         'ncc_watchpack',

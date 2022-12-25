@@ -1,20 +1,20 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import type { CommandFileComplete as CommandInfo } from '../legacy'
+import type { EventFileComplete as EventInfo } from '..'
 import { join as pathJoin } from 'path'
-import { bundle as spack, transform } from '@swc/core'
+import swc, { bundle as spack } from '@swc/core'
 import { mkdirp } from 'fs-extra'
 import { promises } from 'fs'
-import { SERVER_DIRECTORY, SWC_CONFIG } from '../../lib/constants'
-import { LoadedEnvFiles, processEnv } from '../../lib/env'
-import { escapeStringRegexp } from '../../lib/escape-regexp'
+import { SERVER_DIRECTORY, SWC_CONFIG } from '../../../lib/constants'
+import { LoadedEnvFiles, processEnv } from '../../../lib/env'
+import { escapeStringRegexp } from '../../../lib/escape-regexp'
 import { isNumber } from 'berserk/dist/compiled/lodash'
 import findUp from 'berserk/dist/compiled/find-up'
 import { nanoid } from 'berserk/dist/compiled/nanoid'
 import { Module } from 'module'
 
-export default async function compileCommands(
-  commands: Set<string>,
-  commandInfos: Map<string, CommandInfo>,
+export default async function compileEvents(
+  events: Set<string>,
+  eventInfos: Map<string, EventInfo>,
   loadedEnvFiles: LoadedEnvFiles,
   dir: string,
   swcMinify: boolean
@@ -24,16 +24,14 @@ export default async function compileCommands(
     name: string
   }[] = []
 
-  for (let _ of commands) {
-    const command = commandInfos.get(_)
+  for (let _ of events) {
+    const event = eventInfos.get(_)
 
-    if (!command) return
-
-    const isTypescript = command.absolutePath.endsWith('.ts')
-
-    const distDir = pathJoin(dir, '.berserk')
+    if (!event) return
 
     let env = processEnv(loadedEnvFiles, dir)
+
+    const isTypescript = event.absolutePath.endsWith('.ts')
 
     const envEntries = (Object.entries(env) as [string, string][]).map((e) => [
       'process.env.'.concat(e[0]),
@@ -45,7 +43,8 @@ export default async function compileCommands(
     const id = nanoid(5)
     const unique = `bundle_${id}.js`
 
-    const output = pathJoin(distDir, SERVER_DIRECTORY, unique)
+    const buildDir = pathJoin(dir, '.berserk', SERVER_DIRECTORY)
+    const output = pathJoin(dir, '.berserk', SERVER_DIRECTORY, unique)
 
     // Don't bundle packages that are meant to be used in production
     let pkgJson
@@ -53,11 +52,18 @@ export default async function compileCommands(
     if (packageJsonPath) pkgJson = require(packageJsonPath)
 
     process.traceDeprecation = false
-    ;(process as any).noDeprecation = true
 
-    const nodeModules = Module.builtinModules.filter((mod) => !!require(mod))
-
-    nodeModules.push(...nodeModules.map((mod) => `node:${mod}`))
+    const nodeModules = Module.builtinModules
+      .filter((mod) => !!require(mod))
+      .map((mod) => {
+        try {
+          const m = require(`node:${mod}`)
+          if (!m) return mod
+          return `node:${mod}`
+        } catch {
+          return mod
+        }
+      })
 
     const bundled = await spack({
       externalModules:
@@ -71,9 +77,9 @@ export default async function compileCommands(
           : [...nodeModules],
       mode: 'production',
       target: 'node',
-      entry: command.absolutePath,
+      entry: event.absolutePath,
       output: {
-        path: pathJoin(distDir, SERVER_DIRECTORY),
+        path: buildDir,
         name: unique,
       },
       module: {},
@@ -93,18 +99,14 @@ export default async function compileCommands(
       },
     })
 
-    const code = bundled['command.js']
-      ? bundled['command.js'].code
-      : bundled['command.ts']
-      ? bundled['command.ts'].code
+    const code = bundled['event.js']
+      ? bundled['event.js'].code
+      : bundled['event.ts']
+      ? bundled['event.ts'].code
       : Object.values(bundled)[0].code
 
-    const transformed = await transform(
-      code.concat(
-        `exports.__name = "${
-          command.name
-        }";exports.subcommands = ${JSON.stringify(command.subcommands)};`
-      ),
+    const transformed = await swc.transform(
+      code.concat(`exports.__name = "${event.name}"`),
       {
         ...SWC_CONFIG,
         jsc: {
@@ -137,18 +139,18 @@ export default async function compileCommands(
     )
 
     // Create directory if not already exists
-    await mkdirp(pathJoin(distDir, SERVER_DIRECTORY))
+    await mkdirp(buildDir)
 
     // Write transformed code to file
     await promises.writeFile(
       output,
-      `"use command";`.concat(transformed.code),
+      `"use event";`.concat(transformed.code),
       'utf8'
     )
 
     manifest.push({
       path: output,
-      name: command.name,
+      name: event.name,
     })
   }
 

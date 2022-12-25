@@ -7,8 +7,12 @@ import { existsSync } from 'fs'
 import build from '../build'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import arg from 'berserk/dist/compiled/arg/index.js'
+import loadConfig from '../server/config'
+import { PHASE_PRODUCTION_BUILD } from '../lib/constants'
+import * as Log from '../build/output/log'
+import { BerserkConfig } from '../types'
 
-const berserkBuild: cliCommand = async (argv) => {
+const berserkBuild: cliCommand = (argv) => {
   const validArgs: arg.Spec = {
     // Types
     '--help': Boolean,
@@ -38,14 +42,86 @@ const berserkBuild: cliCommand = async (argv) => {
       0
     )
   }
+
   const dir = getProjectDir(args._[0])
+
+  async function validateBerserkConfig() {
+    const { defaultConfig } =
+      require('../server/config-shared') as typeof import('../server/config-shared')
+    const { interopDefault } =
+      require('../lib/interop-default') as typeof import('../lib/interop-default')
+
+    let hasNonDefaultConfig
+    let rawBerserkConfig: BerserkConfig = {}
+
+    try {
+      rawBerserkConfig = interopDefault(
+        await loadConfig(PHASE_PRODUCTION_BUILD, dir, undefined, true)
+      ) as BerserkConfig
+
+      if (typeof rawBerserkConfig === 'function') {
+        rawBerserkConfig = (rawBerserkConfig as any)(PHASE_PRODUCTION_BUILD, {
+          defaultConfig,
+        })
+      }
+
+      if (!rawBerserkConfig.discord?.token)
+        Log.error(`"discord.token" is required for your application to run.`)
+
+      const checkUnsupportedCustomConfig = (
+        configKey = '',
+        parentUserConfig: any,
+        parentDefaultConfig: any
+      ): boolean => {
+        try {
+          // these should not error
+          if (
+            configKey === 'serverComponentsExternalPackages' ||
+            configKey === 'appDir' ||
+            configKey === 'transpilePackages' ||
+            configKey === 'reactStrictMode' ||
+            configKey === 'swcMinify' ||
+            configKey === 'configFileName'
+          ) {
+            return false
+          }
+          let userValue = parentUserConfig?.[configKey]
+          let defaultValue = parentDefaultConfig?.[configKey]
+
+          if (typeof defaultValue !== 'object') {
+            return defaultValue !== userValue
+          }
+          return Object.keys(userValue || {}).some((key: string) => {
+            return checkUnsupportedCustomConfig(key, userValue, defaultValue)
+          })
+        } catch (e) {
+          console.error(
+            `Unexpected error occurred while checking ${configKey}`,
+            e
+          )
+          return false
+        }
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      hasNonDefaultConfig = Object.keys(rawBerserkConfig).some((key) =>
+        checkUnsupportedCustomConfig(key, rawBerserkConfig, defaultConfig)
+      )
+    } catch (e) {
+      console.error('Unexpected error occurred while checking config', e)
+    }
+
+    return rawBerserkConfig
+  }
+
+  validateBerserkConfig()
 
   // Check if the provided directory exists
   if (!existsSync(dir)) {
     printAndExit(`> No such directory exists as the project root: ${dir}`)
   }
 
-  return build(dir, false).catch((err) => {
+  return build(dir).catch((err) => {
     console.error('')
     if (
       isError(err) &&

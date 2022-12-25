@@ -1,4 +1,4 @@
-import { transform, transformSync, bundle, Config } from '@swc/core'
+import { transform, transformSync, parseSync, bundle, Config } from '@swc/core'
 import { config as spackConfig } from '@swc/core/spack'
 import { builtinModules } from 'module'
 import { promises } from 'fs-extra'
@@ -18,12 +18,13 @@ export default class Compiler {
       loose: true,
       parser: {
         syntax: 'typescript',
+        dynamicImport: true,
       },
       target: 'es5',
       externalHelpers: true,
     },
     module: {
-      type: 'commonjs',
+      type: 'es6',
       lazy: true,
       noInterop: true,
       strict: true,
@@ -111,5 +112,20 @@ export default class Compiler {
     const code = Object.values(out).map((output) => output.code)
 
     return code
+  }
+
+  parseSync(code: string, typescript = false) {
+    let config = this.config
+    if (typescript) (config.jsc as any).parser.syntax = 'typescript'
+
+    const out = parseSync(code, {
+      comments: false,
+      decorators: false,
+      decoratorsBeforeExport: false,
+      exportDefaultFrom: true,
+      importAssertions: true,
+      syntax: typescript ? 'typescript' : 'ecmascript',
+    })
+    return out
   }
 }

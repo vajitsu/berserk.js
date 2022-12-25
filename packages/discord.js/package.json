@@ -1,0 +1,50 @@
+{
+  "name": "@berserk/discord.js",
+  "version": "1.0.0-canary.2",
+  "description": "Extenstion of Discord.js Library",
+  "main": "./dist/index.js",
+  "license": "MIT",
+  "repository": "vajitsu/berserk.js",
+  "bugs": "https://github.com/vajitsu/berserk.js/issues",
+  "homepage": "https://berserk.sh/solutions/discord.js",
+  "types": "index.d.ts",
+  "files": [
+    "dist",
+    "index.d.ts",
+    "types/index.d.ts",
+    "types/global.d.ts",
+    "types/compiled.d.ts"
+  ],
+  "scripts": {
+    "dev": "taskr",
+    "release": "taskr release",
+    "build": "pnpm release && pnpm types",
+    "prepublishOnly": "cd ../../ && turbo run build",
+    "types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
+    "typescript": "tsec --noEmit",
+    "ncc-compiled": "ncc cache clean && taskr ncc"
+  },
+  "taskr": {
+    "requires": [
+      "./taskfile-ncc.js",
+      "./taskfile-swc.js",
+      "./taskfile-watch.js"
+    ]
+  },
+  "dependencies": {
+    "@swc/helpers": "latest"
+  },
+  "devDependencies": {
+    "@swc/core": "1.3.17",
+    "@taskr/clear": "1.1.0",
+    "@taskr/esnext": "1.1.0",
+    "@types/node": "^18.11.9",
+    "@vercel/ncc": "0.34.0",
+    "discord.js": "14.7.1",
+    "find-up": "4.1.0",
+    "zod": "3.20.2"
+  },
+  "engines": {
+    "node": ">=14.6.0"
+  }
+}

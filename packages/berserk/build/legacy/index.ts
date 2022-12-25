@@ -1,26 +1,26 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { BerserkConfigComplete } from '../server/config-shared'
-import { trace, flushAllTraces, setGlobal } from '../trace'
+import { BerserkConfigComplete } from '../../server/config-shared'
+import { trace, flushAllTraces, setGlobal } from '../../trace'
 import { AppManifest, createAppManifest } from './entries'
-import { recursiveDelete } from '../lib/recursive-delete'
+import { recursiveDelete } from '../../lib/recursive-delete'
 import {
   APP_PATHS_MANIFEST,
   BUILD_MANIFEST,
   PHASE_PRODUCTION_BUILD,
   SWC_CONFIG,
-} from '../lib/constants'
+} from '../../lib/constants'
 import { transform } from '@swc/core'
 import compileCommands from './compiler/commands'
-import { findDirs } from '../lib/find-dirs'
-import { fileExists } from '../lib/file-exists'
-import * as ciEnvironment from '../lib/ci-info'
+import { findDirs } from '../../lib/find-dirs'
+import { fileExists } from '../../lib/file-exists'
+import * as ciEnvironment from '../../lib/ci-info'
 import title from 'berserk/dist/compiled/title'
-import { isWriteable } from './is-writeable'
-import { loadEnvConfig } from '../lib/env'
-import loadConfig from '../server/config'
-import isError from '../lib/is-error'
-import * as Log from './output/log'
+import { isWriteable } from '../is-writeable'
+import { loadEnvConfig } from '../../lib/env'
+import loadConfig from '../../server/config'
+import isError from '../../lib/is-error'
+import * as Log from '../output/log'
 import { promises } from 'fs'
 import path, { join as pathJoin } from 'path'
 import ms from 'ms'
@@ -33,7 +33,7 @@ import {
   LocalizationMap,
   ChannelType,
 } from 'berserk/dist/compiled/discord.js'
-import { printAndExit } from '../lib/utils'
+import { printAndExit } from '../../lib/utils'
 import compileEvents from './compiler/events'
 import { mkdirp } from 'fs-extra'
 import uuid from 'berserk/dist/compiled/uid-promise'

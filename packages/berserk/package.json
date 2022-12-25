@@ -55,6 +55,7 @@
     "@types/ms": "0.7.31",
     "@types/node": "^18.11.9",
     "@types/recursive-readdir": "^2.2.1",
+    "@types/require-from-string": "1.2.1",
     "@types/semver": "7.3.1",
     "@types/title": "3.4.1",
     "@types/uuid": "^8.3.4",
@@ -112,6 +113,7 @@
     "querystring-es3": "0.2.1",
     "recursive-fs": "^2.1.0",
     "recursive-readdir": "^2.2.3",
+    "require-from-string": "2.0.2",
     "retry": "0.13.1",
     "rimraf": "^3.0.2",
     "rmdir": "^1.2.0",
@@ -132,7 +134,8 @@
     "uuid": "^9.0.0",
     "validate-npm-package-name": "3.0.0",
     "watchpack": "^2.4.0",
-    "ws": "8.2.3"
+    "ws": "8.2.3",
+    "zod": "3.20.2"
   },
   "engines": {
     "node": ">=14.6.0"

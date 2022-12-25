@@ -1,10 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { DISCORD_EVENTS } from '../lib/constants'
+import { DISCORD_EVENTS } from '../../lib/constants'
 import { join, sep } from 'path'
-import { recursiveReadDir } from '../lib/recursive-readdir'
-import { isCommandName } from './utils'
+import { recursiveReadDir } from '../../lib/recursive-readdir'
+import { isCommandName } from '../utils'
 import { camelCase } from 'berserk/dist/compiled/lodash'
-import isFileEmpty from '../lib/is-file-empty'
+import isFileEmpty from '../../lib/is-file-empty'
 
 /**
  * For a given command path removes the provided extensions.

@@ -1,14 +1,17 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import {
+  mkdir,
   mkdirp,
   pathExists,
   pathExistsSync,
-  promises,
+  readFile,
   readFileSync,
+  writeFile,
 } from 'fs-extra'
 import { trace, flushAllTraces, setGlobal } from '../trace'
 import {
   PHASE_DEVELOPMENT_SERVER,
-  PHASE_PRODUCTION_SERVER,
+  PHASE_PRODUCTION_BUILD,
 } from '../lib/constants'
 import loadConfig from '../server/config'
 import { BerserkConfigComplete } from '../server/config-shared'
@@ -21,8 +24,27 @@ import { isWriteable } from './is-writeable'
 import { recursiveDelete } from '../lib/recursive-delete'
 import { compressSync, decompressSync } from 'fflate'
 import * as Log from './output/log'
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { nanoid } from 'berserk/dist/compiled/nanoid'
+import { validateCommandFile } from './validate'
+import requireFromString from 'berserk/dist/compiled/require-from-string'
+import chalk from '../lib/chalk'
+import { printAndExit } from '../lib/utils'
+
+interface BuildManifest {
+  mode: 'production' | 'development'
+  commands: {
+    [name: string]: string
+  }
+  events: {
+    [name: string]: string
+  }
+}
+
+function getDepth(dir: string, filepath: string) {
+  const removed_dir = path.dirname(filepath).replace(dir + path.sep, '')
+  const split = removed_dir.split(path.sep)
+  return split.length
+}
 
 export async function coldStart({
   dir,
@@ -30,12 +52,18 @@ export async function coldStart({
   config,
   parentId,
   dev,
+  dirs,
 }: {
   dir: string
   distDir: string
   config: BerserkConfigComplete
   parentId: number
   dev: boolean
+  dirs: {
+    appDir: string | undefined
+    eventsDir: string | undefined
+    commandsDir: string | undefined
+  }
 }) {
   const coldStartSpan = trace('berserk-build-cold', parentId, {
     dir,
@@ -58,7 +86,7 @@ export async function coldStart({
       .traceChild('create-dist-dir')
       .traceAsyncFn(async () => {
         try {
-          Log.info('')
+          await mkdir(distDir, { recursive: true })
           return true
         } catch (err) {
           if (isError(err) && err.code === 'EPERM') {
@@ -74,13 +102,9 @@ export async function coldStart({
 
     // Ensure commonjs handling is used for files in the distDir (generally .berserk)
     // Files outside of the distDir can be "type": "module"
-    await promises.writeFile(
-      path.join(distDir, 'package.json'),
-      '{"type": "commonjs"}'
-    )
+    await writeFile(path.join(distDir, 'package.json'), '{"type": "commonjs"}')
 
-    const isAppDirEnabled = !!config.experimental.appDir
-    const { commandsDir, eventsDir, appDir } = findDirs(dir, isAppDirEnabled)
+    const { eventsDir, commandsDir, appDir } = dirs
     const regex_commands = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
     const regex_events = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
     const regex_app_event = new RegExp(`^event\\.(?:js|ts)$`, '')
@@ -92,13 +116,13 @@ export async function coldStart({
             path: path.join(dir, 'commands', file),
             type: 'command',
           }))
-        : undefined,
+        : [],
       events: eventsDir
         ? (await recursiveReadDir(eventsDir, regex_events)).map((file) => ({
             path: path.join(dir, 'events', file),
             type: 'event',
           }))
-        : undefined,
+        : [],
       app: appDir
         ? {
             commands: (await recursiveReadDir(appDir, regex_app_command)).map(
@@ -114,19 +138,28 @@ export async function coldStart({
               })
             ),
           }
-        : undefined,
+        : {
+            commands: [],
+            events: [],
+          },
     }
 
-    const chunks = await coldStartSpan
+    const allFiles = [
+      ...files.app.events,
+      ...files.app.commands,
+      ...files.commands,
+      ...files.events,
+    ]
+
+    let chunks = await coldStartSpan
       .traceChild('generate-chunks')
       .traceAsyncFn(async () => {
-        const all = [...(files.events || []), ...(files.commands || [])]
         const allChunks: {
           code: string
           path: string
           type: 'event' | 'command' | 'app__command' | 'app__event'
         }[] = []
-        for (let file of all) {
+        for (let file of allFiles) {
           mkdirp(distDir)
           const code = await compiler.bundle(file.path, dir, distDir)
           allChunks.push({
@@ -137,6 +170,99 @@ export async function coldStart({
         }
         return allChunks
       })
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const validateChunks = await coldStartSpan
+      .traceChild('validate-chunks')
+      .traceAsyncFn(async () => {
+        let error = false
+        for (let chunk of chunks) {
+          const mod = requireFromString(chunk.code)
+          const fileName = path.basename(chunk.path)
+          const name = fileName.replace(/\..*$/, '')
+
+          const info = {
+            name: name,
+            description: mod.description,
+            dmPermission: mod.dmPermission,
+            nsfw: mod.nsfw,
+            fn: mod.default,
+          }
+          const result = validateCommandFile(info)
+
+          if (!result.pass) {
+            error = true
+            const pre_messages = {
+              'default export (function)': [] as unknown as string[],
+              'name (file name/parent directory)': [] as unknown as string[],
+              '`nsfw` export': [] as unknown as string[],
+              '`description` export': [] as unknown as string[],
+              '`dmPermission` export': [] as unknown as string[],
+            }
+            for (let err of result.errors) {
+              pre_messages[err.origin].push(err.message)
+            }
+
+            const messages = Object.entries(pre_messages).map((msg) => [
+              msg[0],
+              msg[1].map((m) => `  - ${m}`).join('\n'),
+            ])
+
+            const message = messages
+              .filter((data) => data[1].length > 0)
+              .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
+              .join('\n')
+
+            if (chunks.indexOf(chunk) > 0) console.log()
+
+            Log.error(
+              `The \`${name}\` slash command has a few errors:\n${message}`
+            )
+          }
+        }
+        if (error) {
+          console.log()
+          printAndExit(
+            'Fix these errors before attempting to build your project again.',
+            0
+          )
+          console.log()
+        }
+      })
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const filteredAppChunks = await coldStartSpan
+      .traceChild('check-app-chunks-depth')
+      .traceAsyncFn(async () => {
+        if (!appDir) return []
+
+        const appChunks = chunks.filter(
+          (chunk) => chunk.type === 'app__command'
+        )
+        const filterAppCommands = []
+
+        for (let chunk of appChunks) {
+          const depth = getDepth(appDir, chunk.path)
+          const workingDir = path
+            .dirname(chunk.path)
+            .replace(dir + path.sep, '')
+
+          const ending = path.extname(chunk.path)
+
+          if (depth > 2)
+            Log.warn(
+              `Subcommand at "${workingDir}${path.sep}command${ending}" is too deep, it will be ignored.`
+            )
+          else filterAppCommands.push(chunk)
+        }
+
+        return filterAppCommands
+      })
+
+    chunks = [
+      ...filteredAppChunks,
+      ...chunks.filter((chunk) => chunk.type !== 'app__command'),
+    ]
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const writeChunks = await coldStartSpan
@@ -151,10 +277,10 @@ export async function coldStart({
 
           if (chunk.type.startsWith('app__')) outDir = path.join(outDir, 'app')
 
-          const outFile = path.join(outDir, `chunk_${nanoid(3)}.js`)
+          const outFile = path.join(outDir, `chunk__${nanoid(5)}.js`)
 
           await mkdirp(outDir)
-          await promises.writeFile(outFile, chunk.code, 'utf8')
+          await writeFile(outFile, chunk.code, 'utf8')
 
           information.push({
             path: outFile,
@@ -171,8 +297,8 @@ export async function coldStart({
         const commands = writeChunks.filter((t) => t.origin === 'command')
         const events = writeChunks.filter((t) => t.origin === 'event')
 
-        const build_manifest = {
-          dev: true,
+        const build_manifest: BuildManifest = {
+          mode: dev ? 'development' : 'production',
           commands: Object.fromEntries(
             commands.map((i) => [
               i.path.split(path.sep).at(-1)?.replace(/\..*$/, ''),
@@ -187,7 +313,7 @@ export async function coldStart({
           ),
         }
 
-        await promises.writeFile(
+        await writeFile(
           path.join(distDir, 'build-manifest.json'),
           JSON.stringify(build_manifest),
           'utf8'
@@ -201,7 +327,8 @@ export async function coldStart({
         const commands = writeChunks.filter((t) => t.origin === 'app__command')
         const events = writeChunks.filter((t) => t.origin === 'app__event')
 
-        const app_build_manifest = {
+        const app_build_manifest: BuildManifest = {
+          mode: dev ? 'development' : 'production',
           commands: Object.fromEntries(
             commands.map((i) => [
               i.path.split(path.sep).at(-1)?.replace(/\..*$/, ''),
@@ -216,7 +343,7 @@ export async function coldStart({
           ),
         }
 
-        await promises.writeFile(
+        await writeFile(
           path.join(distDir, 'app-build-manifest.json'),
           JSON.stringify(app_build_manifest),
           'utf8'
@@ -229,17 +356,12 @@ export async function coldStart({
       .traceAsyncFn(async () => {
         const cacheDir = path.join(distDir, 'cache')
 
-        const allFiles = []
-        if (files.commands) allFiles.push(...files.commands)
-        if (files.events) allFiles.push(...files.events)
-        if (files.app) allFiles.push(...files.app.commands, ...files.app.events)
-
         const information: {
           path: string
         }[] = []
 
         for (let file of allFiles) {
-          const fileContent = await promises.readFile(file.path)
+          const fileContent = await readFile(file.path)
           const filePath = file.path.replace(dir, '')
           const outPath = path.join(cacheDir, filePath)
           const compressed = Buffer.from(
@@ -247,7 +369,7 @@ export async function coldStart({
           )
 
           await mkdirp(path.dirname(outPath))
-          await promises.writeFile(outPath, compressed, 'utf8')
+          await writeFile(outPath, compressed, 'utf8')
 
           information.push({ path: outPath })
         }
@@ -265,9 +387,10 @@ export async function coldStart({
 export async function incrementalBuild({
   dir,
   distDir,
-  config,
   parentId,
   changedFiles,
+  dev,
+  dirs,
 }: {
   dir: string
   distDir: string
@@ -275,6 +398,11 @@ export async function incrementalBuild({
   parentId: number
   changedFiles: string[]
   dev: boolean
+  dirs: {
+    appDir: string | undefined
+    eventsDir: string | undefined
+    commandsDir: string | undefined
+  }
 }) {
   const incrementalBuildSpan = trace('berserk-build-incremental', parentId, {
     dir,
@@ -289,8 +417,7 @@ export async function incrementalBuild({
       .traceChild('load-swc-compiler')
       .traceFn(() => new Compiler())
 
-    const isAppDirEnabled = !!config.experimental.appDir
-    const { commandsDir, eventsDir, appDir } = findDirs(dir, isAppDirEnabled)
+    const { eventsDir, commandsDir, appDir } = dirs
     const regex_commands = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
     const regex_events = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
     const regex_app_event = new RegExp(`^event\\.(?:js|ts)$`, '')
@@ -357,18 +484,77 @@ export async function incrementalBuild({
       })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const validateChunks = await incrementalBuildSpan
+      .traceChild('validate-chunks')
+      .traceAsyncFn(async () => {
+        let error = false
+        for (let chunk of chunks) {
+          const mod = requireFromString(chunk.code)
+          const fileName = path.basename(chunk.path)
+          const name = fileName.replace(/\..*$/, '')
+
+          const info = {
+            name: name,
+            description: mod.description,
+            dmPermission: mod.dmPermission,
+            nsfw: mod.nsfw,
+            fn: mod.default,
+          }
+          const result = validateCommandFile(info)
+
+          if (!result.pass) {
+            error = true
+            const pre_messages = {
+              'default export (function)': [] as unknown as string[],
+              'name (file name/parent directory)': [] as unknown as string[],
+              '`nsfw` export': [] as unknown as string[],
+              '`description` export': [] as unknown as string[],
+              '`dmPermission` export': [] as unknown as string[],
+            }
+            for (let err of result.errors) {
+              pre_messages[err.origin].push(err.message)
+            }
+
+            const messages = Object.entries(pre_messages).map((msg) => [
+              msg[0],
+              msg[1].map((m) => `  - ${m}`).join('\n'),
+            ])
+
+            const message = messages
+              .filter((data) => data[1].length > 0)
+              .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
+              .join('\n')
+
+            if (chunks.indexOf(chunk) > 0) console.log()
+
+            Log.error(
+              `The \`${name}\` slash command has a few errors:\n${message}`
+            )
+          }
+        }
+        if (error) {
+          console.log()
+          printAndExit(
+            'Fix these errors before attempting to build your project again.',
+            0
+          )
+          console.log()
+        }
+      })
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const writeChunks = await incrementalBuildSpan
       .traceChild('update-chunks')
       .traceAsyncFn(async () => {
         const information: {
           path: string
           origin: 'event' | 'command' | 'app__command' | 'app__event'
+          originalPath: string
         }[] = []
 
         for (let chunk of chunks) {
-          const fileName = chunk.path
-            .split(path.sep)
-            .at(-1)
+          const fileName = path
+            .basename(chunk.path)
             ?.replace(/\.js$/, '.js')
             .replace(/\.ts$/, '.js') as string
 
@@ -379,10 +565,11 @@ export async function incrementalBuild({
           const outFile = path.join(outDir, fileName)
 
           await mkdirp(outDir)
-          await promises.writeFile(outFile, chunk.code, 'utf8')
+          await writeFile(outFile, chunk.code, 'utf8')
 
           information.push({
             path: outFile,
+            originalPath: chunk.path,
             origin: chunk.type,
           })
         }
@@ -398,32 +585,38 @@ export async function incrementalBuild({
 
         const p = path.join(distDir, 'build-manifest.json')
 
-        const old = (await pathExists(p))
+        const old: BuildManifest = (await pathExists(p))
           ? JSON.parse(readFileSync(p, 'utf8'))
           : []
 
-        const build_manifest = {
+        const build_manifest: BuildManifest = {
           ...old,
-          dev: true,
+          mode: dev ? 'development' : 'production',
           commands: Object.fromEntries(
             commands.map((i) => [
-              i.path.split(path.sep).at(-1)?.replace(/\..*$/, ''),
+              path.basename(i.originalPath).at(-1)?.replace(/\..*$/, ''),
               i.path.replace(`${distDir}${path.sep}`, '').replace('\\', '/'),
             ])
           ),
           events: Object.fromEntries(
             events.map((i) => [
-              i.path.split(path.sep).at(-1)?.replace(/\..*$/, ''),
+              path.basename(i.originalPath)?.replace(/\..*$/, ''),
               i.path.replace(`${distDir}${path.sep}`, '').replace('\\', '/'),
             ])
           ),
         }
 
-        await promises.writeFile(
-          path.join(distDir, 'build-manifest.json'),
-          JSON.stringify(build_manifest),
-          'utf8'
-        )
+        const no_changes =
+          old.commands === build_manifest.commands &&
+          old.events === build_manifest.events &&
+          old.mode === build_manifest.mode
+
+        if (!no_changes)
+          await writeFile(
+            path.join(distDir, 'build-manifest.json'),
+            JSON.stringify(build_manifest),
+            'utf8'
+          )
       })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -435,12 +628,13 @@ export async function incrementalBuild({
 
         const p = path.join(distDir, 'app-build-manifest.json')
 
-        const old = (await pathExists(p))
+        const old: BuildManifest = (await pathExists(p))
           ? JSON.parse(readFileSync(p, 'utf8'))
-          : []
+          : {}
 
-        const app_build_manifest = {
+        const app_build_manifest: BuildManifest = {
           ...old,
+          mode: dev ? 'development' : 'production',
           commands: Object.fromEntries(
             commands.map((i) => [
               i.path.split(path.sep).at(-1)?.replace(/\..*$/, ''),
@@ -455,11 +649,17 @@ export async function incrementalBuild({
           ),
         }
 
-        await promises.writeFile(
-          path.join(distDir, 'app-build-manifest.json'),
-          JSON.stringify(app_build_manifest),
-          'utf8'
-        )
+        const no_changes =
+          old.commands === app_build_manifest.commands &&
+          old.events === app_build_manifest.events &&
+          old.mode === app_build_manifest.mode
+
+        if (!no_changes)
+          await writeFile(
+            path.join(distDir, 'app-build-manifest.json'),
+            JSON.stringify(app_build_manifest),
+            'utf8'
+          )
       })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -478,7 +678,7 @@ export async function incrementalBuild({
         }[] = []
 
         for (let file of allFiles) {
-          const fileContent = await promises.readFile(file.path)
+          const fileContent = await readFile(file.path)
           const filePath = file.path.replace(dir, '')
           const outPath = path.join(cacheDir, filePath)
           const compressed = Buffer.from(
@@ -486,7 +686,7 @@ export async function incrementalBuild({
           )
 
           await mkdirp(path.dirname(outPath))
-          await promises.writeFile(outPath, compressed, 'utf8')
+          await writeFile(outPath, compressed, 'utf8')
 
           information.push({ path: outPath })
         }
@@ -494,8 +694,10 @@ export async function incrementalBuild({
 
     const end = process.hrtime(start)
     const seconds = end[0] + end[1] / 1000000000
+    const template = `in ${seconds.toFixed(4)}s`
 
-    Log.event(`updated in ${seconds.toFixed(4)}s`)
+    if (dev) Log.event(`updated in ${template}`)
+    else Log.info(`done in ${template}`)
   })
 }
 
@@ -505,12 +707,18 @@ export async function attemptCacheHit({
   config,
   parentId,
   dev,
+  dirs,
 }: {
   dir: string
   distDir: string
   config: BerserkConfigComplete
   parentId: number
   dev: boolean
+  dirs: {
+    appDir: string | undefined
+    eventsDir: string | undefined
+    commandsDir: string | undefined
+  }
 }) {
   const attemptCacheHitSpan = trace('berserk-attempt-cache-hit', parentId, {
     dir,
@@ -519,9 +727,8 @@ export async function attemptCacheHit({
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const attemptCacheHitResult = attemptCacheHitSpan.traceAsyncFn(async () => {
-    const isAppDirEnabled = !!config.experimental.appDir
-    const { commandsDir, eventsDir, appDir } = findDirs(dir, isAppDirEnabled)
     const cacheDir = path.join(distDir, 'cache')
+    const { eventsDir, commandsDir, appDir } = dirs
 
     const regex_commands = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
     const regex_events = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
@@ -561,7 +768,7 @@ export async function attemptCacheHit({
     }
 
     const allFiles = await attemptCacheHitSpan
-      .traceChild('convert-files-to-hex')
+      .traceChild('read-files')
       .traceAsyncFn(async () => {
         const all = []
         if (files.commands) all.push(...files.commands)
@@ -617,19 +824,20 @@ export async function attemptCacheHit({
 
     if (existingCaches.misses.length > 0) {
       Log.info(
-        `${existingCaches.misses.length} cache(s) missed, rebuilding files`
+        `${existingCaches.misses.length} cache(s) missed, rebuilding changed files`
       )
 
-      incrementalBuild({
+      await incrementalBuild({
         dir,
         distDir,
         config,
         parentId: attemptCacheHitSpan.id,
         changedFiles: existingCaches.misses,
         dev,
+        dirs,
       })
     } else if (existingCaches.misses.length < 1)
-      Log.info('No cache misses, nothing to update')
+      Log.info('No missing caches, nothing to update')
   })
 }
 
@@ -645,11 +853,11 @@ export default async function build(
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const buildResult = berserkBuildSpan.traceAsyncFn(async () => {
-      const phase = dev ? PHASE_DEVELOPMENT_SERVER : PHASE_PRODUCTION_SERVER
+      const phase = dev ? PHASE_DEVELOPMENT_SERVER : PHASE_PRODUCTION_BUILD
 
       const config: BerserkConfigComplete = await berserkBuildSpan
         .traceChild('load-berserk-config')
-        .traceAsyncFn(() => loadConfig(phase, dir, {}))
+        .traceAsyncFn(() => loadConfig(phase, dir))
 
       const distDir = path.join(dir, config.distDir)
 
@@ -658,24 +866,36 @@ export default async function build(
 
       const distDirExists = pathExistsSync(distDir)
 
+      const isAppDirEnabled = !!config.experimental.appDir
+      const dirs = findDirs(dir, isAppDirEnabled)
+
       if (distDirExists && changedFiles.length > 0)
-        incrementalBuild({
+        return await incrementalBuild({
           changedFiles,
           parentId: berserkBuildSpan.id,
           dir,
           distDir,
           config,
           dev,
+          dirs,
         })
       else if (!distDirExists)
-        coldStart({ dir, distDir, config, parentId: berserkBuildSpan.id, dev })
+        return await coldStart({
+          dir,
+          distDir,
+          config,
+          parentId: berserkBuildSpan.id,
+          dev,
+          dirs,
+        })
       else if (changedFiles.length < 1)
-        attemptCacheHit({
+        return await attemptCacheHit({
           dir,
           distDir,
           parentId: berserkBuildSpan.id,
           config,
           dev,
+          dirs,
         })
     })
   } finally {
