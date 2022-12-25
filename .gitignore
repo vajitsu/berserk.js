@@ -1,6 +1,6 @@
 # build output
 dist
-.berserk
+.jujutsu
 
 # dependencies
 node_modules
@@ -33,9 +33,7 @@ examples/**/.env*.local
 # Other
 .hintrc
 .turbo
-apps
-examples
-packages/cli
 test.js
 my-app
 .env
+apps
