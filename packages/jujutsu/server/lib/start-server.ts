@@ -37,6 +37,7 @@ export default async function startServer(
   )
 
   const startBot = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const abm = json5.parse(
       readFileSync(join(distDir, 'app-build-manifest.json'), 'utf8')
     )
