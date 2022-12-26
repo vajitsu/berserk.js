@@ -32,7 +32,7 @@ jobs:
         run: sudo ethtool -K eth0 tx off rx off
 
       - name: Check non-docs only change
-        run: echo "::set-output name=DOCS_CHANGE::$(node scripts/run-for-change.js --not --type docs --exec echo 'nope')"
+        run: echo "::set-output name=DOCS_CHANGE::$(node scripts/run-for-change.js --type docs --exec echo 'yup')"
         id: docs-change
 
       - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
