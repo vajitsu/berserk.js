@@ -8,3 +8,4 @@ lerna.json
 pnpm-lock.yaml
 apps/web/**/*.md
 apps/web/**/*.mdx
+apps/web/tsconfig.json
