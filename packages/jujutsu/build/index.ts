@@ -30,7 +30,7 @@ import * as Log from './output/log'
 import { nanoid } from 'jujutsu/dist/compiled/nanoid'
 import { validateCommandFile, validateEventFile } from './validate'
 import requireFromString from 'jujutsu/dist/compiled/require-from-string'
-import { camelCase } from 'jujutsu/dist/compiled/lodash'
+import { camelCase, snakeCase } from 'jujutsu/dist/compiled/lodash'
 import json5 from 'jujutsu/dist/compiled/json5'
 import { printAndExit } from '../lib/utils'
 import chalk from '../lib/chalk'
@@ -51,19 +51,36 @@ interface AppBuildManifest extends BuildManifest {
   }
 }
 
+interface BaseChunk {
+  code: string
+  path: string
+}
+
+interface EventChunk extends BaseChunk {
+  type: 'event'
+}
+
+interface CommandChunk extends BaseChunk {
+  type: 'command'
+}
+
+interface AppEventChunk extends BaseChunk {
+  type: 'app__event'
+}
+
+interface AppCommandChunk extends BaseChunk {
+  type: 'app__command'
+}
+
 function getDepth(dir: string, filepath: string) {
-  const removed_dir = path.dirname(filepath).replace(dir + path.sep, '')
+  const removed_dir = path.dirname(filepath).replace(dir, '')
   const split = removed_dir.split(path.sep)
   return split.length
 }
 
 function validate(
   dir: string,
-  chunks: {
-    code: string
-    path: string
-    type: 'command' | 'event' | 'app__event' | 'app__command'
-  }[]
+  chunks: (EventChunk | CommandChunk | AppEventChunk | AppCommandChunk)[]
 ) {
   let error = false
   const commandChunks = chunks.filter((chunk) => chunk.type.includes('command'))
@@ -771,7 +788,7 @@ export async function incrementalBuild({
     // Removes files that have been deleted from the build
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const deletions = await incrementalBuildSpan
-      .traceChild('delete-missing-files-from-build')
+      .traceChild('delete-missing-files')
       .traceAsyncFn(async () => {
         const nonExistent = filePaths.filter(
           (filepath) => !existsSync(filepath)
@@ -816,9 +833,7 @@ export async function incrementalBuild({
             const commandPath = path.join(
               distDir,
               (
-                (
-                  Object.entries(bm.commands) as unknown as [string, string][]
-                ).find(
+                bmCommands.find(
                   (entry) =>
                     entry[0] ===
                     path.basename(filePath).replace(path.extname(filePath), '')
@@ -986,11 +1001,12 @@ export async function incrementalBuild({
     let chunks = await incrementalBuildSpan
       .traceChild('generate-changed-chunks')
       .traceAsyncFn(async () => {
-        const allChunks: {
-          code: string
-          path: string
-          type: 'command' | 'event' | 'app__event' | 'app__command'
-        }[] = []
+        const allChunks: (
+          | EventChunk
+          | CommandChunk
+          | AppCommandChunk
+          | AppEventChunk
+        )[] = []
 
         const all = [
           ...files.events,
@@ -1012,6 +1028,85 @@ export async function incrementalBuild({
           })
         }
         return allChunks
+      })
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const deleteOldChunks = await incrementalBuildSpan
+      .traceChild('delete-old-chunks')
+      .traceAsyncFn(async () => {
+        // Commands in `commands` directory
+        // Events in `events` directory
+        const bm = json5.parse(
+          readFileSync(path.join(distDir, 'build-manifest.json'), 'utf8')
+        )
+        const bmCommands = Object.entries(bm.commands) as unknown as [
+          string,
+          string
+        ][]
+        const bmEvents = Object.entries(bm.events) as unknown as [
+          string,
+          string
+        ][]
+
+        // Commands and events in `app` directory
+        const abm = json5.parse(
+          readFileSync(path.join(distDir, 'app-build-manifest.json'), 'utf8')
+        )
+        const abmCommands = Object.entries(abm.commands) as unknown as [
+          string,
+          string
+        ][]
+        const abmEvents = Object.entries(abm.events) as unknown as [
+          string,
+          string
+        ][]
+
+        for (let command of bmCommands) {
+          const name = command[0]
+          const chunkPath = path.join(distDir, command[1])
+          if (
+            filePaths.find(
+              (fp) => fp === path.join(dir, 'commands', name) + path.extname(fp)
+            ) &&
+            existsSync(chunkPath)
+          )
+            rmSync(chunkPath, { maxRetries: 3 })
+        }
+        for (let event of bmEvents) {
+          const name = event[0]
+          const chunkPath = path.join(distDir, event[1])
+          if (
+            filePaths.find(
+              (fp) => fp === path.join(dir, 'events', name) + path.extname(fp)
+            ) &&
+            existsSync(chunkPath)
+          )
+            rmSync(chunkPath, { maxRetries: 3 })
+        }
+        for (let command of abmCommands) {
+          const name = snakeCase(command[0]).replace('_', path.sep)
+          const chunkPath = path.join(distDir, command[1])
+          if (
+            filePaths.find(
+              (fp) =>
+                fp === path.join(dir, 'app', name, 'command') + path.extname(fp)
+            ) &&
+            existsSync(chunkPath)
+          )
+            rmSync(chunkPath, { maxRetries: 3 })
+        }
+        for (let event of abmEvents) {
+          const name = snakeCase(event[0]).replace('_', path.sep)
+          const chunkPath = path.join(distDir, event[1])
+          if (
+            filePaths.find(
+              (fp) =>
+                fp === path.join(dir, 'app', name, 'event') + path.extname(fp)
+            ) &&
+            existsSync(chunkPath)
+          )
+            rmSync(chunkPath, { maxRetries: 3 })
+        }
       })
 
     // Validates the changed chunks
@@ -1156,14 +1251,6 @@ export async function incrementalBuild({
       ...filteredRegularChunks.commands,
       ...filteredRegularChunks.events,
     ]
-
-    // Ensures that there are files that remained after validation and filtration
-    if (chunks.length === 0)
-      printAndExit(
-        `> There are no remaining files that are valid, fix the errors associated with each file before ${
-          dev ? 'updating' : 'building'
-        } your project again.`
-      )
 
     // Writes changed chunks to dist directory
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1668,21 +1755,69 @@ export async function attemptCacheHit({
         }
       })
 
+    // Filters a command or event file in `events` or `commands` directory if they are too deep into the directory
+    const filteredRegularFiles = await attemptCacheHitSpan
+      .traceChild('filter-regular-file')
+      .traceAsyncFn(async () => {
+        const commandFiles = commandsDir
+          ? validFilesOnly.filter((file) => file.origin === 'command')
+          : []
+        const eventFiles = eventsDir
+          ? validFilesOnly.filter((file) => file.origin === 'event')
+          : []
+        const filtered: {
+          commands: {
+            content: Buffer
+            path: string
+            origin: string
+          }[]
+          events: {
+            content: Buffer
+            path: string
+            origin: string
+          }[]
+        } = {
+          events: [],
+          commands: [],
+        }
+
+        if (commandFiles.length === 0 && eventFiles.length === 0)
+          return filtered
+
+        for (let file of commandFiles) {
+          const depth = getDepth(commandsDir as string, file.path)
+          if (depth > 1) {
+            const workingFile = file.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(
+              `Command at ${workingFile} is too deep, it will be ignored.`
+            )
+          } else filtered.commands.push(file)
+        }
+
+        for (let file of eventFiles) {
+          const depth = getDepth(eventsDir as string, file.path)
+          if (depth > 1) {
+            const workingFile = file.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+          } else filtered.commands.push(file)
+        }
+
+        return filtered
+      })
+
+    // Replace the unfiltered files with the filtered ones
     const validFiles = [
       ...filteredAppFiles.commands,
       ...filteredAppFiles.events,
-      ...validFilesOnly.filter(
-        (file) => file.origin !== 'app__event' && file.origin !== 'app__command'
-      ),
+      ...filteredRegularFiles.commands,
+      ...filteredRegularFiles.events,
     ]
-
-    // Ensure that there are remaining files after filteration and validation
-    if (validFiles.length === 0)
-      printAndExit(
-        `> No valid files out of the all modified files. Fix these errors before ${
-          dev ? 'updating' : 'building'
-        } your project again.`
-      )
 
     // If it has a existing cache, compare it to the decompressed cache
     // If no cache if found, mark the file as invalid
@@ -1742,7 +1877,7 @@ export async function attemptCacheHit({
     // Run an inc. build, or do nothing and exit the process.
     if (existingCaches.invalid.length > 0) {
       Log.info(
-        `${existingCaches.invalid.length} invalid cache(s), rebuilding modified files\n`
+        `${existingCaches.invalid.length} invalid cache(s), rebuilding modified files`
       )
 
       await incrementalBuild({
