@@ -11,6 +11,8 @@ const withNextra = require('nextra')({
 const nextConfig = {
   experimental: {
     appDir: true,
+    runtime: 'experimental-edge',
+    mdxRs: true,
   },
   async redirects() {
     return [
