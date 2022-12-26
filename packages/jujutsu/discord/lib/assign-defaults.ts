@@ -19,21 +19,12 @@ export default function assignDefaults(
   // eslint-disable-next-line default-case
   switch (type) {
     case 'command':
-      return Object.fromEntries(
-        Object.entries({ ...currentInfo, ...commandDefaults }).filter(
-          (entry) =>
-            entry[0] === 'name' ||
-            entry[0] === 'fn' ||
-            entry[0] === 'description' ||
-            entry[0] === 'dmPermission' ||
-            entry[0] === 'nsfw'
-        )
-      ) as any
+      return { ...commandDefaults, ...currentInfo } as any
     case 'event':
       return Object.fromEntries(
         Object.entries({
-          ...currentInfo,
           ...eventDefaults,
+          ...currentInfo,
         }).filter((entry) => entry[0] === 'name' || entry[0] === 'fn')
       ) as any
   }

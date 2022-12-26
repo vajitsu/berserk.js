@@ -358,10 +358,19 @@ export default class SlashCommandManager {
   private commands: { [name: string]: CommandComplete } = {}
 
   addCommand(command: { name: string; absolutePath: string }) {
-    this.commands[command.name] = assignDefaults(
-      'command',
-      require(command.absolutePath)
-    ) as CommandComplete
+    const {
+      description,
+      default: fn,
+      nsfw,
+      dmPermission,
+    } = require(command.absolutePath)
+    this.commands[command.name] = assignDefaults('command', {
+      name: command.name,
+      description,
+      fn,
+      nsfw,
+      dmPermission,
+    }) as CommandComplete
   }
 
   getCommands() {
@@ -379,11 +388,8 @@ export default class SlashCommandManager {
 
     if (!command) return
 
-    const useClient = () => this.instance.client
-    const useInteraction = () => interaction
-
     try {
-      return void (await command.fn.bind(useClient).bind(useInteraction))
+      return void (await command.fn(interaction, this.instance.client))
     } catch (error) {
       return void this.instance.events.emit('error', error)
     }
@@ -394,6 +400,7 @@ export default class SlashCommandManager {
       if (!this.instance?.client?.application) return
 
       const commands = this.getCommands().map((com) => formData(com))
+
       const rest = new REST().setToken(this.instance.config.token as string)
 
       await rest.put(
