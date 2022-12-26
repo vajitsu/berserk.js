@@ -70,7 +70,7 @@ jobs:
             pnpm-store-
             pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
       - run: pnpm install --no-frozen-lockfile
-      - run: pnpm run build
+      - run: pnpm run build --filter=./packages/*
 
       - id: check-release
         run: |
