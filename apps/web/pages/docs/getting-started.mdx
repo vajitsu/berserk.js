@@ -2,6 +2,8 @@
 description: Get started with Jujutsu.js in the official documentation, and learn more about all our features!
 ---
 
+import Callout from '../../components/callout'
+
 # Getting Started
 
 Welcome to the Jujutsu.js documentation!
@@ -21,7 +23,7 @@ Your Discord application has now been created!
 Now that a Discord application has been initialized, we need to create a Discord bot.
 
 1. Select the `Bot` tab on the sidebar
-2. Click the `Add Bot` and select the confirmation button in the popup
+2. Click the `Add Bot` button and select the confirmation button in the popup
 
 The token should now appear under the username input area.
 
@@ -42,4 +44,8 @@ const jujutsuConfig = {
 module.exports = jujutsuConfig
 ```
 
-> **Never** share your token with anybody. If you accidentally share your bot's token, immediately reset it in the [`Discord Developer Portal`](https://discord.com/developers/applications) . Make sure to update your token in your Jujutsu.js project.
+> Replace `'your-token-goes-here'` with your bot's Discord token.
+
+<Callout>
+  **Never** share your token with anybody. If you accidentally share your bot's token, immediately reset it in the [Discord Developer Portal](https://discord.com/developers/applications). Make sure to update your token in your Jujutsu.js project.
+</Callout>
