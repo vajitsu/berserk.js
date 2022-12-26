@@ -12,7 +12,7 @@ const theme: DocsThemeConfig = {
   logo: () => <></>,
   logoLink: false,
   docsRepositoryBase:
-    'https://github.com/vajitsu/jujutsu.js/tree/canary/apps/web/pages',
+    'https://github.com/vajitsu/jujutsu.js/blob/canary/apps/web',
   search: {
     placeholder: 'Search...',
   },

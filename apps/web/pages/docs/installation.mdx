@@ -16,17 +16,17 @@ To automatically create a new Jujutsu.js project using the app directory:
 <Tabs items={['npm', 'pnpm', 'yarn']} storageKey="selected-package-manager">
   <Tab>
   ```bash filename="Terminal"
-    npx create-jujutsu-app@latest
-  ```
-  </Tab>
-  <Tab>
-  ```bash filename="Terminal
-    yarn create jujutsu-app
+  npx create-jujutsu-app@latest
   ```
   </Tab>
   <Tab>
   ```bash filename="Terminal" 
-    pnpm create jujutsu-app
+  pnpm create jujutsu-app
+  ```
+  </Tab>
+  <Tab>
+  ```bash filename="Terminal"
+  yarn create jujutsu-app
   ```
   </Tab>
 </Tabs>
@@ -38,16 +38,19 @@ To create a new Jujutsu.js app, install the required packages:
 <Tabs items={['npm', 'pnpm', 'yarn']} storageKey="selected-package-manager">
   <Tab>
   ```bash filename="Terminal"
-    npm install jujutsu@latest
-  ```</Tab>
+  npm install jujutsu@latest
+  ```
+  </Tab>
   <Tab>
   ```bash filename="Terminal"
-    yarn add jujutsu@latest
-  ```</Tab>
+  pnpm install jujutsu@latest
+  ```
+  </Tab>
   <Tab>
   ```bash filename="Terminal"
-    pnpm install jujutsu@latest
-  ```</Tab>
+  yarn add jujutsu@latest
+  ```
+  </Tab>
 </Tabs>
 
 Open `package.json` and add the following `scripts`:
@@ -81,9 +84,7 @@ export default function Hello(interaction) {
 ```
 
 <Callout type="info">
-  As you may have noticed, we write ESM code into a JavaScript file without
-  `type` in `package.json` marked as "module". This is because we treat all
-  JavaScript files in the `commands`, `events`, and `app` directory as a module.
+  ESM supported out of the box without having enabling it (dont worry, CommonJS is still supported)
 </Callout>
 
 > Good to know: If you forget to export `description`, Jujutsu.js will automatically assign a blank string to the `descriptuon` export for you when running the development server.
