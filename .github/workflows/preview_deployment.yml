@@ -38,7 +38,7 @@ jobs:
       - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
 
   deploy-preview:
-    if: ${{ needs.build.outputs.docsChange == 'true' }}
+    if: ${{ needs.build.outputs.docsChange == 'yup' }}
     name: Deploy Preview
     runs-on: ubuntu-latest
     steps:

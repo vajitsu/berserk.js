@@ -31,14 +31,14 @@ jobs:
       - name: tune linux network
         run: sudo ethtool -K eth0 tx off rx off
 
-      - name: Check non-docs only change
+      - name: Check docs change
         run: echo "::set-output name=DOCS_CHANGE::$(node scripts/run-for-change.js --type docs --exec echo 'yup')"
         id: docs-change
 
       - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
 
   deploy-production:
-    if: ${{ needs.build.outputs.docsChange == 'true' }}
+    if: ${{ needs.build.outputs.docsChange == 'yup' }}
     name: Deploy for produciton
     runs-on: ubuntu-latest
     steps:

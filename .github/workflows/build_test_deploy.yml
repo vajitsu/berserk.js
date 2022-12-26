@@ -51,10 +51,10 @@ jobs:
       - run: echo "::set-output name=DISCORD_CHANGE::$(node scripts/run-for-change.js --type jujutsu-discord --exec echo 'yup')"
         id: discord-change
 
+      - run: echo ${{steps.discord-change.outputs.DISCORD_CHANGE}}
+
       - run: echo "::set-output name=TURBO_TOKEN::$(echo ${TURBO_TOKEN:-empty})"
         id: turbo-token
-
-      - run: echo ${{steps.discord-change.outputs.DISCORD_CHANGE}}
 
       - run: npm i -g turbo@${{ env.TURBO_VERSION }} pnpm@${{ env.PNPM_VERSION }}
 
