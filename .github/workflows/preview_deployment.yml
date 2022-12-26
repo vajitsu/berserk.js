@@ -10,8 +10,8 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
-  check-for-change:
-    name: Check for website changes
+  change:
+    name: Check for changes
     runs-on: ubuntu-latest
     outputs:
       docsChange: ${{ steps.docs-change.outputs.DOCS_CHANGE }}
@@ -38,7 +38,7 @@ jobs:
       - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
 
   deploy-preview:
-    if: ${{ needs.check_for_change.outputs.docsChange == 'yup' }}
+    if: ${{ needs.change.outputs.docsChange == 'yup' }}
     name: Deploy Preview
     runs-on: ubuntu-latest
     steps:
