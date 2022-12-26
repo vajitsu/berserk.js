@@ -10,41 +10,15 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
-  check-for-change:
-    name: Check for website changes
-    runs-on: ubuntu-latest
-    outputs:
-      docsChange: ${{ steps.docs-change.outputs.DOCS_CHANGE }}
-    steps:
-      - name: Setup node
-        uses: actions/setup-node@v3
-        if: ${{ steps.docs-change.outputs.docsChange == 'nope' }}
-        with:
-          node-version: 16
-          check-latest: true
-
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 25
-
-      # https://github.com/actions/virtual-environments/issues/1187
-      - name: tune linux network
-        run: sudo ethtool -K eth0 tx off rx off
-
-      - name: Check docs change
-        run: echo "::set-output name=DOCS_CHANGE::$(node scripts/run-for-change.js --type docs --exec echo 'yup')"
-        id: docs-change
-
-      - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
-
   deploy-production:
-    if: ${{ needs.check_for_change.outputs.docsChange == 'yup' }}
     name: Deploy for produciton
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+      - name: Install pnpm
+        run: npm install -g pnpm@7.3.0
+      - name: Instal Vercel CLI
+        run: pnpm install -g vercel@latest
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
