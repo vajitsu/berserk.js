@@ -1,4 +1,4 @@
-import { CommandFile, commandFile } from '../lib/schemas'
+import { CommandFile, EventFile, commandFile, eventFile } from '../lib/schemas'
 
 export function validateCommandFile(input: CommandFile):
   | { pass: true }
@@ -71,4 +71,43 @@ export function validateCommandFile(input: CommandFile):
     }
 }
 
-export function validateEventFile() {}
+export function validateEventFile(input: EventFile):
+  | { pass: true }
+  | {
+      pass: false
+      errors: {
+        message: string
+        origin:
+          | 'name (file name/parent directory)'
+          | 'default export (function)'
+      }[]
+    } {
+  const result = eventFile.safeParse(input)
+
+  if (!result.success) {
+    const error = result.error
+    const { fn, name } = error.format()
+
+    const name_errs = name?._errors
+      ? name?._errors.map((err) => ({
+          message: err,
+          origin: 'name (file name/parent directory)' as const,
+        }))
+      : []
+
+    const fn_errs = fn?._errors
+      ? fn?._errors.map((err) => ({
+          message: err,
+          origin: 'default export (function)' as const,
+        }))
+      : []
+
+    return {
+      pass: false,
+      errors: [...name_errs, ...fn_errs],
+    }
+  } else
+    return {
+      pass: true,
+    }
+}

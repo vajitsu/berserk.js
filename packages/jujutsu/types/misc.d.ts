@@ -5,6 +5,16 @@ declare module 'jujutsu/dist/compiled/node-fetch' {
   export * from 'node-fetch'
 }
 
+declare module 'jujutsu/dist/compiled/fflate' {
+  import m from 'fflate'
+  export = m
+}
+
+declare module 'jujutsu/dist/compiled/fs-extra' {
+  import m from 'fs-extra'
+  export = m
+}
+
 declare module 'jujutsu/dist/compiled/undici' {}
 
 declare module 'jujutsu/dist/compiled/zlib' {

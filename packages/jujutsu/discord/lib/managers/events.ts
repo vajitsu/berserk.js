@@ -1,8 +1,9 @@
-import { EventFileComplete } from '../../../build/legacy'
+import { EventCompelte } from '../../../build/types'
 import bot from '../../bot'
+import assignDefaults from '../assign-defaults'
 
 export default class EventManager {
-  private events: { [name: string]: EventFileComplete } = {}
+  private events: { [name: string]: EventCompelte } = {}
 
   constructor(private instance: bot) {
     this.instance.client.on('interactionCreate', (i) => {
@@ -11,9 +12,13 @@ export default class EventManager {
     })
   }
 
-  registerEvent(event: EventFileComplete) {
-    this.events[event.name] = event
-    this.instance.client.on(event.name, event.default.bind(event))
+  registerEvent(event: { name: string; absolutePath: string }) {
+    this.events[event.name] = assignDefaults(
+      'event',
+      require(event.absolutePath)
+    ) as EventCompelte
+    const new_event = this.events[event.name]
+    this.instance.client.on(new_event.name, new_event.fn.bind(event))
   }
 
   public getEvent(name: string) {

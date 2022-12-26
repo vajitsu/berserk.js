@@ -26,7 +26,7 @@ import { LocalizationMap as localizationMap } from 'jujutsu/dist/compiled/discor
 // eslint-disable-next-line import/no-extraneous-dependencies
 import getGzipSize from 'jujutsu/dist/compiled/gzip-size'
 import { promises as fs } from 'fs'
-import { SLASH_COMMAND_REGEX } from '../lib/constants'
+import { SLASH_COMMAND } from '../lib/constants'
 
 const fileGzipStats: { [k: string]: Promise<number> | undefined } = {}
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -83,6 +83,7 @@ export interface CommandInfo {
   }
 }
 
-export function isCommandName(command: string) {
-  return SLASH_COMMAND_REGEX.is(command)
+export function isValidCommandName(commandName: string) {
+  const result = SLASH_COMMAND.safeParse(commandName)
+  return result.success
 }

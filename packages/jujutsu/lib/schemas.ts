@@ -39,7 +39,7 @@ export interface CommandFile {
 
 export const commandFile = z.object({
   ...slashCommand,
-  fn: z.function().args().returns(z.void()),
+  fn: z.function().args().returns(z.void().promise().or(z.void())),
 })
 
 export interface EventFile {
@@ -52,5 +52,5 @@ export const eventFile = z.object({
     invalid_type_error: 'Event does not exist on list of available events',
     required_error: "The event's name is a required field",
   }),
-  fn: z.function().args().returns(z.void()),
+  fn: z.function().args().returns(z.void().promise().or(z.void())),
 })

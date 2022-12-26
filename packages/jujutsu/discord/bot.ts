@@ -7,6 +7,7 @@ import { EventEmitter } from 'jujutsu/dist/compiled/ws'
 import EventManager from './lib/managers/events'
 import isError, { JujutsuError } from '../lib/is-error'
 import * as Log from '../build/output/log'
+import { printAndExit } from '../lib/utils'
 
 interface ExtendedConfig extends DiscordConfig {
   quiet: boolean
@@ -26,7 +27,7 @@ export default class bot {
     public debug = false
   ) {
     if (config.options == null)
-      throw new Error(
+      printAndExit(
         "> Couldn't find `discord.options`. Add a value for `options` to your `jujutsu.config.js` configuration under `discord`."
       )
 
@@ -43,7 +44,7 @@ export default class bot {
     this.client.on('error', (e: JujutsuError) => {
       if (this.config.quiet) return void 0
       Log.error(e.type === 'init' ? e.message : e)
-      if (this.dev) Log.wait('Waiting for changes')
+      if (this.dev) Log.wait('waiting for changes')
     })
     this.client.on('debug', (message) =>
       this.debug && !this.config.quiet ? Log.event(message) : void 0
@@ -56,7 +57,7 @@ export default class bot {
         !this.config.token ||
         (this.config.token && this.config.token.length < 1)
       )
-        throw new Error(
+        printAndExit(
           "> Couldn't find `discord.token`. Add a value for `token` to your `jujutsu.config.js` configuration under `discord`."
         )
 

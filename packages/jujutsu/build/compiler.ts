@@ -10,30 +10,10 @@ import { compileBundleOptions, config as spackConfig } from '@swc/core/spack'
 import { builtinModules } from 'module'
 import { promises } from 'fs-extra'
 import path from 'path'
+import { SWC_CONFIG } from '../lib/constants'
 
 export default class Compiler {
-  private config: Config = {
-    minify: true,
-    env: {
-      forceAllTransforms: true,
-      mode: 'usage',
-    },
-    jsc: {
-      loose: true,
-      parser: {
-        syntax: 'typescript',
-      },
-      target: 'es5',
-      externalHelpers: true,
-    },
-    module: {
-      type: 'commonjs',
-      lazy: true,
-      noInterop: true,
-      strict: true,
-      strictMode: true,
-    },
-  }
+  private config: Config = SWC_CONFIG
 
   async transform(code: string) {
     let config = this.config

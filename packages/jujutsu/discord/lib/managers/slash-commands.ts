@@ -5,26 +5,19 @@ import {
   Routes,
   SlashCommandBuilder,
 } from 'jujutsu/dist/compiled/discord.js'
-import { CommandFileComplete } from '../../../build/legacy'
 import isError from '../../../lib/is-error'
 import bot from '../../bot'
 import * as Log from '../../../build/output/log'
+import { CommandComplete } from '../../../build/types'
+import assignDefaults from '../assign-defaults'
 
-function formData({
-  name,
-  description,
-  dmPermission,
-  defaultMemberPermissions,
-  options,
-  localizations,
-  subcommands,
-}: CommandFileComplete) {
+function formData({ name, description, dmPermission }: CommandComplete) {
   const _ = new SlashCommandBuilder()
   _.setName(name)
   if (description) _.setDescription(description)
   if (dmPermission !== undefined) _.setDMPermission(dmPermission)
-  if (defaultMemberPermissions !== undefined)
-    _.setDefaultMemberPermissions(defaultMemberPermissions)
+
+  /*
   if (localizations?.name) _.setNameLocalizations(localizations.name)
   if (localizations?.description)
     _.setDescriptionLocalizations(localizations.description)
@@ -354,6 +347,7 @@ function formData({
 
         return _i
       })
+  */
 
   return _.toJSON()
 }
@@ -361,10 +355,13 @@ function formData({
 export default class SlashCommandManager {
   constructor(private instance: bot) {}
 
-  private commands: { [name: string]: CommandFileComplete } = {}
+  private commands: { [name: string]: CommandComplete } = {}
 
-  addCommand(command: CommandFileComplete) {
-    this.commands[command.name] = command
+  addCommand(command: { name: string; absolutePath: string }) {
+    this.commands[command.name] = assignDefaults(
+      'command',
+      require(command.absolutePath)
+    ) as CommandComplete
   }
 
   getCommands() {
@@ -382,8 +379,11 @@ export default class SlashCommandManager {
 
     if (!command) return
 
+    const useClient = () => this.instance.client
+    const useInteraction = () => interaction
+
     try {
-      return void (await command.default(interaction, this.instance.client))
+      return void (await command.fn.bind(useClient).bind(useInteraction))
     } catch (error) {
       return void this.instance.events.emit('error', error)
     }
