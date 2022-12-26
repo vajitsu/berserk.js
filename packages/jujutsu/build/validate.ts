@@ -70,3 +70,5 @@ export function validateCommandFile(input: CommandFile):
       pass: true,
     }
 }
+
+export function validateEventFile() {}

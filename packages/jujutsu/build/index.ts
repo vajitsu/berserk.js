@@ -177,6 +177,7 @@ export async function coldStart({
       .traceAsyncFn(async () => {
         let error = false
         for (let chunk of chunks) {
+          console.log(chunk.code)
           const mod = requireFromString(chunk.code)
           const fileName = path.basename(chunk.path)
           const name = fileName.replace(/\..*$/, '')

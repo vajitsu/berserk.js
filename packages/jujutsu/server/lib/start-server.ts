@@ -8,11 +8,7 @@ import { Client } from 'jujutsu/dist/compiled/discord.js'
 import { recursiveReadDirSync } from './recursive-readdir-sync'
 import { join, relative } from 'path'
 import fs from 'fs-extra'
-<<<<<<< HEAD:packages/jujutsu/server/lib/start-server.ts
 import build, { interopForCommand, interopForEvent } from '../../build/legacy'
-=======
-import build, { interopForCommand, interopForEvent } from '../../build'
->>>>>>> origin/canary:packages/berserk/server/lib/start-server.ts
 import JujutsuDevServer from '../dev/jujutsu-dev-server'
 import { JujutsuServerOptions } from '../jujutsu'
 import { SERVER_DIRECTORY } from '../../lib/constants'

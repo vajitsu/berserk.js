@@ -9,27 +9,22 @@ export default class Compiler {
     minify: true,
     env: {
       forceAllTransforms: true,
-      mode: 'usage',
-      targets: {
-        node: process.versions.node,
-      },
+      mode: 'usage'
     },
     jsc: {
       loose: true,
       parser: {
         syntax: 'typescript',
-        dynamicImport: true,
       },
       target: 'es5',
       externalHelpers: true,
     },
     module: {
-      type: 'es6',
+      type: 'commonjs',
       lazy: true,
       noInterop: true,
       strict: true,
       strictMode: true,
-      ignoreDynamic: true,
     },
   }
 
@@ -57,6 +52,7 @@ export default class Compiler {
         .split(path.sep)
         .at(-1)
         ?.replace(/\..*$/, '.js') as string
+      
       transpilations.push({
         name: fileName,
         output: out.code,
@@ -78,9 +74,7 @@ export default class Compiler {
   async bundle(entry: string, dir: string, distDir: string) {
     const packageJson = require(path.join(dir, 'package.json'))
 
-    const fileName = entry
-      .split(path.sep)
-      .at(-1)
+    const fileName = path.basename(entry)
       ?.replace(/\..*$/, '') as string
 
     const spackEntry = Object.fromEntries([[fileName, entry]])
@@ -94,6 +88,8 @@ export default class Compiler {
       externalModules.push(...Object.keys(packageJson.devDependencies))
     if (packageJson.dependencies)
       externalModules.push(...Object.keys(packageJson.dependencies))
+    
+    console.log(distDir)
 
     const out = await bundle(
       spackConfig({
@@ -102,7 +98,9 @@ export default class Compiler {
         output: {
           path: distDir,
         } as any,
-        options: this.config,
+        options: {
+          root: distDir
+        },
         module: {},
         mode: 'production',
         target: 'node',
@@ -125,6 +123,7 @@ export default class Compiler {
       exportDefaultFrom: true,
       importAssertions: true,
       syntax: typescript ? 'typescript' : 'ecmascript',
+      
     })
     return out
   }
