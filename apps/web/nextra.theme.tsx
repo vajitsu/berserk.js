@@ -51,7 +51,7 @@ const theme: DocsThemeConfig = {
   footer: {
     text: () => (
       <a
-        href="https://vercel.com/?utm_source=swc"
+        href="https://vercel.com/?utm_source=jujutsu-js"
         target="_blank"
         rel="noopener"
         className="inline-flex items-center no-underline text-current"
