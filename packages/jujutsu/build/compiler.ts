@@ -1,5 +1,12 @@
-import { transform, transformSync, parseSync, bundle, Config } from '@swc/core'
-import { config as spackConfig } from '@swc/core/spack'
+import {
+  transform,
+  transformSync,
+  transformFile,
+  parseSync,
+  bundle,
+  Config,
+} from '@swc/core'
+import { compileBundleOptions, config as spackConfig } from '@swc/core/spack'
 import { builtinModules } from 'module'
 import { promises } from 'fs-extra'
 import path from 'path'
@@ -9,7 +16,7 @@ export default class Compiler {
     minify: true,
     env: {
       forceAllTransforms: true,
-      mode: 'usage'
+      mode: 'usage',
     },
     jsc: {
       loose: true,
@@ -31,8 +38,8 @@ export default class Compiler {
   async transform(code: string) {
     let config = this.config
 
-    const out = await transform(code, { ...(config as Config) })
-    return out
+    const out = await transform(code, config)
+    return out.code
   }
 
   async transformFiles(
@@ -48,19 +55,26 @@ export default class Compiler {
     for (let file of files) {
       const code = await promises.readFile(file.path)
       const out = await this.transform(code.toString('utf8'))
-      const fileName = file.path
-        .split(path.sep)
-        .at(-1)
+      const fileName = path
+        .basename(file.path)
         ?.replace(/\..*$/, '.js') as string
-      
+
       transpilations.push({
         name: fileName,
-        output: out.code,
+        output: out,
         type: file.type,
       })
     }
 
     return transpilations
+  }
+
+  async transformFile(filepath: string, typescript = false) {
+    const out = await transformFile(filepath, {
+      ...this.config,
+      jsc: { parser: { syntax: typescript ? 'typescript' : 'ecmascript' } },
+    })
+    return out.code
   }
 
   transformSync(code: string, typescript = false) {
@@ -74,8 +88,7 @@ export default class Compiler {
   async bundle(entry: string, dir: string, distDir: string) {
     const packageJson = require(path.join(dir, 'package.json'))
 
-    const fileName = path.basename(entry)
-      ?.replace(/\..*$/, '') as string
+    const fileName = path.basename(entry)?.replace(/\..*$/, '') as string
 
     const spackEntry = Object.fromEntries([[fileName, entry]])
 
@@ -88,8 +101,22 @@ export default class Compiler {
       externalModules.push(...Object.keys(packageJson.devDependencies))
     if (packageJson.dependencies)
       externalModules.push(...Object.keys(packageJson.dependencies))
-    
-    console.log(distDir)
+
+    const conf = spackConfig({
+      externalModules,
+      entry: spackEntry,
+      output: {
+        path: distDir,
+      } as any,
+      options: {
+        root: distDir,
+      },
+      module: {},
+      mode: 'production',
+      target: 'node',
+    })
+
+    console.log(await compileBundleOptions(conf))
 
     const out = await bundle(
       spackConfig({
@@ -99,7 +126,8 @@ export default class Compiler {
           path: distDir,
         } as any,
         options: {
-          root: distDir
+          root: distDir,
+          configFile: path.join(distDir, '.swcrc'),
         },
         module: {},
         mode: 'production',
@@ -123,7 +151,6 @@ export default class Compiler {
       exportDefaultFrom: true,
       importAssertions: true,
       syntax: typescript ? 'typescript' : 'ecmascript',
-      
     })
     return out
   }

@@ -1,22 +1,22 @@
 export default {
-    minify: true,
-    env: {
-      forceAllTransforms: true,
-      mode: 'usage'
+  minify: true,
+  env: {
+    forceAllTransforms: true,
+    mode: 'usage',
+  },
+  jsc: {
+    loose: true,
+    parser: {
+      syntax: 'typescript',
     },
-    jsc: {
-      loose: true,
-      parser: {
-        syntax: 'typescript',
-      },
-      target: 'es5',
-      externalHelpers: true,
-    },
-    module: {
-      type: 'commonjs',
-      lazy: true,
-      noInterop: true,
-      strict: true,
-      strictMode: true,
-    },
-  }
+    target: 'es5',
+    externalHelpers: true,
+  },
+  module: {
+    type: 'commonjs',
+    lazy: true,
+    noInterop: true,
+    strict: true,
+    strictMode: true,
+  },
+}

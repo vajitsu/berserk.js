@@ -161,10 +161,13 @@ export async function coldStart({
         }[] = []
         for (let file of allFiles) {
           mkdirp(distDir)
-          const code = await compiler.bundle(file.path, dir, distDir)
+          const code = await compiler.transformFile(
+            file.path,
+            path.extname(file.path) === '.ts'
+          )
           allChunks.push({
             path: file.path,
-            code: code.at(0) as string,
+            code: code as string,
             type: file.type as any,
           })
         }
@@ -177,7 +180,6 @@ export async function coldStart({
       .traceAsyncFn(async () => {
         let error = false
         for (let chunk of chunks) {
-          console.log(chunk.code)
           const mod = requireFromString(chunk.code)
           const fileName = path.basename(chunk.path)
           const name = fileName.replace(/\..*$/, '')
@@ -247,12 +249,14 @@ export async function coldStart({
           const workingDir = path
             .dirname(chunk.path)
             .replace(dir + path.sep, '')
+            .split(path.sep)
+            .join('/')
 
           const ending = path.extname(chunk.path)
 
           if (depth > 2)
             Log.warn(
-              `Subcommand at "${workingDir}${path.sep}command${ending}" is too deep, it will be ignored.`
+              `Subcommand at "${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           else filterAppCommands.push(chunk)
         }
@@ -302,13 +306,13 @@ export async function coldStart({
           mode: dev ? 'development' : 'production',
           commands: Object.fromEntries(
             commands.map((i) => [
-              i.path.split(path.sep).at(-1)?.replace(/\..*$/, ''),
+              path.basename(i.path)?.replace(path.extname(i.path), ''),
               i.path.replace(`${distDir}${path.sep}`, '').replace('\\', '/'),
             ])
           ),
           events: Object.fromEntries(
             events.map((i) => [
-              i.path.split(path.sep).at(-1)?.replace(/\..*$/, ''),
+              path.basename(i.path)?.replace(path.extname(i.path), ''),
               i.path.replace(`${distDir}${path.sep}`, '').replace('\\', '/'),
             ])
           ),
@@ -380,6 +384,8 @@ export async function coldStart({
     const seconds = end[0] + end[1] / 1000000000
     const template = `in ${seconds.toFixed(4)}s`
 
+    console.log()
+
     if (dev) Log.event(`updated in ${template}`)
     else Log.info(`done in ${template}`)
   })
@@ -392,6 +398,7 @@ export async function incrementalBuild({
   changedFiles,
   dev,
   dirs,
+  invalidCache = false,
 }: {
   dir: string
   distDir: string
@@ -404,6 +411,7 @@ export async function incrementalBuild({
     eventsDir: string | undefined
     commandsDir: string | undefined
   }
+  invalidCache?: boolean
 }) {
   const incrementalBuildSpan = trace('jujutsu-build-incremental', parentId, {
     dir,
@@ -434,7 +442,7 @@ export async function incrementalBuild({
               type: 'command',
             }))
             .filter((file) => filePaths.includes(file.path))
-        : undefined,
+        : [],
       events: eventsDir
         ? (await recursiveReadDir(eventsDir, regex_events))
             .map((file) => ({
@@ -442,7 +450,7 @@ export async function incrementalBuild({
               type: 'event',
             }))
             .filter((file) => filePaths.includes(file.path))
-        : undefined,
+        : [],
       app: appDir
         ? {
             commands: (await recursiveReadDir(appDir, regex_app_command))
@@ -458,7 +466,10 @@ export async function incrementalBuild({
               }))
               .filter((file) => filePaths.includes(file.path)),
           }
-        : undefined,
+        : {
+            commands: [],
+            events: [],
+          },
     }
 
     const chunks = await incrementalBuildSpan
@@ -470,14 +481,22 @@ export async function incrementalBuild({
           type: 'command' | 'event' | 'app__event' | 'app__command'
         }[] = []
 
-        const all = [...(files.events || []), ...(files.commands || [])]
+        const all = [
+          ...files.events,
+          ...files.commands,
+          ...files.app.commands,
+          ...files.app.events,
+        ]
 
         for (let file of all) {
           mkdirp(distDir)
-          const code = await compiler.bundle(file.path, dir, distDir)
+          const code = await compiler.transformFile(
+            file.path,
+            path.extname(file.path) === '.ts'
+          )
           allChunks.push({
             path: file.path,
-            code: code.at(0) as string,
+            code: code as string,
             type: file.type as any,
           })
         }
@@ -489,7 +508,10 @@ export async function incrementalBuild({
       .traceChild('validate-chunks')
       .traceAsyncFn(async () => {
         let error = false
-        for (let chunk of chunks) {
+        const commandChunks = chunks.filter((chunk) =>
+          chunk.type.includes('command')
+        )
+        for (let chunk of commandChunks) {
           const mod = requireFromString(chunk.code)
           const fileName = path.basename(chunk.path)
           const name = fileName.replace(/\..*$/, '')
@@ -554,16 +576,11 @@ export async function incrementalBuild({
         }[] = []
 
         for (let chunk of chunks) {
-          const fileName = path
-            .basename(chunk.path)
-            ?.replace(/\.js$/, '.js')
-            .replace(/\.ts$/, '.js') as string
-
           let outDir = path.join(distDir, 'server')
 
           if (chunk.type.startsWith('app__')) outDir = path.join(outDir, 'app')
 
-          const outFile = path.join(outDir, fileName)
+          const outFile = path.join(outDir, `chunk__${nanoid(5)}.js`)
 
           await mkdirp(outDir)
           await writeFile(outFile, chunk.code, 'utf8')
@@ -697,6 +714,8 @@ export async function incrementalBuild({
     const seconds = end[0] + end[1] / 1000000000
     const template = `in ${seconds.toFixed(4)}s`
 
+    if (!invalidCache) console.log()
+
     if (dev) Log.event(`updated in ${template}`)
     else Log.info(`done in ${template}`)
   })
@@ -779,6 +798,7 @@ export async function attemptCacheHit({
         return all.map((file) => ({
           content: readFileSync(file.path),
           path: file.path,
+          origin: file.type,
         }))
       })
 
@@ -795,17 +815,13 @@ export async function attemptCacheHit({
         if (cacheFiles.length < 1)
           return {
             hits,
-            misses: allFiles.map((file) => file.path),
+            invalid: allFiles.map((file) => file.path),
           }
 
         for (let file of cacheFiles) {
           const relativeFilePath = path.join(dir, file)
 
-          const found = allFiles.find(
-            (f) =>
-              f.path === relativeFilePath.replace(/\.cache$/, '.ts') ||
-              f.path === relativeFilePath.replace(/\.cache$/, '.js')
-          )
+          const found = allFiles.find((f) => f.path === relativeFilePath)
 
           if (found) {
             const fileContent = readFileSync(path.join(cacheDir, file))
@@ -819,13 +835,27 @@ export async function attemptCacheHit({
 
         return {
           hits,
-          misses: miss,
+          invalid: miss,
         }
       })
 
-    if (existingCaches.misses.length > 0) {
+    const missingCaches = await attemptCacheHitSpan
+      .traceChild('find-missing-caches')
+      .traceAsyncFn(async () =>
+        allFiles
+          .filter(
+            (file) =>
+              !existingCaches.hits.includes(file.path) &&
+              !existingCaches.invalid.includes(file.path)
+          )
+          .map((file) => file.path)
+      )
+
+    existingCaches.invalid.push(...missingCaches)
+
+    if (existingCaches.invalid.length > 0) {
       Log.info(
-        `${existingCaches.misses.length} cache(s) missed, rebuilding changed files`
+        `${existingCaches.invalid.length} invalid cache(s), rebuilding changed files`
       )
 
       await incrementalBuild({
@@ -833,12 +863,13 @@ export async function attemptCacheHit({
         distDir,
         config,
         parentId: attemptCacheHitSpan.id,
-        changedFiles: existingCaches.misses,
+        changedFiles: existingCaches.invalid,
         dev,
         dirs,
+        invalidCache: true,
       })
-    } else if (existingCaches.misses.length < 1)
-      Log.info('No missing caches, nothing to update')
+    } else if (existingCaches.invalid.length < 1)
+      Log.info('No invalid caches, nothing to update')
   })
 }
 
@@ -865,12 +896,13 @@ export default async function build(
       setGlobal('phase', phase)
       setGlobal('distDir', distDir)
 
-      const distDirExists = pathExistsSync(distDir)
+      const cacheDirExists = pathExistsSync(path.join(distDir, 'cache'))
+      const serverDistExists = pathExistsSync(path.join(distDir, 'server'))
 
       const isAppDirEnabled = !!config.experimental.appDir
       const dirs = findDirs(dir, isAppDirEnabled)
 
-      if (distDirExists && changedFiles.length > 0)
+      if (serverDistExists && changedFiles.length > 0)
         return await incrementalBuild({
           changedFiles,
           parentId: jujutsuBuildSpan.id,
@@ -880,7 +912,7 @@ export default async function build(
           dev,
           dirs,
         })
-      else if (!distDirExists)
+      else if (!serverDistExists)
         return await coldStart({
           dir,
           distDir,
@@ -889,7 +921,7 @@ export default async function build(
           dev,
           dirs,
         })
-      else if (changedFiles.length < 1)
+      else if (changedFiles.length < 1 && cacheDirExists)
         return await attemptCacheHit({
           dir,
           distDir,
@@ -898,6 +930,17 @@ export default async function build(
           dev,
           dirs,
         })
+      else if (changedFiles.length < 1) {
+        Log.info('No cache to read from, rebuilding project')
+        return await coldStart({
+          dir,
+          distDir,
+          config,
+          parentId: jujutsuBuildSpan.id,
+          dev,
+          dirs,
+        })
+      }
     })
   } finally {
     flushAllTraces()
