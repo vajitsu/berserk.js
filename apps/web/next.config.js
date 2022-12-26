@@ -2,17 +2,8 @@
 const withNextra = require('nextra')({
   theme: 'nextra-theme-docs',
   themeConfig: './nextra.theme.tsx',
-  staticImage: true,
   flexsearch: {
     codeblocks: false,
-  },
-  mdxOptions: {
-    rehypePlugins: [
-      [
-        require('@code-hike/mdx').remarkCodeHike,
-        { theme: require('shiki/themes/material-darker.json') },
-      ],
-    ],
   },
 })
 
@@ -20,10 +11,6 @@ const withNextra = require('nextra')({
 const nextConfig = {
   experimental: {
     appDir: true,
-    runtime: 'experimental-edge',
-  },
-  typescript: {
-    ignoreBuildErrors: true,
   },
   async redirects() {
     return [
@@ -34,7 +21,7 @@ const nextConfig = {
       },
       {
         source: '/',
-        destination: '/docs/',
+        destination: '/docs',
         permanent: false,
       },
     ]

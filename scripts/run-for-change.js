@@ -6,9 +6,6 @@ const exec = promisify(execOrig)
 const CHANGE_ITEM_GROUPS = {
   docs: [
     'bench',
-    'docs',
-    'errors',
-    'examples',
     'UPGRADING.md',
     'contributing.md',
     'contributing',
@@ -17,6 +14,7 @@ const CHANGE_ITEM_GROUPS = {
     '.github/ISSUE_TEMPLATE',
     '.github/labeler.json',
     '.github/pull_request_template.md',
+    'apps/web',
   ],
   'jujutsu-discord': [
     'packages/jujutsu-discord',

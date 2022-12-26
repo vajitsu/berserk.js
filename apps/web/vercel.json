@@ -1,0 +1,13 @@
+{
+  "github": {
+    "silent": true,
+    "autoJobCancelation": true
+  },
+  "cleanUrls": true,
+  "env": {
+    "VERCEL_DEEP_CLONE": "true"
+  },
+  "trailingSlash": false,
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm build"
+}
