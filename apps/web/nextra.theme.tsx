@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import Balancer from 'react-wrap-balancer'
 import { useRouter } from 'next/router'
 import { DocsThemeConfig } from 'nextra-theme-docs'
 import classNames from 'classnames'
@@ -31,16 +30,14 @@ const theme: DocsThemeConfig = {
   components: {
     h1: (props: any) => {
       return (
-        <Balancer>
-          <h1
-            className={classNames(
-              inter.className,
-              'mt-3 text-5xl font-bold leading-snug'
-            )}
-          >
-            {props.children}
-          </h1>
-        </Balancer>
+        <h1
+          className={classNames(
+            inter.className,
+            'mt-3 text-5xl font-bold leading-snug'
+          )}
+        >
+          {props.children}
+        </h1>
       )
     },
   },
