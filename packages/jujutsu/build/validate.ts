@@ -50,7 +50,7 @@ export function validateCommandFile(input: CommandFile):
 
     const fn_errs = fn?._errors
       ? fn?._errors.map((err) => ({
-          message: err,
+          message: err === 'Required' ? 'This is a required export' : err,
           origin: 'default export (function)' as const,
         }))
       : []
@@ -97,7 +97,7 @@ export function validateEventFile(input: EventFile):
 
     const fn_errs = fn?._errors
       ? fn?._errors.map((err) => ({
-          message: err,
+          message: err === 'Required' ? 'This is a required export' : err,
           origin: 'default export (function)' as const,
         }))
       : []

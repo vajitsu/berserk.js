@@ -45,10 +45,138 @@ interface BuildManifest {
   }
 }
 
+interface AppBuildManifest extends BuildManifest {
+  subcommands: {
+    [name: string]: string
+  }
+}
+
 function getDepth(dir: string, filepath: string) {
   const removed_dir = path.dirname(filepath).replace(dir + path.sep, '')
   const split = removed_dir.split(path.sep)
   return split.length
+}
+
+function validate(
+  dir: string,
+  chunks: {
+    code: string
+    path: string
+    type: 'command' | 'event' | 'app__event' | 'app__command'
+  }[]
+) {
+  let error = false
+  const commandChunks = chunks.filter((chunk) => chunk.type.includes('command'))
+  const eventChunks = chunks.filter((chunk) => chunk.type.includes('event'))
+
+  // Commands and subcommands
+  for (let chunk of commandChunks) {
+    const inApp = chunk.type.includes('app')
+    const mod = requireFromString(chunk.code)
+    const fileName = path.basename(chunk.path)
+    const name = inApp
+      ? camelCase(
+          chunk.path
+            .replace(path.join(dir, 'app'), '')
+            .replace(path.basename(chunk.path), '')
+            .replace(path.extname(chunk.path), '')
+            .split(path.sep)
+            .join('_')
+        )
+      : fileName.replace(path.extname(chunk.path), '')
+
+    const info = {
+      name: name,
+      description: mod.description,
+      dmPermission: mod.dmPermission,
+      nsfw: mod.nsfw,
+      fn: mod.default,
+    }
+    const result = validateCommandFile(info)
+
+    if (!result.pass) {
+      error = true
+      const pre_messages = {
+        'default export (function)': [] as unknown as string[],
+        'name (file name/parent directory)': [] as unknown as string[],
+        '`nsfw` export': [] as unknown as string[],
+        '`description` export': [] as unknown as string[],
+        '`dmPermission` export': [] as unknown as string[],
+      }
+      for (let err of result.errors) {
+        pre_messages[err.origin].push(err.message)
+      }
+
+      const messages = Object.entries(pre_messages).map((msg) => [
+        msg[0],
+        msg[1].map((m) => `          - ${m}`).join('\n'),
+      ])
+
+      const message = messages
+        .filter((data) => data[1].length > 0)
+        .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+        .join('\n')
+
+      if (chunks.indexOf(chunk) > 0) console.log()
+
+      Log.error(`The \`${name}\` slash command has a few errors:\n${message}`)
+    }
+  }
+
+  // Events
+  for (let chunk of eventChunks) {
+    const inApp = chunk.type.includes('app')
+    const mod = requireFromString(chunk.code)
+    const allDirs = path.dirname(chunk.path).replace(dir + path.sep, '')
+    const snake_case = allDirs.replace(path.sep, '_')
+    const name = inApp
+      ? camelCase(snake_case)
+      : path.basename(chunk.path).replace(path.extname(chunk.path), '')
+
+    const info = {
+      name: name,
+      description: mod.description,
+      dmPermission: mod.dmPermission,
+      nsfw: mod.nsfw,
+      fn: mod.default,
+    }
+    const result = validateEventFile(info)
+
+    if (!result.pass) {
+      error = true
+      const pre_messages = {
+        'default export (function)': [] as unknown as string[],
+        'name (file name/parent directory)': [] as unknown as string[],
+      }
+      for (let err of result.errors) {
+        pre_messages[err.origin].push(err.message)
+      }
+
+      const messages = Object.entries(pre_messages).map((msg) => [
+        msg[0],
+        msg[1].map((m) => `          - ${m}`).join('\n'),
+      ])
+
+      const message = messages
+        .filter((data) => data[1].length > 0)
+        .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+        .join('\n')
+
+      if (chunks.indexOf(chunk) > 0) console.log()
+
+      Log.error(`The \`${name}\` event has a few errors:\n${message}`)
+    }
+  }
+
+  // Exits build process if theres any issues
+  if (error) {
+    console.log()
+    printAndExit(
+      'Fix these errors before attempting to build your project again.',
+      0
+    )
+    console.log()
+  }
 }
 
 export async function coldStart({
@@ -207,111 +335,7 @@ export async function coldStart({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const validateChunks = await coldStartSpan
       .traceChild('validate-chunks')
-      .traceAsyncFn(async () => {
-        let error = false
-        const commandChunks = chunks.filter((chunk) =>
-          chunk.type.includes('command')
-        )
-        const eventChunks = chunks.filter((chunk) =>
-          chunk.type.includes('event')
-        )
-
-        for (let chunk of commandChunks) {
-          const mod = requireFromString(chunk.code)
-          const fileName = path.basename(chunk.path)
-          const name = fileName.replace(path.extname(chunk.path), '')
-
-          const info = {
-            name: name,
-            description: mod.description,
-            dmPermission: mod.dmPermission,
-            nsfw: mod.nsfw,
-            fn: mod.default,
-          }
-          const result = validateCommandFile(info)
-
-          if (!result.pass) {
-            error = true
-            const pre_messages = {
-              'default export (function)': [] as unknown as string[],
-              'name (file name/parent directory)': [] as unknown as string[],
-              '`nsfw` export': [] as unknown as string[],
-              '`description` export': [] as unknown as string[],
-              '`dmPermission` export': [] as unknown as string[],
-            }
-            for (let err of result.errors) {
-              pre_messages[err.origin].push(err.message)
-            }
-
-            const messages = Object.entries(pre_messages).map((msg) => [
-              msg[0],
-              msg[1].map((m) => `  - ${m}`).join('\n'),
-            ])
-
-            const message = messages
-              .filter((data) => data[1].length > 0)
-              .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
-              .join('\n')
-
-            if (chunks.indexOf(chunk) > 0) console.log()
-
-            Log.error(
-              `The \`${name}\` slash command has a few errors:\n${message}`
-            )
-          }
-        }
-
-        for (let chunk of eventChunks) {
-          const mod = requireFromString(chunk.code)
-
-          const allDirs = path.dirname(chunk.path).replace(dir + path.sep, '')
-          const snake_case = allDirs.replace(path.sep, '_')
-          const name = camelCase(snake_case)
-
-          const info = {
-            name: name,
-            description: mod.description,
-            dmPermission: mod.dmPermission,
-            nsfw: mod.nsfw,
-            fn: mod.default,
-          }
-          const result = validateEventFile(info)
-
-          if (!result.pass) {
-            error = true
-            const pre_messages = {
-              'default export (function)': [] as unknown as string[],
-              'name (file name/parent directory)': [] as unknown as string[],
-            }
-            for (let err of result.errors) {
-              pre_messages[err.origin].push(err.message)
-            }
-
-            const messages = Object.entries(pre_messages).map((msg) => [
-              msg[0],
-              msg[1].map((m) => `  - ${m}`).join('\n'),
-            ])
-
-            const message = messages
-              .filter((data) => data[1].length > 0)
-              .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
-              .join('\n')
-
-            if (chunks.indexOf(chunk) > 0) console.log()
-
-            Log.error(`The \`${name}\` event has a few errors:\n${message}`)
-          }
-        }
-
-        if (error) {
-          console.log()
-          printAndExit(
-            'Fix these errors before attempting to build your project again.',
-            0
-          )
-          console.log()
-        }
-      })
+      .traceAsyncFn(async () => validate(dir, chunks))
 
     // Ignore cases for `command` files:
     // 1. If the `command` file is too deep into the `app` directory (3 or more directories)
@@ -349,11 +373,21 @@ export async function coldStart({
 
           const ending = path.extname(chunk.path)
 
-          if (depth > 2)
+          if (depth > 2) {
             Log.warn(
-              `Subcommand at "${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `Command at "${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
-          else filterAppCommands.push(chunk)
+          } else if (depth === 2) {
+            const parentDir = workingDir.split('/').at(0) as string
+            const hasCommand =
+              existsSync(path.join(dir, 'app', parentDir, 'command.js')) ||
+              existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
+            if (!hasCommand)
+              Log.warn(
+                `Subcommand at "${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+              )
+            else filterAppCommands.push(chunk)
+          } else filterAppCommands.push(chunk)
         }
 
         for (let chunk of appEventChunks) {
@@ -376,14 +410,77 @@ export async function coldStart({
         }
       })
 
+    // Filters a command or event file in `events` or `commands` directory if they are too deep into the directory
+    const filteredRegularChunks = await coldStartSpan
+      .traceChild('filter-regular-chunks')
+      .traceAsyncFn(async () => {
+        const commandChunks = commandsDir
+          ? chunks.filter((chunk) => chunk.type === 'command')
+          : []
+        const eventChunks = eventsDir
+          ? chunks.filter((chunk) => chunk.type === 'event')
+          : []
+        const filtered: {
+          commands: {
+            code: string
+            path: string
+            type: 'command'
+          }[]
+          events: {
+            code: string
+            path: string
+            type: 'event'
+          }[]
+        } = {
+          events: [],
+          commands: [],
+        }
+
+        if (eventChunks.length === 0 && commandChunks.length === 0)
+          return filtered
+
+        for (let chunk of commandChunks) {
+          const depth = getDepth(commandsDir as string, chunk.path)
+          if (depth > 1) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(
+              `Command at ${workingFile} is too deep, it will be ignored.`
+            )
+          } else filtered.commands.push(chunk as any)
+        }
+
+        for (let chunk of eventChunks) {
+          const depth = getDepth(eventsDir as string, chunk.path)
+          if (depth > 1) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+          } else filtered.commands.push(chunk as any)
+        }
+
+        return filtered
+      })
+
     // Replace the unfiltered app chunks with the filtered ones
     chunks = [
       ...filteredAppChunks.commands,
       ...filteredAppChunks.events,
-      ...chunks.filter(
-        (chunk) => chunk.type !== 'app__command' && chunk.type !== 'app__event'
-      ),
+      ...filteredRegularChunks.commands,
+      ...filteredRegularChunks.events,
     ]
+
+    // Ensures that there are files that remained after validation and filtration
+    if (chunks.length === 0)
+      printAndExit(
+        `> There are no remaining files that are valid, fix the errors associated with each file before ${
+          dev ? 'updating' : 'building'
+        } your project again.`
+      )
 
     // Write these valid chunks to the dist directory
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -458,10 +555,15 @@ export async function coldStart({
     const appBuildManifest = await coldStartSpan
       .traceChild('create-app-build-manifest')
       .traceAsyncFn(async () => {
-        const commands = writeChunks.filter((t) => t.origin === 'app__command')
+        const commands = writeChunks
+          .filter((t) => t.origin === 'app__command')
+          .filter((chunk) => getDepth(path.join(dir, 'app'), chunk.path) === 1)
+        const subcommands = writeChunks
+          .filter((t) => t.origin === 'app__command')
+          .filter((chunk) => getDepth(path.join(dir, 'app'), chunk.path) === 2)
         const events = writeChunks.filter((t) => t.origin === 'app__event')
 
-        const app_build_manifest: BuildManifest = {
+        const app_build_manifest: AppBuildManifest = {
           mode: dev ? 'development' : 'production',
           commands: Object.fromEntries(
             commands.map((i) => [
@@ -493,6 +595,21 @@ export async function coldStart({
                 .join('/'),
             ])
           ),
+          subcommands: Object.fromEntries(
+            subcommands.map((i) => [
+              camelCase(
+                i.originPath
+                  .replace(path.join(dir, 'app'), '')
+                  .replace(path.basename(i.originPath), '')
+                  .split(path.sep)
+                  .join('_')
+              ),
+              i.path
+                .replace(`${distDir}${path.sep}`, '')
+                .split(path.sep)
+                .join('/'),
+            ])
+          ),
         }
 
         await writeFile(
@@ -502,7 +619,7 @@ export async function coldStart({
         )
       })
 
-    // Fill the cache with all valid chunks
+    // Fill the cache with valid chunks only
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const fillCache = await coldStartSpan
       .traceChild('fill-cache')
@@ -513,9 +630,9 @@ export async function coldStart({
           path: string
         }[] = []
 
-        for (let file of allFiles) {
-          const fileContent = await readFile(file.path)
-          const filePath = file.path.replace(dir, '')
+        for (let file of writeChunks) {
+          const fileContent = await readFile(file.originPath)
+          const filePath = file.originPath.replace(dir, '')
           const outPath = path.join(cacheDir, filePath)
           const compressed = Buffer.from(
             compressSync(fileContent, { level: 9 })
@@ -547,7 +664,6 @@ export async function incrementalBuild({
   changedFiles,
   dev,
   dirs,
-  invalidCache = false,
 }: {
   dir: string
   distDir: string
@@ -663,13 +779,23 @@ export async function incrementalBuild({
         const commands = nonExistent.filter((filepath) =>
           filepath.startsWith(path.join(dir, 'commands'))
         )
+        const events = nonExistent.filter((filepath) =>
+          filepath.startsWith(path.join(dir, 'events'))
+        )
         const appCommands = nonExistent.filter(
           (filepath) =>
             filepath.startsWith(path.join(dir, 'app')) &&
             path.basename(filepath).replace(path.extname(filepath), '') ===
               'command'
         )
+        const appEvents = nonExistent.filter(
+          (filepath) =>
+            filepath.startsWith(path.join(dir, 'app')) &&
+            path.basename(filepath).replace(path.extname(filepath), '') ===
+              'event'
+        )
 
+        // Commands in `commands` directory
         for (let filePath of commands) {
           if (existsSync(filePath)) return
 
@@ -700,7 +826,7 @@ export async function incrementalBuild({
               ).at(1)
             )
 
-            rmSync(commandPath)
+            if (existsSync(commandPath)) rmSync(commandPath)
           }
 
           const cachePath = path.join(
@@ -710,9 +836,52 @@ export async function incrementalBuild({
             path.basename(filePath)
           )
 
-          rmSync(cachePath)
+          if (existsSync(cachePath)) rmSync(cachePath)
         }
 
+        // Events in `events` directory
+        for (let filePath of events) {
+          if (existsSync(filePath)) return
+
+          const bm = json5.parse(
+            readFileSync(path.join(distDir, 'build-manifest.json'), 'utf8')
+          )
+          const bmEvents = Object.entries(bm.events) as unknown as [
+            string,
+            string
+          ][]
+          const fileEvent = bmEvents.find(
+            (entry) =>
+              entry[0] ===
+              path.basename(filePath).replace(path.extname(filePath), '')
+          )
+
+          if (fileEvent) {
+            const eventPath = path.join(
+              distDir,
+              (
+                bmEvents.find(
+                  (entry) =>
+                    entry[0] ===
+                    path.basename(filePath).replace(path.extname(filePath), '')
+                ) as any
+              ).at(1)
+            )
+
+            if (existsSync(eventPath)) rmSync(eventPath)
+          }
+
+          const cachePath = path.join(
+            distDir,
+            'cache',
+            'events',
+            path.basename(filePath)
+          )
+
+          if (existsSync(cachePath)) rmSync(cachePath)
+        }
+
+        // Commands and subcommands in `app` directory
         for (let fp of appCommands) {
           if (existsSync(fp)) return
 
@@ -723,17 +892,39 @@ export async function incrementalBuild({
             string,
             string
           ][]
-          const fileCommand = abmCommands.find(
-            (entry) =>
-              entry[0] ===
-              camelCase(
-                fp
-                  .replace(path.join(dir, 'app'), '')
-                  .replace(path.basename(fp), '')
-                  .split(path.sep)
-                  .join('_')
-              )
-          )
+          const abmSubCommands = Object.entries(abm.subcommands) as unknown as [
+            string,
+            string
+          ][]
+
+          const depth = getDepth(path.join(dir, 'app'), fp)
+
+          const fileCommand =
+            depth === 1
+              ? abmCommands.find(
+                  (entry) =>
+                    entry[0] ===
+                    camelCase(
+                      fp
+                        .replace(path.join(dir, 'app'), '')
+                        .replace(path.basename(fp), '')
+                        .split(path.sep)
+                        .at(0)
+                    )
+                )
+              : depth === 2
+              ? abmSubCommands.find(
+                  (entry) =>
+                    entry[0] ===
+                    camelCase(
+                      fp
+                        .replace(path.join(dir, 'app'), '')
+                        .replace(path.basename(fp), '')
+                        .split(path.sep)
+                        .at(1)
+                    )
+                )
+              : undefined
 
           if (fileCommand) {
             const commandPath = path.join(distDir, fileCommand.at(1) as string)
@@ -750,10 +941,49 @@ export async function incrementalBuild({
 
           if (existsSync(cachePath)) rmSync(cachePath)
         }
+
+        // Events in `app` directory
+        for (let fp of appEvents) {
+          if (existsSync(fp)) return
+
+          const abm = json5.parse(
+            readFileSync(path.join(distDir, 'app-build-manifest.json'), 'utf8')
+          )
+          const abmEvents = Object.entries(abm.events) as unknown as [
+            string,
+            string
+          ][]
+          const fileEvent = abmEvents.find(
+            (entry) =>
+              entry[0] ===
+              camelCase(
+                fp
+                  .replace(path.join(dir, 'app'), '')
+                  .replace(path.basename(fp), '')
+                  .split(path.sep)
+                  .join('_')
+              )
+          )
+
+          if (fileEvent) {
+            const eventPath = path.join(distDir, fileEvent.at(1) as string)
+
+            if (existsSync(eventPath)) rmSync(eventPath)
+          }
+
+          const cachePath = path.join(
+            distDir,
+            'cache',
+            'app',
+            fp.replace(path.join(dir, 'app'), '')
+          )
+
+          if (existsSync(cachePath)) rmSync(cachePath)
+        }
       })
 
     // Trnaspiles changed files only
-    const chunks = await incrementalBuildSpan
+    let chunks = await incrementalBuildSpan
       .traceChild('generate-changed-chunks')
       .traceAsyncFn(async () => {
         const allChunks: {
@@ -788,64 +1018,152 @@ export async function incrementalBuild({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const validateChunks = await incrementalBuildSpan
       .traceChild('validate-chunks')
+      .traceAsyncFn(async () => validate(dir, chunks))
+
+    // Ignore cases for `command` files:
+    // 1. If the `command` file is too deep into the `app` directory (3 or more directories)
+    // 2. If the `command` file has a depth of 2, make sure it has another `command` file in the parent directory
+    // Note: At the depth of 2, all `command` files are treated as subcommands
+    // --
+    // Ignore case for `event` files: Event name (all directories -> snake-case -> camel case) aren't actual client events supported by the Discord API
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const filteredAppChunks = await incrementalBuildSpan
+      .traceChild('filter-app-chunks')
       .traceAsyncFn(async () => {
-        let error = false
-        const commandChunks = chunks.filter((chunk) =>
-          chunk.type.includes('command')
+        if (!appDir)
+          return {
+            commands: [],
+            events: [],
+          }
+
+        const appCommandChunks = chunks.filter(
+          (chunk) => chunk.type === 'app__command'
         )
-        for (let chunk of commandChunks) {
-          const mod = requireFromString(chunk.code)
-          const fileName = path.basename(chunk.path)
-          const name = fileName.replace(/\..*$/, '')
+        const filterAppCommands = []
 
-          const info = {
-            name: name,
-            description: mod.description,
-            dmPermission: mod.dmPermission,
-            nsfw: mod.nsfw,
-            fn: mod.default,
-          }
-          const result = validateCommandFile(info)
+        const appEventChunks = chunks.filter(
+          (chunk) => chunk.type === 'app__event'
+        )
+        const filterAppEvents = []
 
-          if (!result.pass) {
-            error = true
-            const pre_messages = {
-              'default export (function)': [] as unknown as string[],
-              'name (file name/parent directory)': [] as unknown as string[],
-              '`nsfw` export': [] as unknown as string[],
-              '`description` export': [] as unknown as string[],
-              '`dmPermission` export': [] as unknown as string[],
-            }
-            for (let err of result.errors) {
-              pre_messages[err.origin].push(err.message)
-            }
+        for (let chunk of appCommandChunks) {
+          const depth = getDepth(appDir, chunk.path)
+          const workingDir = path
+            .dirname(chunk.path)
+            .replace(dir + path.sep, '')
+            .split(path.sep)
+            .join('/')
 
-            const messages = Object.entries(pre_messages).map((msg) => [
-              msg[0],
-              msg[1].map((m) => `  - ${m}`).join('\n'),
-            ])
+          const ending = path.extname(chunk.path)
 
-            const message = messages
-              .filter((data) => data[1].length > 0)
-              .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
-              .join('\n')
-
-            if (chunks.indexOf(chunk) > 0) console.log()
-
-            Log.error(
-              `The \`${name}\` slash command has a few errors:\n${message}`
+          if (depth > 2) {
+            Log.warn(
+              `Command at "${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
-          }
+          } else if (depth === 2) {
+            const parentDir = workingDir.split('/').at(0) as string
+            const hasCommand =
+              existsSync(path.join(dir, 'app', parentDir, 'command.js')) ||
+              existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
+            if (!hasCommand)
+              Log.warn(
+                `Subcommand at "${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+              )
+            else filterAppCommands.push(chunk)
+          } else filterAppCommands.push(chunk)
         }
-        if (error) {
-          console.log()
-          printAndExit(
-            'Fix these errors before attempting to build your project again.',
-            0
-          )
-          console.log()
+
+        for (let chunk of appEventChunks) {
+          const allDirs = path.dirname(chunk.path).replace(dir + path.sep, '')
+          const workingDir = allDirs.split(path.sep).join('/')
+          const ending = path.extname(chunk.path)
+          const snake_case = allDirs.replace(path.sep, '_')
+          const camel_case = camelCase(snake_case)
+
+          if (!DISCORD_EVENTS.includes(camel_case))
+            Log.warn(
+              `Event at "${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+            )
+          else filterAppEvents.push(chunk)
+        }
+
+        return {
+          commands: filterAppCommands,
+          events: filterAppEvents,
         }
       })
+
+    // Filters a command or event file in `events` or `commands` directory if they are too deep into the directory
+    const filteredRegularChunks = await incrementalBuildSpan
+      .traceChild('filter-regular-chunks')
+      .traceAsyncFn(async () => {
+        const commandChunks = commandsDir
+          ? chunks.filter((chunk) => chunk.type === 'command')
+          : []
+        const eventChunks = eventsDir
+          ? chunks.filter((chunk) => chunk.type === 'event')
+          : []
+        const filtered: {
+          commands: {
+            code: string
+            path: string
+            type: 'command'
+          }[]
+          events: {
+            code: string
+            path: string
+            type: 'event'
+          }[]
+        } = {
+          events: [],
+          commands: [],
+        }
+
+        if (eventChunks.length === 0 && commandChunks.length === 0)
+          return filtered
+
+        for (let chunk of commandChunks) {
+          const depth = getDepth(commandsDir as string, chunk.path)
+          if (depth > 1) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(
+              `Command at ${workingFile} is too deep, it will be ignored.`
+            )
+          } else filtered.commands.push(chunk as any)
+        }
+
+        for (let chunk of eventChunks) {
+          const depth = getDepth(eventsDir as string, chunk.path)
+          if (depth > 1) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+          } else filtered.commands.push(chunk as any)
+        }
+
+        return filtered
+      })
+
+    // Replace the unfiltered app chunks with the filtered ones
+    chunks = [
+      ...filteredAppChunks.commands,
+      ...filteredAppChunks.events,
+      ...filteredRegularChunks.commands,
+      ...filteredRegularChunks.events,
+    ]
+
+    // Ensures that there are files that remained after validation and filtration
+    if (chunks.length === 0)
+      printAndExit(
+        `> There are no remaining files that are valid, fix the errors associated with each file before ${
+          dev ? 'updating' : 'building'
+        } your project again.`
+      )
 
     // Writes changed chunks to dist directory
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -890,7 +1208,6 @@ export async function incrementalBuild({
         const old: BuildManifest = (await pathExists(p))
           ? JSON.parse(readFileSync(p, 'utf8'))
           : []
-
         const build_manifest: BuildManifest = {
           ...old,
           mode: dev ? 'development' : 'production',
@@ -898,7 +1215,6 @@ export async function incrementalBuild({
             commands.map((i) => [
               path
                 .basename(i.originPath)
-                .at(-1)
                 ?.replace(path.extname(i.originPath), ''),
               i.path
                 .replace(`${distDir}${path.sep}`, '')
@@ -937,16 +1253,21 @@ export async function incrementalBuild({
     const appBuildManifest = await incrementalBuildSpan
       .traceChild('create-app-build-manifest')
       .traceAsyncFn(async () => {
-        const commands = writeChunks.filter((t) => t.origin === 'app__command')
+        const commands = writeChunks
+          .filter((t) => t.origin === 'app__command')
+          .filter((chunk) => getDepth(path.join(dir, 'app'), chunk.path) === 1)
+        const subcommands = writeChunks
+          .filter((t) => t.origin === 'app__command')
+          .filter((chunk) => getDepth(path.join(dir, 'app'), chunk.path) === 2)
         const events = writeChunks.filter((t) => t.origin === 'app__event')
 
         const p = path.join(distDir, 'app-build-manifest.json')
 
-        const old: BuildManifest = (await pathExists(p))
+        const old: AppBuildManifest = (await pathExists(p))
           ? JSON.parse(readFileSync(p, 'utf8'))
           : {}
 
-        const app_build_manifest: BuildManifest = {
+        const app_build_manifest: AppBuildManifest = {
           ...old,
           mode: dev ? 'development' : 'production',
           commands: Object.fromEntries(
@@ -966,6 +1287,21 @@ export async function incrementalBuild({
           ),
           events: Object.fromEntries(
             events.map((i) => [
+              camelCase(
+                i.originPath
+                  .replace(path.join(dir, 'app'), '')
+                  .replace(path.basename(i.originPath), '')
+                  .split(path.sep)
+                  .join('_')
+              ),
+              i.path
+                .replace(`${distDir}${path.sep}`, '')
+                .split(path.sep)
+                .join('/'),
+            ])
+          ),
+          subcommands: Object.fromEntries(
+            subcommands.map((i) => [
               camelCase(
                 i.originPath
                   .replace(path.join(dir, 'app'), '')
@@ -1001,18 +1337,13 @@ export async function incrementalBuild({
       .traceAsyncFn(async () => {
         const cacheDir = path.join(distDir, 'cache')
 
-        const allFiles = []
-        if (files.commands) allFiles.push(...files.commands)
-        if (files.events) allFiles.push(...files.events)
-        if (files.app) allFiles.push(...files.app.commands, ...files.app.events)
-
         const information: {
           path: string
         }[] = []
 
-        for (let file of allFiles) {
-          const fileContent = await readFile(file.path)
-          const filePath = file.path.replace(dir, '')
+        for (let file of writeChunks) {
+          const fileContent = await readFile(file.originPath)
+          const filePath = file.originPath.replace(dir, '')
           const outPath = path.join(cacheDir, filePath)
           const compressed = Buffer.from(
             compressSync(fileContent, { level: 9 })
@@ -1030,7 +1361,7 @@ export async function incrementalBuild({
     const seconds = end[0] + end[1] / 1000000000
     const template = `in ${seconds.toFixed(4)}s`
 
-    if (!invalidCache) console.log()
+    console.log()
 
     if (dev) Log.event(`updated in ${template}`)
     else Log.info(`done in ${template}`)
@@ -1063,6 +1394,11 @@ export async function attemptCacheHit({
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const attemptCacheHitResult = attemptCacheHitSpan.traceAsyncFn(async () => {
+    // Load SWC Compiler with custom functions
+    const compiler = attemptCacheHitSpan
+      .traceChild('load-swc-compiler')
+      .traceFn(() => new Compiler())
+
     // Get neccessary directories for function
     const cacheDir = path.join(distDir, 'cache')
     const { eventsDir, commandsDir, appDir } = dirs
@@ -1141,6 +1477,213 @@ export async function attemptCacheHit({
         }))
       })
 
+    const validFilesOnly = await attemptCacheHitSpan
+      .traceChild('validate-files')
+      .traceAsyncFn(async () => {
+        const valid: {
+          content: Buffer
+          path: string
+          origin: string
+        }[] = []
+
+        for (let file of allFiles) {
+          const mod = requireFromString(
+            await compiler.transform(file.content.toString('utf8'))
+          )
+
+          if (file.origin.includes('command')) {
+            const inApp = file.origin.includes('app')
+            const fileName = path.basename(file.path)
+            const name = inApp
+              ? camelCase(
+                  file.path
+                    .replace(path.join(dir, 'app'), '')
+                    .replace(path.basename(file.path), '')
+                    .replace(path.extname(file.path), '')
+                    .split(path.sep)
+                    .join('_')
+                )
+              : fileName.replace(path.extname(file.path), '')
+
+            const info = {
+              name: name,
+              description: mod.description,
+              dmPermission: mod.dmPermission,
+              nsfw: mod.nsfw,
+              fn: mod.default,
+            }
+            const result = validateCommandFile(info)
+
+            if (!result.pass) {
+              const pre_messages = {
+                'default export (function)': [] as unknown as string[],
+                'name (file name/parent directory)': [] as unknown as string[],
+                '`nsfw` export': [] as unknown as string[],
+                '`description` export': [] as unknown as string[],
+                '`dmPermission` export': [] as unknown as string[],
+              }
+              for (let err of result.errors) {
+                pre_messages[err.origin].push(err.message)
+              }
+
+              const messages = Object.entries(pre_messages).map((msg) => [
+                msg[0],
+                msg[1].map((m) => `           - ${m}`).join('\n'),
+              ])
+
+              const message = messages
+                .filter((data) => data[1].length > 0)
+                .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+                .join('\n')
+
+              if (allFiles.indexOf(file) > 0) console.log()
+
+              Log.error(
+                `The \`${name}\` slash command has a few errors:\n${message}`
+              )
+            } else valid.push(file)
+          } else if (file.origin.includes('event')) {
+            const allDirs = path.dirname(file.path).replace(dir + path.sep, '')
+            const snake_case = allDirs.replace(path.sep, '_')
+            const name = camelCase(snake_case)
+
+            const info = {
+              name: name,
+              description: mod.description,
+              dmPermission: mod.dmPermission,
+              nsfw: mod.nsfw,
+              fn: mod.default,
+            }
+            const result = validateEventFile(info)
+
+            if (!result.pass) {
+              const pre_messages = {
+                'default export (function)': [] as unknown as string[],
+                'name (file name/parent directory)': [] as unknown as string[],
+              }
+              for (let err of result.errors) {
+                pre_messages[err.origin].push(err.message)
+              }
+
+              const messages = Object.entries(pre_messages).map((msg) => [
+                msg[0],
+                msg[1].map((m) => `          - ${m}`).join('\n'),
+              ])
+
+              const message = messages
+                .filter((data) => data[1].length > 0)
+                .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+                .join('\n')
+
+              if (allFiles.indexOf(file) > 0) console.log()
+
+              Log.error(`The \`${name}\` event has a few errors:\n${message}`)
+            } else valid.push(file)
+          }
+        }
+
+        if (valid.length !== allFiles.length) {
+          Log.warn('The invalid files will be ignored.')
+          console.log()
+        } else if (valid.length === 0)
+          printAndExit(
+            `> No valid files out of the all modified files. Fix these errors before ${
+              dev ? 'updating' : 'building'
+            } your project again.`
+          )
+
+        return valid
+      })
+
+    // Ignore cases for `command` files:
+    // 1. If the `command` file is too deep into the `app` directory (3 or more directories)
+    // 2. If the `command` file has a depth of 2, make sure it has another `command` file in the parent directory
+    // Note: At the depth of 2, all `command` files are treated as subcommands
+    // --
+    // Ignore case for `event` files: Event name (all directories -> snake-case -> camel case) aren't actual client events supported by the Discord API
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const filteredAppFiles = await attemptCacheHitSpan
+      .traceChild('filter-app-files')
+      .traceAsyncFn(async () => {
+        if (!appDir)
+          return {
+            commands: [],
+            events: [],
+          }
+
+        const appCommandFiles = validFilesOnly.filter(
+          (file) => file.origin === 'app__command'
+        )
+        const filterAppCommands = []
+
+        const appEventFiles = validFilesOnly.filter(
+          (file) => file.origin === 'app__event'
+        )
+        const filterAppEvents = []
+
+        for (let file of appCommandFiles) {
+          const depth = getDepth(appDir, file.path)
+          const workingDir = path
+            .dirname(file.path)
+            .replace(dir + path.sep, '')
+            .split(path.sep)
+            .join('/')
+
+          const ending = path.extname(file.path)
+
+          if (depth > 2) {
+            Log.warn(
+              `Command at "${workingDir}/command${ending}" is too deep, it will be ignored.`
+            )
+          } else if (depth === 2) {
+            const parentDir = workingDir.split('/').at(0) as string
+            const hasCommand =
+              existsSync(path.join(dir, 'app', parentDir, 'command.js')) ||
+              existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
+            if (!hasCommand)
+              Log.warn(
+                `Subcommand at "${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+              )
+            else filterAppCommands.push(file)
+          } else filterAppCommands.push(file)
+        }
+
+        for (let file of appEventFiles) {
+          const allDirs = path.dirname(file.path).replace(dir + path.sep, '')
+          const workingDir = allDirs.split(path.sep).join('/')
+          const ending = path.extname(file.path)
+          const snake_case = allDirs.replace(path.sep, '_')
+          const camel_case = camelCase(snake_case)
+
+          if (!DISCORD_EVENTS.includes(camel_case))
+            Log.warn(
+              `Event at "${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+            )
+          else filterAppEvents.push(file)
+        }
+
+        return {
+          commands: filterAppCommands,
+          events: filterAppEvents,
+        }
+      })
+
+    const validFiles = [
+      ...filteredAppFiles.commands,
+      ...filteredAppFiles.events,
+      ...validFilesOnly.filter(
+        (file) => file.origin !== 'app__event' && file.origin !== 'app__command'
+      ),
+    ]
+
+    // Ensure that there are remaining files after filteration and validation
+    if (validFiles.length === 0)
+      printAndExit(
+        `> No valid files out of the all modified files. Fix these errors before ${
+          dev ? 'updating' : 'building'
+        } your project again.`
+      )
+
     // If it has a existing cache, compare it to the decompressed cache
     // If no cache if found, mark the file as invalid
     const existingCaches = await attemptCacheHitSpan
@@ -1156,13 +1699,13 @@ export async function attemptCacheHit({
         if (cacheFiles.length < 1)
           return {
             hits,
-            invalid: allFiles.map((file) => file.path),
+            invalid: validFiles.map((file) => file.path),
           }
 
         for (let file of cacheFiles) {
           const relativeFilePath = path.join(dir, file)
 
-          const found = allFiles.find((f) => f.path === relativeFilePath)
+          const found = validFiles.find((f) => f.path === relativeFilePath)
 
           if (found) {
             const fileContent = readFileSync(path.join(cacheDir, file))
@@ -1184,7 +1727,7 @@ export async function attemptCacheHit({
     const missingCaches = await attemptCacheHitSpan
       .traceChild('find-missing-caches')
       .traceAsyncFn(async () =>
-        allFiles
+        validFiles
           .filter(
             (file) =>
               !existingCaches.hits.includes(file.path) &&
@@ -1199,7 +1742,7 @@ export async function attemptCacheHit({
     // Run an inc. build, or do nothing and exit the process.
     if (existingCaches.invalid.length > 0) {
       Log.info(
-        `${existingCaches.invalid.length} invalid cache(s), rebuilding modified files`
+        `${existingCaches.invalid.length} invalid cache(s), rebuilding modified files\n`
       )
 
       await incrementalBuild({

@@ -1,5 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Client, Events } from 'jujutsu/dist/compiled/discord.js'
+import {
+  Client,
+  Events,
+  ChatInputCommandInteraction,
+} from 'jujutsu/dist/compiled/discord.js'
 import { z } from 'jujutsu/dist/compiled/zod'
 
 export const discordJs = {
@@ -34,17 +38,23 @@ export interface CommandFile {
   description: string
   dmPermission: boolean
   nsfw: boolean
-  fn: () => void | Promise<void>
+  fn: (
+    interaction: ChatInputCommandInteraction,
+    client: Client
+  ) => void | Promise<void>
 }
 
 export const commandFile = z.object({
   ...slashCommand,
-  fn: z.function().args().returns(z.void().promise().or(z.void())),
+  fn: z
+    .function()
+    .args(z.any(), discordJs.client)
+    .returns(z.void().promise().or(z.void())),
 })
 
 export interface EventFile {
   name: string
-  fn: () => void | Promise<void>
+  fn: (client: Client) => void | Promise<void>
 }
 
 export const eventFile = z.object({
@@ -54,6 +64,6 @@ export const eventFile = z.object({
   }),
   fn: z
     .function()
-    .args(z.any(), discordJs.client)
+    .args(discordJs.client)
     .returns(z.void().promise().or(z.void())),
 })
