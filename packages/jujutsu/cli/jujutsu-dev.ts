@@ -145,17 +145,9 @@ const jujutsuDev: cliCommand = async (argv) => {
 
   validateJujutsuConfig()
 
-  //const
-
-  //   startServer({
-  //     conf: findConfig<JujutsuConfig>(process.cwd(), 'jujutsu'),
-  //     ...devServerOptions,
-  //   })
-
   const conf = await loadConfig(PHASE_DEVELOPMENT_SERVER, dir)
 
-  await build(dir, null, true).finally(async () => {
-    // Ensure all traces are flushed before finishing the command
+  return await build(dir, true).finally(async () => {
     await flushAllTraces()
 
     startServer(
@@ -169,17 +161,17 @@ const jujutsuDev: cliCommand = async (argv) => {
       console.error(err)
       process.exit(1)
     })
-  })
 
-  for (const CONFIG_FILE of CONFIG_FILES) {
-    watchFile(path.join(dir, CONFIG_FILE), (cur: any, prev: any) => {
-      if (cur.size > 0 || prev.size > 0) {
-        console.log(
-          `\n> Found a change in ${CONFIG_FILE}. Restart the server to see the changes in effect.`
-        )
-      }
-    })
-  }
+    for (const CONFIG_FILE of CONFIG_FILES) {
+      watchFile(path.join(dir, CONFIG_FILE), (cur: any, prev: any) => {
+        if (cur.size > 0 || prev.size > 0) {
+          console.log(
+            `\n> Found a change in ${CONFIG_FILE}. Restart the server to see the changes in effect.`
+          )
+        }
+      })
+    }
+  })
 }
 
 export { jujutsuDev }

@@ -29,6 +29,7 @@ examples/**/.env*.local
 # Cache
 *.tsbuildinfo
 .swc/
+.next
 
 # Other
 .hintrc

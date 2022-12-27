@@ -10,3 +10,6 @@ lerna.json
 pnpm-lock.yaml
 package.json
 packages/jujutsu-discord/target/**
+apps/web/**/*.md
+apps/web/**/*.mdx
+apps/web/tsconfig.json

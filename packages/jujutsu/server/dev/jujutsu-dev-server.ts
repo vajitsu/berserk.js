@@ -24,6 +24,8 @@ export default class DevServer extends Server {
   private setDevReady?: Function
 
   private appDir?: string
+  private eventDir?: string
+  private commandDir?: string
 
   protected dev: boolean
   protected distDir: string
@@ -52,6 +54,8 @@ export default class DevServer extends Server {
     this.jujutsuConfig = conf as JujutsuConfigComplete
     this.distDir = require('path').join(this.dir, this.jujutsuConfig.distDir)
     this.appDir = require('path').join(this.dir, 'app')
+    this.eventDir = require('path').join(this.dir, 'events')
+    this.commandDir = require('path').join(this.dir, 'commands')
 
     this.devReady = new Promise((resolve) => {
       this.setDevReady = resolve
@@ -83,27 +87,40 @@ export default class DevServer extends Server {
       ].map((file) => pathJoin(this.dir, file))
       files.push(...envFiles)
 
-      const regex_commands = new RegExp(
-        `^command\\.(?:${this.jujutsuConfig.commandExtensions.join('|')})$`,
-        ''
-      )
-      const regex_events = new RegExp(
-        `^event\\.(?:${this.jujutsuConfig.eventExtensions.join('|')})$`,
+      const regex_app = new RegExp(`^(?:command|event)\\.(?:js|ts)$`, '')
+      const regex_commands_events = new RegExp(
+        `^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`,
         ''
       )
 
       const appFiles =
         this.appDir && (await fileExists(this.appDir, 'directory'))
           ? [
-              ...(await recursiveReadDir(this.appDir, regex_commands)).map(
-                (file) => pathJoin(this.dir, 'app', file)
-              ),
-              ...(await recursiveReadDir(this.appDir, regex_events)).map(
-                (file) => pathJoin(this.dir, 'app', file)
+              ...(await recursiveReadDir(this.appDir, regex_app)).map((file) =>
+                pathJoin(this.dir, 'app', file)
               ),
             ]
           : []
-      files.push(...appFiles)
+
+      const commandFiles =
+        this.commandDir && (await fileExists(this.commandDir, 'directory'))
+          ? [
+              ...(
+                await recursiveReadDir(this.commandDir, regex_commands_events)
+              ).map((file) => pathJoin(this.dir, 'commands', file)),
+            ]
+          : []
+
+      const eventFiles =
+        this.eventDir && (await fileExists(this.eventDir, 'directory'))
+          ? [
+              ...(
+                await recursiveReadDir(this.eventDir, regex_commands_events)
+              ).map((file) => pathJoin(this.dir, 'events', file)),
+            ]
+          : []
+
+      files.push(...appFiles, ...eventFiles, ...commandFiles)
 
       // tsconfig/jsonfig paths hot-reloading
       const tsconfigPaths = [
@@ -135,6 +152,8 @@ export default class DevServer extends Server {
         let envChange = false
         let tsconfigChange = false
         let appChange = false
+        let commandChange = false
+        let eventChange = false
 
         for (const [fileName, meta] of knownFiles) {
           if (
@@ -172,6 +191,20 @@ export default class DevServer extends Server {
             continue
           }
 
+          if (commandFiles.includes(fileName)) {
+            if (watchTimeChange) {
+              commandChange = true
+            }
+            continue
+          }
+
+          if (eventFiles.includes(fileName)) {
+            if (watchTimeChange) {
+              eventChange = true
+            }
+            continue
+          }
+
           if (fileName.endsWith('.ts')) {
             //enabledTypeScript = true
           }
@@ -195,11 +228,14 @@ export default class DevServer extends Server {
           }
         }
 
-        if (appChange) {
+        if (appChange || eventChange || commandChange) {
+          console.log()
           Log.wait('Project modified, building new changes...')
+
           this.bot.client.destroy()
           this.stopWatcher()
-          build(this.dir, null, true)
+
+          build(this.dir)
           startServer(this.options)
         }
       })
@@ -222,9 +258,7 @@ export default class DevServer extends Server {
   async prepare(): Promise<void> {
     setGlobal('distDir', this.distDir)
     setGlobal('phase', PHASE_DEVELOPMENT_SERVER)
-    setGlobal('bot', this.bot)
 
-    await this.startWatcher()
     await this.startWatcher()
     this.setDevReady!()
   }

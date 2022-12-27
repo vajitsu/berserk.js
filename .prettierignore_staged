@@ -3,5 +3,9 @@
 **/.next/**
 **/dist/**
 packages/jujutsu/compiled/**/*
+packages/jujutsu-discord/compiled/**/*
 lerna.json
 pnpm-lock.yaml
+apps/web/**/*.md
+apps/web/**/*.mdx
+apps/web/tsconfig.json

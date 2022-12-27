@@ -31,7 +31,7 @@ export const prefixes = {
     : 'JUJUTSU >>>',
   error: chalk.red('error') + ' -',
   warn: chalk.yellow('warn') + ' -',
-  event: chalk.magenta('event') + '  -',
+  event: chalk.magenta('event') + ' -',
   wait: chalk.cyan('wait') + ' -',
   info: chalk.cyan('info') + ' -',
   ready: chalk.green('ready') + ' -',

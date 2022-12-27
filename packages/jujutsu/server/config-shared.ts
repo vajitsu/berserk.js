@@ -15,9 +15,28 @@ export interface TypeScriptConfig {
   tsconfigPath?: string
 }
 
+export interface JujutsuDiscordConfig {
+  token?: string
+  library: '@jujutsu/discord'
+  options?: {
+    intents: number[]
+  }
+}
+
+export interface DiscordJsConfig {
+  token?: string
+  library: 'discord.js'
+  options?: ClientOptions
+}
+
 export interface DiscordConfig {
   token?: string
-  options?: ClientOptions
+  library: '@jujutsu/discord' | 'discord.js'
+  options?:
+    | {
+        intents: number[]
+      }
+    | ClientOptions
 }
 
 export interface ExperimentalConfig {
@@ -49,7 +68,7 @@ export interface JujutsuConfig extends Record<string, any> {
   /**
    * Configure your Discord application
    */
-  discord?: DiscordConfig
+  discord?: DiscordJsConfig | JujutsuDiscordConfig
   /**
    * Destination directory (defaults to `.jujutsu`)
    */
@@ -58,8 +77,6 @@ export interface JujutsuConfig extends Record<string, any> {
    * The build output directory (defaults to `.jujutsu`) is now cleared by default except for the Jujutsu.js caches.
    */
   cleanDistDir?: boolean
-  commandExtensions?: string[]
-  eventExtensions?: string[]
   /**
    * Enable experimental features. Note that all experimental features are subject to breaking changes in the future.
    */
@@ -74,10 +91,9 @@ export const defaultConfig: JujutsuConfig = {
   },
   distDir: '.jujutsu',
   cleanDistDir: true,
-  commandExtensions: ['js', 'ts'],
-  eventExtensions: ['js', 'ts'],
   discord: {
     token: '',
+    library: 'discord.js',
     options: {
       intents: [1],
     },

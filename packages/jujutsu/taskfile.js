@@ -1,67 +1,20 @@
-const { relative, join, dirname } = require('path')
+const { relative, join } = require('path')
 // eslint-disable-next-line import/no-extraneous-dependencies
 const fs = require('fs-extra')
 
+require('taskr')
+
 const externals = {
   'node-fetch': 'node-fetch',
-  chokidar: 'chokidar',
-  undici: 'undici',
-  'jest-worker': 'jest-worker',
 }
 
 // eslint-disable-next-line camelcase
-externals['jest-worker'] = 'jujutsu/dist/compiled/jest-worker'
-export async function ncc_jest_worker(task, opts) {
-  await fs.remove(join(__dirname, 'compiled/jest-worker'))
-  await fs.ensureDir(join(__dirname, 'compiled/jest-worker/workers'))
-
-  const workers = ['processChild.js', 'threadChild.js']
-
+externals['zod'] = 'jujutsu/dist/compiled/zod'
+export async function ncc_zod(task, opts) {
   await task
-    .source(opts.src || relative(__dirname, require.resolve('jest-worker')))
-    .ncc({ packageName: 'jest-worker', externals })
-    .target('compiled/jest-worker')
-
-  for (const worker of workers) {
-    const content = await fs.readFile(
-      join(
-        dirname(require.resolve('jest-worker/package.json')),
-        'build/workers',
-        worker
-      ),
-      'utf8'
-    )
-    await fs.writeFile(
-      join(
-        dirname(require.resolve('jest-worker/package.json')),
-        'build/workers',
-        worker + '.tmp.js'
-      ),
-      content.replace(/require\(file\)/g, '__non_webpack_require__(file)')
-    )
-    await task
-      .source(
-        opts.src ||
-          relative(
-            __dirname,
-            join(
-              dirname(require.resolve('jest-worker/package.json')),
-              'build/workers',
-              worker + '.tmp.js'
-            )
-          )
-      )
-      .ncc({ externals })
-      .target('compiled/jest-worker/out')
-
-    await fs.move(
-      join(__dirname, 'compiled/jest-worker/out', worker + '.tmp.js'),
-      join(__dirname, 'compiled/jest-worker', worker),
-      { overwrite: true }
-    )
-  }
-  await fs.remove(join(__dirname, 'compiled/jest-worker/workers'))
-  await fs.remove(join(__dirname, 'compiled/jest-worker/out'))
+    .source(opts.src || relative(__dirname, require.resolve('zod')))
+    .ncc({ packageName: 'zod', externals })
+    .target('compiled/zod')
 }
 // eslint-disable-next-line camelcase
 externals['nanoid'] = 'jujutsu/dist/compiled/nanoid'
@@ -72,20 +25,20 @@ export async function ncc_nanoid(task, opts) {
     .target('compiled/nanoid')
 }
 // eslint-disable-next-line camelcase
-externals['undici'] = 'jujutsu/dist/compiled/undici'
-export async function ncc_undici(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('undici')))
-    .ncc({ packageName: 'undici', externals })
-    .target('compiled/undici')
-}
-// eslint-disable-next-line camelcase
 externals['title'] = 'jujutsu/dist/compiled/title'
 export async function ncc_title(task, opts) {
   await task
     .source(opts.src || relative(__dirname, require.resolve('title')))
     .ncc({ packageName: 'title', externals })
     .target('compiled/title')
+}
+// eslint-disable-next-line camelcase
+externals['fs-extra'] = 'jujutsu/dist/compiled/fs-extra'
+export async function ncc_fs_extra(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('fs-extra')))
+    .ncc({ packageName: 'fs-extra', externals })
+    .target('compiled/fs-extra')
 }
 // eslint-disable-next-line camelcase
 externals['gradient-string'] = 'jujutsu/dist/compiled/gradient-string'
@@ -108,20 +61,6 @@ export async function ncc_dotenv_expand(task, opts) {
     .source(opts.src || relative(__dirname, require.resolve('dotenv-expand')))
     .ncc({ packageName: 'dotenv-expand', externals })
     .target('compiled/dotenv-expand')
-}
-externals['esm'] = 'jujutsu/dist/compiled/esm'
-export async function ncc_esm(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('esm')))
-    .ncc({ packageName: 'esm', externals })
-    .target('compiled/esm')
-}
-externals['@swc/core'] = 'jujutsu/dist/compiled/@swc/core'
-export async function ncc_swc_core(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('@swc/core')))
-    .ncc({ packageName: '@swc/core', externals })
-    .target('compiled/@swc/core')
 }
 // eslint-disable-next-line camelcase
 externals['chalk'] = 'jujutsu/dist/compiled/chalk'
@@ -155,6 +94,14 @@ export async function ncc_node_fetch(task, opts) {
     .ncc({ packageName: 'node-fetch', externals })
     .target('compiled/node-fetch')
 }
+// eslint-disable-next-line camelcase
+externals['fflate'] = 'jujutsu/dist/compiled/fflate'
+export async function ncc_fflate(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('fflate')))
+    .ncc({ packageName: 'fflate', externals })
+    .target('compiled/fflate')
+}
 export async function ncc_events(task, opts) {
   await task
     .source(opts.src || relative(__dirname, require.resolve('events/')))
@@ -165,42 +112,6 @@ export async function ncc_events(task, opts) {
       target: 'es5',
     })
     .target('compiled/events')
-}
-// eslint-disable-next-line camelcase
-export async function ncc_util(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('util/')))
-    .ncc({
-      packageName: 'util',
-      externals,
-      mainFields: ['browser', 'main'],
-      target: 'es5',
-    })
-    .target('compiled/util')
-}
-// eslint-disable-next-line camelcase
-externals['text-table'] = 'jujutsu/dist/compiled/text-table'
-export async function ncc_text_table(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('text-table')))
-    .ncc({ packageName: 'text-table', externals })
-    .target('compiled/text-table')
-}
-// eslint-disable-next-line camelcase
-externals['uid-promise'] = 'jujutsu/dist/compiled/uid-promise'
-export async function ncc_uid_promise(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('uid-promise')))
-    .ncc({ packageName: 'uid-promise', externals })
-    .target('compiled/uid-promise')
-}
-// eslint-disable-next-line camelcase
-externals['unistore'] = 'jujutsu/dist/compiled/unistore'
-export async function ncc_unistore(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('unistore')))
-    .ncc({ packageName: 'unistore', externals })
-    .target('compiled/unistore')
 }
 // eslint-disable-next-line camelcase
 externals['arg'] = 'jujutsu/dist/compiled/arg'
@@ -227,33 +138,6 @@ export async function ncc_nft(task, opts) {
     .target('compiled/@vercel/nft')
 }
 // eslint-disable-next-line camelcase
-externals['@sapphire/shapeshift'] = 'jujutsu/dist/compiled/@sapphire/shapeshift'
-export async function ncc_shapeshift(task, opts) {
-  await task
-    .source(
-      opts.src || relative(__dirname, require.resolve('@sapphire/shapeshift'))
-    )
-    .ncc({ packageName: '@sapphire/shapeshift', externals })
-    .target('compiled/@sapphire/shapeshift')
-}
-// eslint-disable-next-line camelcase
-externals['comment-json'] = 'jujutsu/dist/compiled/comment-json'
-export async function ncc_comment_json(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('comment-json')))
-    .ncc({ packageName: 'comment-json', externals })
-    .target('compiled/comment-json')
-}
-// eslint-disable-next-line camelcase
-externals['conf'] = 'jujutsu/dist/compiled/conf'
-export async function ncc_conf(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('conf')))
-    .ncc({ packageName: 'conf', externals })
-    .target('compiled/conf')
-}
-
-// eslint-disable-next-line camelcase
 externals['@napi-rs/triples'] = 'jujutsu/dist/compiled/@napi-rs/triples'
 export async function ncc_napirs_triples(task, opts) {
   await task
@@ -262,6 +146,22 @@ export async function ncc_napirs_triples(task, opts) {
     )
     .ncc({ packageName: '@napi-rs/triples', externals })
     .target('compiled/@napi-rs/triples')
+}
+// eslint-disable-next-line camelcase
+externals['unistore'] = 'jujutsu/dist/compiled/unistore'
+export async function ncc_unistore(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('unistore')))
+    .ncc({ packageName: 'unistore', externals })
+    .target('compiled/unistore')
+}
+// eslint-disable-next-line camelcase
+externals['strip-ansi'] = 'jujutsu/dist/compiled/strip-ansi'
+export async function ncc_strip_ansi(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('strip-ansi')))
+    .ncc({ packageName: 'strip-ansi', externals })
+    .target('compiled/strip-ansi')
 }
 // eslint-disable-next-line camelcase
 externals['lodash'] = 'jujutsu/dist/compiled/lodash'
@@ -312,28 +212,22 @@ export async function ncc_find_up(task, opts) {
     .target('compiled/find-up')
 }
 // eslint-disable-next-line camelcase
-externals['glob'] = 'jujutsu/dist/compiled/glob'
-export async function ncc_glob(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('glob')))
-    .ncc({ packageName: 'glob', externals })
-    .target('compiled/glob')
-}
-// eslint-disable-next-line camelcase
-externals['gzip-size'] = 'jujutsu/dist/compiled/gzip-size'
-export async function ncc_gzip_size(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('gzip-size')))
-    .ncc({ packageName: 'gzip-size', externals })
-    .target('compiled/gzip-size')
-}
-// eslint-disable-next-line camelcase
 externals['json5'] = 'jujutsu/dist/compiled/json5'
 export async function ncc_json5(task, opts) {
   await task
     .source(opts.src || relative(__dirname, require.resolve('json5')))
     .ncc({ packageName: 'json5', externals })
     .target('compiled/json5')
+}
+// eslint-disable-next-line camelcase
+externals['require-from-string'] = 'jujutsu/dist/compiled/require-from-string'
+export async function ncc_require_from_string(task, opts) {
+  await task
+    .source(
+      opts.src || relative(__dirname, require.resolve('require-from-string'))
+    )
+    .ncc({ packageName: 'require-from-string', externals })
+    .target('compiled/require-from-string')
 }
 // eslint-disable-next-line camelcase
 externals['ora'] = 'jujutsu/dist/compiled/ora'
@@ -526,38 +420,33 @@ export async function ncc(task, opts) {
     .clear('compiled')
     .parallel(
       [
+        'ncc_require_from_string',
+        'ncc_zod',
         'ncc_dotenv',
         'ncc_dotenv_expand',
-        'ncc_esm',
         'ncc_watchpack',
         'ncc_chalk',
         'ncc_node_fetch',
-        'ncc_undici',
         'ncc_arg',
+        'ncc_fflate',
         'ncc_events',
-        'ncc_util',
         'ncc_ci_info',
         'ncc_gradient_string',
-        'ncc_comment_json',
-        'ncc_conf',
         'ncc_lodash',
         'ncc_cross_spawn',
         'ncc_discordjs',
         'ncc_find_cache_dir',
         'ncc_find_up',
-        'ncc_glob',
-        'ncc_gzip_size',
         'ncc_json5',
+        'ncc_strip_ansi',
+        'ncc_unistore',
+        'ncc_fs_extra',
         'ncc_ora',
         'ncc_semver',
         'ncc_segment_ajv_human_errors',
         'ncc_napirs_triples',
-        'ncc_text_table',
-        'ncc_unistore',
         'ncc_title',
-        'ncc_uid_promise',
         'ncc_nft',
-        'ncc_shapeshift',
         'ncc_ws',
         'ncc_nanoid',
       ],

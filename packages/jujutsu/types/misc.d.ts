@@ -5,10 +5,35 @@ declare module 'jujutsu/dist/compiled/node-fetch' {
   export * from 'node-fetch'
 }
 
+declare module 'jujutsu/dist/compiled/fflate' {
+  import m from 'fflate'
+  export = m
+}
+
+declare module 'jujutsu/dist/compiled/fs-extra' {
+  import m from 'fs-extra'
+  export = m
+}
+
 declare module 'jujutsu/dist/compiled/undici' {}
+
+declare module 'jujutsu/dist/compiled/zlib' {
+  export function deflate(buf: Buffer): any
+  export function inflate(input: any): any
+}
 
 declare module 'jujutsu/dist/compiled/title' {
   import m from 'title'
+  export = m
+}
+
+declare module 'jujutsu/dist/compiled/require-from-string' {
+  import m from 'require-from-string'
+  export = m
+}
+
+declare module 'jujutsu/dist/compiled/zod' {
+  import m from 'zod'
   export = m
 }
 
