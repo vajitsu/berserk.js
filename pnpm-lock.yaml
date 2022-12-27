@@ -306,8 +306,8 @@ importers:
       tree-kill: 1.2.2
       tsconfig: 7.0.0
       tsconfig-paths: 4.1.0
-      tsec: 0.2.6_kkhh45ydecbw6opikcdpjm4why
-      typescript: 5.0.0-dev.20221226
+      tsec: 0.2.6_6nxc7ciutg477otegrc3g3prla
+      typescript: 5.0.0-dev.20221227
       undici: 5.14.0
       unistore: 3.5.2
       util: 0.12.5
@@ -649,6 +649,33 @@ packages:
   /@bazel/bazelisk/1.12.1:
     resolution: {integrity: sha512-TGCwVeIiVeQUP6yLpxAg8yluFOC+tBQnWw5l8lqwMxKhRtOA+WaH1CJKAXeCBAaS2MxohhkXq44zj/7AM+t2jg==}
     hasBin: true
+    dev: true
+
+  /@bazel/concatjs/5.7.3_4pltmifhmixrywjx6vnzbkmwdu:
+    resolution: {integrity: sha512-fhqIwX3DT5p9Gy1K6gzBNXHxUmcERKampdsHE2ew5dbXSCFrShwvur3sIuMnp6YVYbHZBUGnx7HtUw5Z34q8mg==}
+    hasBin: true
+    requiresBuild: true
+    peerDependencies:
+      karma: '>=4.0.0'
+      karma-chrome-launcher: '>=2.0.0'
+      karma-firefox-launcher: '>=1.0.0'
+      karma-jasmine: '>=2.0.0'
+      karma-junit-reporter: '>=2.0.0'
+      karma-requirejs: '>=1.0.0'
+      karma-sourcemap-loader: '>=0.3.0'
+    dependencies:
+      karma: 6.4.1_debug@2.6.9
+      karma-chrome-launcher: 3.1.1
+      karma-firefox-launcher: 2.1.2
+      karma-jasmine: 5.1.0_karma@6.4.1
+      karma-junit-reporter: 2.0.1_karma@6.4.1
+      karma-requirejs: 1.1.0_rexopxsgq4andhwzqrad3qy2ka
+      karma-sourcemap-loader: 0.3.8
+      protobufjs: 6.8.8
+      source-map-support: 0.5.9
+      tsutils: 3.21.0_i4tuk7a3lwdxdqupgpoxjqd7zu
+    transitivePeerDependencies:
+      - typescript
     dev: true
 
   /@bazel/concatjs/5.7.3_r6lfriuudvwiwzibsjnqt4eyd4:
@@ -14220,6 +14247,21 @@ packages:
       strip-json-comments: 2.0.1
     dev: true
 
+  /tsec/0.2.6_6nxc7ciutg477otegrc3g3prla:
+    resolution: {integrity: sha512-k+R542uVRucupBFLsSXVvrgyy0W7MMNFsrDxewBsFaCGO18P9HX/91GmejA8cywRneWPV/CRdj3JwslKoPafVA==}
+    hasBin: true
+    peerDependencies:
+      '@bazel/bazelisk': '>=1.7.5'
+      '@bazel/concatjs': '>=5.3.0'
+      typescript: '>=3.9.2'
+    dependencies:
+      '@bazel/bazelisk': 1.12.1
+      '@bazel/concatjs': 5.7.3_4pltmifhmixrywjx6vnzbkmwdu
+      glob: 7.2.3
+      minimatch: 3.1.2
+      typescript: 5.0.0-dev.20221227
+    dev: true
+
   /tsec/0.2.6_kkhh45ydecbw6opikcdpjm4why:
     resolution: {integrity: sha512-k+R542uVRucupBFLsSXVvrgyy0W7MMNFsrDxewBsFaCGO18P9HX/91GmejA8cywRneWPV/CRdj3JwslKoPafVA==}
     hasBin: true
@@ -14241,6 +14283,16 @@ packages:
 
   /tslib/2.4.1:
     resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
+
+  /tsutils/3.21.0_i4tuk7a3lwdxdqupgpoxjqd7zu:
+    resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
+    engines: {node: '>= 6'}
+    peerDependencies:
+      typescript: '>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta'
+    dependencies:
+      tslib: 1.14.1
+      typescript: 5.0.0-dev.20221227
+    dev: true
 
   /tsutils/3.21.0_ifkhuraeiki3uq6s5jsqvzp4la:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
@@ -14418,6 +14470,12 @@ packages:
 
   /typescript/5.0.0-dev.20221226:
     resolution: {integrity: sha512-InxD6NrcHRNrl1T3aakg3iHHqEUhbGIcHlbZzCJfK3sqQsVJMYCBxgASWEdgr8F0FiEK3wd9CQMYNdxS+Dmwdw==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: true
+
+  /typescript/5.0.0-dev.20221227:
+    resolution: {integrity: sha512-IQyCPrF9bhLYPi3IePtuEYbcjqJ/cgOzzYMshLK40IFXgoit9SmONnBLhEvacw6YKUGsZJuOd8tdrfPw4us7Hw==}
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true

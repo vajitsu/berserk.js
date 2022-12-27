@@ -8,7 +8,7 @@ import {
 import isError from '../../../lib/is-error'
 import bot from '../../bot'
 import * as Log from '../../../build/output/log'
-import { CommandComplete } from '../../../build/types'
+import { CommandComplete, SubCommandComplete } from '../../../build/types'
 import assignDefaults from '../assign-defaults'
 
 function formData({
@@ -408,10 +408,23 @@ export default class SlashCommandManager {
 
     if (!command) return
 
-    try {
-      return void (await command.fn(interaction, this.instance.client))
-    } catch (error) {
-      return void this.instance.events.emit('error', error)
+    if (command.subcommands.length > 0) {
+      const subCommandName = interaction.options.getSubcommand()
+      const subcommand = command.subcommands.find(
+        (sub) => sub.name === subCommandName
+      ) as SubCommandComplete
+
+      try {
+        return void (await subcommand.fn(interaction, this.instance.client))
+      } catch (error) {
+        return void this.instance.events.emit('error', error)
+      }
+    } else {
+      try {
+        return void (await command.fn(interaction, this.instance.client))
+      } catch (error) {
+        return void this.instance.events.emit('error', error)
+      }
     }
   }
 
