@@ -74,7 +74,7 @@ interface AppCommandChunk extends BaseChunk {
 
 function getDepth(dir: string, filepath: string) {
   const removed_dir = path.dirname(filepath).replace(dir, '')
-  const split = removed_dir.split(path.sep)
+  const split = removed_dir.split(path.sep).filter((d) => d.length > 0)
   return split.length
 }
 
@@ -384,7 +384,7 @@ export async function coldStart({
           const depth = getDepth(appDir, chunk.path)
           const workingDir = path
             .dirname(chunk.path)
-            .replace(dir + path.sep, '')
+            .replace(appDir + path.sep, '')
             .split(path.sep)
             .join('/')
 
@@ -392,7 +392,7 @@ export async function coldStart({
 
           if (depth > 2) {
             Log.warn(
-              `Command at "${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           } else if (depth === 2) {
             const parentDir = workingDir.split('/').at(0) as string
@@ -401,14 +401,16 @@ export async function coldStart({
               existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
             if (!hasCommand)
               Log.warn(
-                `Subcommand at "${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+                `Subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
               )
             else filterAppCommands.push(chunk)
           } else filterAppCommands.push(chunk)
         }
 
         for (let chunk of appEventChunks) {
-          const allDirs = path.dirname(chunk.path).replace(dir + path.sep, '')
+          const allDirs = path
+            .dirname(chunk.path)
+            .replace(appDir + path.sep, '')
           const workingDir = allDirs.split(path.sep).join('/')
           const ending = path.extname(chunk.path)
           const snake_case = allDirs.replace(path.sep, '_')
@@ -416,7 +418,7 @@ export async function coldStart({
 
           if (!DISCORD_EVENTS.includes(camel_case))
             Log.warn(
-              `Event at "${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+              `Event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
           else filterAppEvents.push(chunk)
         }
@@ -573,12 +575,18 @@ export async function coldStart({
       .traceChild('create-app-build-manifest')
       .traceAsyncFn(async () => {
         const commands = writeChunks
-          .filter((t) => t.origin === 'app__command')
-          .filter((chunk) => getDepth(path.join(dir, 'app'), chunk.path) === 1)
+          .filter((chunk) => chunk.origin === 'app__command')
+          .filter(
+            (chunk) => getDepth(path.join(dir, 'app'), chunk.originPath) === 1
+          )
         const subcommands = writeChunks
-          .filter((t) => t.origin === 'app__command')
-          .filter((chunk) => getDepth(path.join(dir, 'app'), chunk.path) === 2)
-        const events = writeChunks.filter((t) => t.origin === 'app__event')
+          .filter((chunk) => chunk.origin === 'app__command')
+          .filter(
+            (chunk) => getDepth(path.join(dir, 'app'), chunk.originPath) === 2
+          )
+        const events = writeChunks.filter(
+          (chunk) => chunk.origin === 'app__event'
+        )
 
         const app_build_manifest: AppBuildManifest = {
           mode: dev ? 'development' : 'production',
@@ -614,17 +622,22 @@ export async function coldStart({
           ),
           subcommands: Object.fromEntries(
             subcommands.map((i) => [
-              camelCase(
-                i.originPath
-                  .replace(path.join(dir, 'app'), '')
-                  .replace(path.basename(i.originPath), '')
-                  .split(path.sep)
-                  .join('_')
-              ),
-              i.path
-                .replace(`${distDir}${path.sep}`, '')
+              i.originPath
+                .replace(path.join(dir, 'app') + path.sep, '')
+                .replace(path.sep + path.basename(i.originPath), '')
                 .split(path.sep)
-                .join('/'),
+                .at(1),
+              {
+                path: i.path
+                  .replace(`${distDir}${path.sep}`, '')
+                  .split(path.sep)
+                  .join('/'),
+                parent: i.originPath
+                  .replace(path.join(dir, 'app') + path.sep, '')
+                  .replace(path.sep + path.basename(i.originPath), '')
+                  .split(path.sep)
+                  .at(0),
+              },
             ])
           ),
         }
@@ -1145,7 +1158,7 @@ export async function incrementalBuild({
           const depth = getDepth(appDir, chunk.path)
           const workingDir = path
             .dirname(chunk.path)
-            .replace(dir + path.sep, '')
+            .replace(appDir + path.sep, '')
             .split(path.sep)
             .join('/')
 
@@ -1153,7 +1166,7 @@ export async function incrementalBuild({
 
           if (depth > 2) {
             Log.warn(
-              `Command at "${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           } else if (depth === 2) {
             const parentDir = workingDir.split('/').at(0) as string
@@ -1162,14 +1175,16 @@ export async function incrementalBuild({
               existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
             if (!hasCommand)
               Log.warn(
-                `Subcommand at "${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+                `Subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
               )
             else filterAppCommands.push(chunk)
           } else filterAppCommands.push(chunk)
         }
 
         for (let chunk of appEventChunks) {
-          const allDirs = path.dirname(chunk.path).replace(dir + path.sep, '')
+          const allDirs = path
+            .dirname(chunk.path)
+            .replace(appDir + path.sep, '')
           const workingDir = allDirs.split(path.sep).join('/')
           const ending = path.extname(chunk.path)
           const snake_case = allDirs.replace(path.sep, '_')
@@ -1341,12 +1356,18 @@ export async function incrementalBuild({
       .traceChild('create-app-build-manifest')
       .traceAsyncFn(async () => {
         const commands = writeChunks
-          .filter((t) => t.origin === 'app__command')
-          .filter((chunk) => getDepth(path.join(dir, 'app'), chunk.path) === 1)
+          .filter((chunk) => chunk.origin === 'app__command')
+          .filter(
+            (chunk) => getDepth(path.join(dir, 'app'), chunk.originPath) === 1
+          )
         const subcommands = writeChunks
-          .filter((t) => t.origin === 'app__command')
-          .filter((chunk) => getDepth(path.join(dir, 'app'), chunk.path) === 2)
-        const events = writeChunks.filter((t) => t.origin === 'app__event')
+          .filter((chunk) => chunk.origin === 'app__command')
+          .filter(
+            (chunk) => getDepth(path.join(dir, 'app'), chunk.originPath) === 2
+          )
+        const events = writeChunks.filter(
+          (chunk) => chunk.origin === 'app__event'
+        )
 
         const p = path.join(distDir, 'app-build-manifest.json')
 
@@ -1389,17 +1410,22 @@ export async function incrementalBuild({
           ),
           subcommands: Object.fromEntries(
             subcommands.map((i) => [
-              camelCase(
-                i.originPath
-                  .replace(path.join(dir, 'app'), '')
-                  .replace(path.basename(i.originPath), '')
-                  .split(path.sep)
-                  .join('_')
-              ),
-              i.path
-                .replace(`${distDir}${path.sep}`, '')
+              i.originPath
+                .replace(path.join(dir, 'app') + path.sep, '')
+                .replace(path.sep + path.basename(i.originPath), '')
                 .split(path.sep)
-                .join('/'),
+                .at(1),
+              {
+                path: i.path
+                  .replace(`${distDir}${path.sep}`, '')
+                  .split(path.sep)
+                  .join('/'),
+                parent: i.originPath
+                  .replace(path.join(dir, 'app') + path.sep, '')
+                  .replace(path.sep + path.basename(i.originPath), '')
+                  .split(path.sep)
+                  .at(0),
+              },
             ])
           ),
         }
@@ -1712,7 +1738,7 @@ export async function attemptCacheHit({
           const depth = getDepth(appDir, file.path)
           const workingDir = path
             .dirname(file.path)
-            .replace(dir + path.sep, '')
+            .replace(appDir + path.sep, '')
             .split(path.sep)
             .join('/')
 
@@ -1720,7 +1746,7 @@ export async function attemptCacheHit({
 
           if (depth > 2) {
             Log.warn(
-              `Command at "${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           } else if (depth === 2) {
             const parentDir = workingDir.split('/').at(0) as string
@@ -1729,14 +1755,14 @@ export async function attemptCacheHit({
               existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
             if (!hasCommand)
               Log.warn(
-                `Subcommand at "${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+                `Subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
               )
             else filterAppCommands.push(file)
           } else filterAppCommands.push(file)
         }
 
         for (let file of appEventFiles) {
-          const allDirs = path.dirname(file.path).replace(dir + path.sep, '')
+          const allDirs = path.dirname(file.path).replace(appDir + path.sep, '')
           const workingDir = allDirs.split(path.sep).join('/')
           const ending = path.extname(file.path)
           const snake_case = allDirs.replace(path.sep, '_')
@@ -1744,7 +1770,7 @@ export async function attemptCacheHit({
 
           if (!DISCORD_EVENTS.includes(camel_case))
             Log.warn(
-              `Event at "${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+              `Event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
           else filterAppEvents.push(file)
         }
