@@ -4,23 +4,7 @@ const { exec: execOrig, spawn } = require('child_process')
 const exec = promisify(execOrig)
 
 const CHANGE_ITEM_GROUPS = {
-  docs: [
-    'bench',
-    'UPGRADING.md',
-    'contributing.md',
-    'contributing',
-    'CODE_OF_CONDUCT.md',
-    'readme.md',
-    '.github/ISSUE_TEMPLATE',
-    '.github/labeler.json',
-    '.github/pull_request_template.md',
-    'apps/web',
-  ],
-  'jujutsu-discord': [
-    'packages/jujutsu-discord',
-    'packages/jujutsu-discord-rs',
-    'scripts/normalize-version-bump.js',
-  ],
+  discord: ['packages/jujutsu-discord', 'scripts/normalize-version-bump.js'],
 }
 
 async function main() {

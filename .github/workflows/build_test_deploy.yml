@@ -42,13 +42,7 @@ jobs:
       - name: tune linux network
         run: sudo ethtool -K eth0 tx off rx off
 
-      - name: Check non-docs only change
-        run: echo "::set-output name=DOCS_CHANGE::$(node scripts/run-for-change.js --not --type docs --exec echo 'nope')"
-        id: docs-change
-
-      - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
-
-      - run: echo "::set-output name=DISCORD_CHANGE::$(node scripts/run-for-change.js --type jujutsu-discord --exec echo 'yup')"
+      - run: echo "::set-output name=DISCORD_CHANGE::$(node scripts/run-for-change.js --type discord --exec echo 'yup')"
         id: discord-change
 
       - run: echo ${{steps.discord-change.outputs.DISCORD_CHANGE}}

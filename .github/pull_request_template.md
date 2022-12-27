@@ -8,8 +8,4 @@ Choose the right checklist for the change that you're making:
 
 - [ ] Related issues linked using `fixes #number`
 - [ ] Integration tests added
-- [ ] Errors have a helpful link attached, see [`contributing.md`](https://github.com/vercel/next.js/blob/canary/contributing.md)
-
-## Documentation
-
-- [ ] Make sure the linting passes by running `pnpm build && pnpm lint`
+- [ ] Errors have a helpful link attached
