@@ -54,7 +54,7 @@ export default async function startServer(
     }))
 
     const subcommand_files = [
-      ...(Object.entries(abm.commands) as unknown as [
+      ...(Object.entries(abm.subcommands) as unknown as [
         string,
         { parent: string; path: string }
       ][]),
