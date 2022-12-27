@@ -5,26 +5,32 @@ import {
   Routes,
   SlashCommandBuilder,
 } from 'jujutsu/dist/compiled/discord.js'
-import { CommandFileComplete } from '../../../build'
 import isError from '../../../lib/is-error'
 import bot from '../../bot'
 import * as Log from '../../../build/output/log'
+import { CommandComplete } from '../../../build/types'
+import assignDefaults from '../assign-defaults'
 
 function formData({
   name,
   description,
   dmPermission,
-  defaultMemberPermissions,
-  options,
-  localizations,
+  defaultMemberPermission,
   subcommands,
-}: CommandFileComplete) {
-  const _ = new SlashCommandBuilder()
-  _.setName(name)
-  if (description) _.setDescription(description)
-  if (dmPermission !== undefined) _.setDMPermission(dmPermission)
-  if (defaultMemberPermissions !== undefined)
-    _.setDefaultMemberPermissions(defaultMemberPermissions)
+}: CommandComplete) {
+  const slash_command = new SlashCommandBuilder()
+  slash_command.setName(name)
+  slash_command.setDescription(description)
+  slash_command.setDMPermission(dmPermission)
+  slash_command.setDefaultMemberPermissions(defaultMemberPermission)
+
+  for (let command of subcommands) {
+    slash_command.addSubcommand((subcommand) =>
+      subcommand.setName(command.name).setDescription(command.description)
+    )
+  }
+
+  /*
   if (localizations?.name) _.setNameLocalizations(localizations.name)
   if (localizations?.description)
     _.setDescriptionLocalizations(localizations.description)
@@ -354,17 +360,37 @@ function formData({
 
         return _i
       })
+  */
 
-  return _.toJSON()
+  return slash_command.toJSON()
 }
 
 export default class SlashCommandManager {
   constructor(private instance: bot) {}
 
-  private commands: { [name: string]: CommandFileComplete } = {}
+  private commands: { [name: string]: CommandComplete } = {}
 
-  addCommand(command: CommandFileComplete) {
-    this.commands[command.name] = command
+  addCommand(command: {
+    name: string
+    absolutePath: string
+    subcommands: { name: string; absolutePath: string }[]
+  }) {
+    const mod = require(command.absolutePath)
+    this.commands[command.name] = assignDefaults('command', {
+      name: command.name,
+      description: mod.description,
+      fn: mod.default || mod,
+      nsfw: mod.nsfw,
+      dmPermission: mod.dmPermission,
+      defaultMemberPermission: mod.defaultMemberPermission,
+      subcommands: command.subcommands
+        .map((sub) => [sub.name, require(sub.absolutePath)])
+        .map((sub) => ({
+          name: sub[0],
+          description: sub[1].description,
+          fn: sub[1].default || sub[1],
+        })),
+    }) as CommandComplete
   }
 
   getCommands() {
@@ -383,7 +409,7 @@ export default class SlashCommandManager {
     if (!command) return
 
     try {
-      return void (await command.default(interaction, this.instance.client))
+      return void (await command.fn(interaction, this.instance.client))
     } catch (error) {
       return void this.instance.events.emit('error', error)
     }
@@ -394,6 +420,7 @@ export default class SlashCommandManager {
       if (!this.instance?.client?.application) return
 
       const commands = this.getCommands().map((com) => formData(com))
+
       const rest = new REST().setToken(this.instance.config.token as string)
 
       await rest.put(

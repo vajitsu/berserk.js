@@ -45,7 +45,7 @@ const jujutsuBuild: cliCommand = (argv) => {
     printAndExit(`> No such directory exists as the project root: ${dir}`)
   }
 
-  return build(dir, null).catch((err) => {
+  return build(dir).catch((err) => {
     console.error('')
     if (
       isError(err) &&

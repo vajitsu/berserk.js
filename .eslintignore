@@ -4,5 +4,6 @@ node_modules
 **/dist/**
 packages/jujutsu/compiled/**/*
 packages/jujutsu-discord/compiled/**/*
+packages/precompiled/compiled/**/*
 **/__tmp__/**
-packages/create-jujutsu/templates/**
+packages/create-jujutsu-app/templates/**

@@ -4,6 +4,7 @@ import fs from 'fs'
 import chalk from 'jujutsu/dist/compiled/chalk'
 import path from 'path'
 import * as Log from '../build/output/log'
+import { printAndExit } from './utils'
 
 export const existsSync = (f: string): boolean => {
   try {
@@ -46,14 +47,14 @@ export function findDirs(
     commandsDir == null &&
     eventsDir === null
   ) {
-    throw new Error(
+    printAndExit(
       "> Couldn't find any `commands`, `events`, or `app` directory. Please create one under the project root"
     )
   }
 
   if (!isAppDirEnabled) {
     if (appDir != null && commandsDir == null && eventsDir == null) {
-      throw new Error(
+      printAndExit(
         '> The `app` directory is experimental. To enable, add `appDir: true` to your `jujutsu.config.js` configuration under `experimental`.'
       )
     }
@@ -63,7 +64,7 @@ export function findDirs(
       )
     }
     if (commandsDir == null && eventsDir == null) {
-      throw new Error(
+      printAndExit(
         "> Couldn't find a `events` or `commands` directory. Please create one under the project root"
       )
     }

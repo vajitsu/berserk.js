@@ -1,7 +1,7 @@
 'area: app':
   - 'App directory (appDir: true)'
 'area: create-jujutsu-app':
-  - 'CLI (create-jujutsu)'
+  - 'CLI (create-jujutsu-app)'
 'area: package manager':
   - 'Package manager (npm, pnpm, Yarn)'
 'area: SWC minify':

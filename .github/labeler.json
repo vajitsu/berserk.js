@@ -2,7 +2,7 @@
   "labels": {
     "area: examples": ["examples/**"],
     "area: documentation": ["docs/**", "errors/**"],
-    "area: create-jujutsu": ["packages/create-jujutsu/**"],
+    "area: create-jujutsu-app": ["packages/create-jujutsu-app/**"],
     "type: jujutsu": ["packages/jujutsu/**", "packages/jujutsu-discord/**"],
     "created-by: Jujutsu.js team": [{ "type": "user", "pattern": "kijv" }],
     "created-by: Jujutsu.js docs team": [{ "type": "user", "pattern": "kijv" }]

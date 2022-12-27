@@ -103,12 +103,4 @@ if (process.versions.pnp === '3') {
   }
 }
 
-commands[command]()
-  .then((exec) => exec(forwardedArgs))
-  .then(() => {
-    if (command === 'build') {
-      // ensure process exits after build completes so open handles/connections
-      // don't cause process to hang
-      process.exit(0)
-    }
-  })
+commands[command]().then((exec) => exec(forwardedArgs))

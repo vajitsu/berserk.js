@@ -8,12 +8,15 @@ pnpm run ncc-compiled
 
 cd ../../
 
+<<<<<<< HEAD
+=======
 cd packages/jujutsu-discord
 
 pnpm run ncc-compiled
 
 cd ../..
 
+>>>>>>> origin/canary
 # Make sure to exit with 1 if there are changes after running ncc-compiled
 # step to ensure we get any changes committed
 
