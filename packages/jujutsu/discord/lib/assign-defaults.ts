@@ -1,17 +1,19 @@
-import { CommandComplete, EventCompelte } from '../../build/types'
+import { CommandComplete, EventComplete } from '../../build/types'
 
 export default function assignDefaults(
   type: 'command' | 'event',
-  currentInfo: Partial<CommandComplete> | Partial<EventCompelte>
-): CommandComplete | EventCompelte {
+  currentInfo: Partial<CommandComplete> | Partial<EventComplete>
+): CommandComplete | EventComplete {
   const commandDefaults: CommandComplete = {
     name: '',
     description: '',
     dmPermission: false,
-    nsfw: true,
+    nsfw: false,
+    subcommands: [],
+    defaultMemberPermission: null,
     fn() {},
   }
-  const eventDefaults: EventCompelte = {
+  const eventDefaults: EventComplete = {
     name: '',
     fn() {},
   }

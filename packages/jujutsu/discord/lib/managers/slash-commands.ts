@@ -11,11 +11,24 @@ import * as Log from '../../../build/output/log'
 import { CommandComplete } from '../../../build/types'
 import assignDefaults from '../assign-defaults'
 
-function formData({ name, description, dmPermission }: CommandComplete) {
-  const _ = new SlashCommandBuilder()
-  _.setName(name)
-  if (description) _.setDescription(description)
-  if (dmPermission !== undefined) _.setDMPermission(dmPermission)
+function formData({
+  name,
+  description,
+  dmPermission,
+  defaultMemberPermission,
+  subcommands,
+}: CommandComplete) {
+  const slash_command = new SlashCommandBuilder()
+  slash_command.setName(name)
+  slash_command.setDescription(description)
+  slash_command.setDMPermission(dmPermission)
+  slash_command.setDefaultMemberPermissions(defaultMemberPermission)
+
+  for (let command of subcommands) {
+    slash_command.addSubcommand((subcommand) =>
+      subcommand.setName(command.name).setDescription(command.description)
+    )
+  }
 
   /*
   if (localizations?.name) _.setNameLocalizations(localizations.name)
@@ -349,7 +362,7 @@ function formData({ name, description, dmPermission }: CommandComplete) {
       })
   */
 
-  return _.toJSON()
+  return slash_command.toJSON()
 }
 
 export default class SlashCommandManager {
@@ -357,19 +370,26 @@ export default class SlashCommandManager {
 
   private commands: { [name: string]: CommandComplete } = {}
 
-  addCommand(command: { name: string; absolutePath: string }) {
-    const {
-      description,
-      default: fn,
-      nsfw,
-      dmPermission,
-    } = require(command.absolutePath)
+  addCommand(command: {
+    name: string
+    absolutePath: string
+    subcommands: { name: string; absolutePath: string }[]
+  }) {
+    const mod = require(command.absolutePath)
     this.commands[command.name] = assignDefaults('command', {
       name: command.name,
-      description,
-      fn,
-      nsfw,
-      dmPermission,
+      description: mod.description,
+      fn: mod.default || mod,
+      nsfw: mod.nsfw,
+      dmPermission: mod.dmPermission,
+      defaultMemberPermission: mod.defaultMemberPermission,
+      subcommands: command.subcommands
+        .map((sub) => [sub.name, require(sub.absolutePath)])
+        .map((sub) => ({
+          name: sub[0],
+          description: sub[1].description,
+          fn: sub[1].default || sub[1],
+        })),
     }) as CommandComplete
   }
 

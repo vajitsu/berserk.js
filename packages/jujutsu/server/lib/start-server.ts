@@ -46,18 +46,30 @@ export default async function startServer(
     )
 
     const event_files = [
-      ...(Object.entries(bm.events) as unknown as [string, string]),
-      ...(Object.entries(abm.events) as unknown as [string, string]),
+      ...(Object.entries(bm.events) as unknown as [string, string][]),
+      ...(Object.entries(abm.events) as unknown as [string, string][]),
     ].map((f) => ({
       name: f[0],
       absolutePath: join(distDir, f[1]),
     }))
 
-    const command_files = [
-      ...(Object.entries(bm.commands) as unknown as [string, string]),
-      ...(Object.entries(abm.commands) as unknown as [string, string]),
+    const subcommand_files = [
+      ...(Object.entries(abm.commands) as unknown as [
+        string,
+        { parent: string; path: string }
+      ][]),
     ].map((f) => ({
       name: f[0],
+      parent: f[1].parent,
+      absolutePath: join(distDir, f[1].path),
+    }))
+
+    const command_files = [
+      ...(Object.entries(bm.commands) as unknown as [string, string][]),
+      ...(Object.entries(abm.commands) as unknown as [string, string][]),
+    ].map((f) => ({
+      name: f[0],
+      subcommands: subcommand_files.filter((sub) => sub.parent === f[0]),
       absolutePath: join(distDir, f[1]),
     }))
 

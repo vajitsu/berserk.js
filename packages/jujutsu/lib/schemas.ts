@@ -29,7 +29,20 @@ export const slashCommand = {
     .max(100, {
       message: 'Must be less than or equal to 100 characters',
     }),
-  dmPermission: z.boolean().default(true),
+  dmPermission: z.boolean().default(false),
+  defaultMemberPermission: z
+    .bigint({
+      invalid_type_error:
+        'Default member permission must be a bigint or number',
+    })
+    .or(
+      z.number({
+        invalid_type_error:
+          'Default member permission must be a bigint or number',
+      })
+    )
+    .nullable()
+    .default(null),
   nsfw: z.boolean().optional().default(false),
 }
 
@@ -48,7 +61,7 @@ export const commandFile = z.object({
   ...slashCommand,
   fn: z
     .function()
-    .args(z.any(), discordJs.client)
+    .args(z.unknown(), discordJs.client)
     .returns(z.void().promise().or(z.void())),
 })
 
