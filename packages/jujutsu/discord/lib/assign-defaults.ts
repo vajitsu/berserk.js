@@ -9,8 +9,8 @@ export default function assignDefaults(
     description: '',
     dmPermission: false,
     nsfw: false,
-    subcommands: [],
     defaultMemberPermission: null,
+    subcommands: [],
     fn() {},
   }
   const eventDefaults: EventComplete = {

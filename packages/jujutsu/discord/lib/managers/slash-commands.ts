@@ -368,7 +368,9 @@ function formData({
 export default class SlashCommandManager {
   constructor(private instance: bot) {}
 
-  private commands: { [name: string]: CommandComplete } = {}
+  private commands: {
+    [name: string]: CommandComplete
+  } = {}
 
   addCommand(command: {
     name: string
@@ -383,13 +385,16 @@ export default class SlashCommandManager {
       nsfw: mod.nsfw,
       dmPermission: mod.dmPermission,
       defaultMemberPermission: mod.defaultMemberPermission,
-      subcommands: command.subcommands
-        .map((sub) => [sub.name, require(sub.absolutePath)])
-        .map((sub) => ({
-          name: sub[0],
-          description: sub[1].description,
-          fn: sub[1].default || sub[1],
-        })),
+      subcommands:
+        command.subcommands.length > 0
+          ? command.subcommands
+              .map((sub) => [sub.name, require(sub.absolutePath)])
+              .map((sub) => ({
+                name: sub[0],
+                description: sub[1].description,
+                fn: sub[1].default || sub[1],
+              }))
+          : [],
     }) as CommandComplete
   }
 
@@ -408,7 +413,7 @@ export default class SlashCommandManager {
 
     if (!command) return
 
-    if (command.subcommands.length > 0) {
+    if (command.subcommands && command.subcommands.length > 0) {
       const subCommandName = interaction.options.getSubcommand()
       const subcommand = command.subcommands.find(
         (sub) => sub.name === subCommandName
@@ -419,7 +424,7 @@ export default class SlashCommandManager {
       } catch (error) {
         return void this.instance.events.emit('error', error)
       }
-    } else {
+    } else if (!command.subcommands) {
       try {
         return void (await command.fn(interaction, this.instance.client))
       } catch (error) {
