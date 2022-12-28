@@ -368,7 +368,9 @@ function formData({
 export default class SlashCommandManager {
   constructor(private instance: bot) {}
 
-  private commands: { [name: string]: CommandComplete } = {}
+  private commands: {
+    [name: string]: CommandComplete
+  } = {}
 
   addCommand(command: {
     name: string
@@ -383,13 +385,16 @@ export default class SlashCommandManager {
       nsfw: mod.nsfw,
       dmPermission: mod.dmPermission,
       defaultMemberPermission: mod.defaultMemberPermission,
-      subcommands: command.subcommands
-        .map((sub) => [sub.name, require(sub.absolutePath)])
-        .map((sub) => ({
-          name: sub[0],
-          description: sub[1].description,
-          fn: sub[1].default || sub[1],
-        })),
+      subcommands:
+        command.subcommands.length > 0
+          ? command.subcommands
+              .map((sub) => [sub.name, require(sub.absolutePath)])
+              .map((sub) => ({
+                name: sub[0],
+                description: sub[1].description,
+                fn: sub[1].default || sub[1],
+              }))
+          : [],
     }) as CommandComplete
   }
 

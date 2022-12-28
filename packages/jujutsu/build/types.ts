@@ -12,13 +12,14 @@ export interface SubCommandComplete {
     client: Client
   ) => Promise<void> | void
 }
+
 export interface CommandComplete {
   name: string
   description: string
   nsfw: boolean
   dmPermission: boolean
-  subcommands: SubCommandComplete[]
   defaultMemberPermission: number | bigint | null
+  subcommands: SubCommandComplete[]
   fn: (
     interaction: ChatInputCommandInteraction,
     client: Client

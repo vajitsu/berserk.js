@@ -83,10 +83,26 @@ function validate(
   chunks: (EventChunk | CommandChunk | AppEventChunk | AppCommandChunk)[]
 ) {
   let error = false
-  const commandChunks = chunks.filter((chunk) => chunk.type.includes('command'))
+  const subcommandChunks = chunks
+    .filter(
+      (chunk) =>
+        chunk.type === 'app__command' &&
+        getDepth(path.join(dir, 'app'), chunk.path) === 2
+    )
+    .map((chunk) => ({
+      ...chunk,
+      parent: chunk.path
+        .replace(path.join(dir, 'app') + path.sep, '')
+        .replace(path.sep + path.basename(chunk.path), '')
+        .split(path.sep)
+        .at(0),
+    }))
+  const commandChunks = chunks
+    .filter((chunk) => chunk.type.includes('command'))
+    .filter((chunk) => !subcommandChunks.find((sub) => sub.path === chunk.path))
   const eventChunks = chunks.filter((chunk) => chunk.type.includes('event'))
 
-  // Commands and subcommands
+  // Commands
   for (let chunk of commandChunks) {
     const inApp = chunk.type.includes('app')
     const mod = requireFromString(chunk.code)
@@ -101,6 +117,8 @@ function validate(
             .join('_')
         )
       : fileName.replace(path.extname(chunk.path), '')
+
+    // const subcommands = inApp ? subcommandChunks.filter(sub => sub.parent === name) : []
 
     const info = {
       name: name,
@@ -194,6 +212,24 @@ function validate(
     )
     console.log()
   }
+}
+
+function normalizeChunkPath(
+  filepath: string,
+  dir: string,
+  type: 'command' | 'event',
+  inAppDir = false
+) {
+  const replaceDir = inAppDir
+    ? path.join(dir, 'app')
+    : type === 'event'
+    ? path.join(dir, 'events')
+    : path.join(dir, 'commands')
+  const replaceBase = inAppDir
+    ? path.sep + path.basename(filepath)
+    : path.extname(filepath)
+  const replaced = filepath.replace(replaceDir, '').replace(replaceBase, '')
+  return inAppDir ? (replaced.split(path.sep).at(-1) as string) : replaced
 }
 
 export async function coldStart({
@@ -500,6 +536,58 @@ export async function coldStart({
           dev ? 'updating' : 'building'
         } your project again.`
       )
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const findConflictingChunks = await coldStartSpan
+      .traceChild('check-for-conflicting-chunks')
+      .traceAsyncFn(async () => {
+        let conflict = false
+        for (let chunk of chunks) {
+          const name = normalizeChunkPath(
+            chunk.path,
+            dir,
+            chunk.type.includes('command') ? 'command' : 'event',
+            chunk.type.includes('app')
+          )
+          const type = chunk.type.includes('command') ? 'command' : 'event'
+          const filtered = chunks
+            .map((c) => ({
+              ...c,
+              name: normalizeChunkPath(
+                c.path,
+                dir,
+                c.type.includes('command') ? 'command' : 'event',
+                c.type.includes('app')
+              ),
+              refinedType: c.type.includes('command') ? 'command' : 'event',
+            }))
+            .filter((c) => c.name === name && c.refinedType === type)
+
+          if (filtered.length > 1) {
+            conflict = true
+            const message = filtered
+              .map(
+                (c) =>
+                  `  - ${c.path
+                    .replace(dir + path.sep, '')
+                    .split(path.sep)
+                    .join('/')}`
+              )
+              .join('\n')
+            Log.error(
+              `These files are conflicting each other for the \`${name}\` ${
+                type === 'command' ? 'slash ' + type : type
+              }:\n${message}`
+            )
+          }
+        }
+        if (conflict)
+          printAndExit(
+            `> Fix these conflicts before ${
+              dev ? 'updating' : 'building'
+            } your project again.`
+          )
+      })
 
     // Write these valid chunks to the dist directory
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1266,6 +1354,58 @@ export async function incrementalBuild({
       ...filteredRegularChunks.commands,
       ...filteredRegularChunks.events,
     ]
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const findConflictingChunks = await incrementalBuildSpan
+      .traceChild('check-for-conflicting-chunks')
+      .traceAsyncFn(async () => {
+        let conflict = false
+        for (let chunk of chunks) {
+          const name = normalizeChunkPath(
+            chunk.path,
+            dir,
+            chunk.type.includes('command') ? 'command' : 'event',
+            chunk.type.includes('app')
+          )
+          const type = chunk.type.includes('command') ? 'command' : 'event'
+          const filtered = chunks
+            .map((c) => ({
+              ...c,
+              name: normalizeChunkPath(
+                c.path,
+                dir,
+                c.type.includes('command') ? 'command' : 'event',
+                c.type.includes('app')
+              ),
+              refinedType: c.type.includes('command') ? 'command' : 'event',
+            }))
+            .filter((c) => c.name === name && c.refinedType === type)
+
+          if (filtered.length > 1) {
+            conflict = true
+            const message = filtered
+              .map(
+                (c) =>
+                  `  - ${c.path
+                    .replace(dir + path.sep, '')
+                    .split(path.sep)
+                    .join('/')}`
+              )
+              .join('\n')
+            Log.error(
+              `These files are conflicting each other for the \`${name}\` ${
+                type === 'command' ? 'slash ' + type : type
+              }:\n${message}`
+            )
+          }
+        }
+        if (conflict)
+          printAndExit(
+            `> Fix these conflicts before ${
+              dev ? 'updating' : 'building'
+            } your project again.`
+          )
+      })
 
     // Writes changed chunks to dist directory
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
