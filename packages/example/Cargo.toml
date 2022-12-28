@@ -1,0 +1,14 @@
+[workspace]
+
+members = [
+  "crates/core",
+  "crates/napi",
+  "crates/wasm"
+]
+
+# This is a workaround for wasm timeout issue
+[profile.dev.package."*"]
+debug-assertions = false
+
+[profile.release]
+lto = true
