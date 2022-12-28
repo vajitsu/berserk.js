@@ -413,7 +413,7 @@ export default class SlashCommandManager {
 
     if (!command) return
 
-    if (command.subcommands && command.subcommands.length > 0) {
+    if (command.subcommands.length > 0) {
       const subCommandName = interaction.options.getSubcommand()
       const subcommand = command.subcommands.find(
         (sub) => sub.name === subCommandName
@@ -424,7 +424,7 @@ export default class SlashCommandManager {
       } catch (error) {
         return void this.instance.events.emit('error', error)
       }
-    } else if (!command.subcommands) {
+    } else {
       try {
         return void (await command.fn(interaction, this.instance.client))
       } catch (error) {
