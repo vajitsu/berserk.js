@@ -52,7 +52,7 @@
     "find-up": "^6.3.0",
     "fs-extra": "9.0.0",
     "husky": "8.0.0",
-    "jujutsu": "workspace:1.0.0-canary.0",
+    "jujutsu": "workspace:*",
     "lerna": "4.0.0",
     "lint-staged": "10.1.7",
     "module": "1.2.5",
