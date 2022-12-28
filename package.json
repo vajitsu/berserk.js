@@ -33,6 +33,7 @@
     "@babel/core": "7.18.0",
     "@babel/eslint-parser": "7.18.2",
     "@babel/generator": "7.18.0",
+    "@napi-rs/cli": "2.13.3",
     "@swc/cli": "0.1.55",
     "@swc/core": "1.2.203",
     "@swc/helpers": "0.4.14",
