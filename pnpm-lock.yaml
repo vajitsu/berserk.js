@@ -26,7 +26,7 @@ importers:
       find-up: ^6.3.0
       fs-extra: 9.0.0
       husky: 8.0.0
-      jujutsu: workspace:1.0.0-canary.0
+      jujutsu: workspace:*
       lerna: 4.0.0
       lint-staged: 10.1.7
       module: 1.2.5
@@ -125,12 +125,6 @@ importers:
       tar: 4.4.18
       update-check: 1.5.4
       validate-npm-package-name: 3.0.0
-
-  packages/discord:
-    specifiers:
-      '@napi-rs/cli': 2.13.3
-    devDependencies:
-      '@napi-rs/cli': 2.13.3
 
   packages/jujutsu:
     specifiers:
