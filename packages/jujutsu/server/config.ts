@@ -127,15 +127,6 @@ export default async function loadConfig(
       Log.warn(`Detected ${configFileName}, no exported configuration found.`)
     }
 
-    if (userConfig.amp?.canonicalBase) {
-      const { canonicalBase } = userConfig.amp || ({} as any)
-      userConfig.amp = userConfig.amp || {}
-      userConfig.amp.canonicalBase =
-        (canonicalBase.endsWith('/')
-          ? canonicalBase.slice(0, -1)
-          : canonicalBase) || ''
-    }
-
     const completeConfig = assignDefaults(dir, {
       configFile: path,
       configFileName,

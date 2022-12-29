@@ -154,7 +154,7 @@ function validate(
 
       if (chunks.indexOf(chunk) > 0) console.log()
 
-      Log.error(`The \`${name}\` slash command has a few errors:\n${message}`)
+      Log.error(`the \`${name}\` slash command has a few errors:\n${message}`)
     }
   }
 
@@ -199,7 +199,7 @@ function validate(
 
       if (chunks.indexOf(chunk) > 0) console.log()
 
-      Log.error(`The \`${name}\` event has a few errors:\n${message}`)
+      Log.error(`the \`${name}\` event has a few errors:\n${message}`)
     }
   }
 
@@ -207,8 +207,7 @@ function validate(
   if (error) {
     console.log()
     printAndExit(
-      'Fix these errors before attempting to build your project again.',
-      0
+      '> fix these errors before attempting to build your project again.'
     )
     console.log()
   }
@@ -428,7 +427,7 @@ export async function coldStart({
 
           if (depth > 2) {
             Log.warn(
-              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           } else if (depth === 2) {
             const parentDir = workingDir.split('/').at(0) as string
@@ -437,7 +436,7 @@ export async function coldStart({
               existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
             if (!hasCommand)
               Log.warn(
-                `Subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+                `subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
               )
             else filterAppCommands.push(chunk)
           } else filterAppCommands.push(chunk)
@@ -454,7 +453,7 @@ export async function coldStart({
 
           if (!DISCORD_EVENTS.includes(camel_case))
             Log.warn(
-              `Event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+              `event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
           else filterAppEvents.push(chunk)
         }
@@ -502,7 +501,7 @@ export async function coldStart({
               .split(path.sep)
               .join('/')
             Log.warn(
-              `Command at ${workingFile} is too deep, it will be ignored.`
+              `command at ${workingFile} is too deep, it will be ignored.`
             )
           } else filtered.commands.push(chunk as any)
         }
@@ -514,7 +513,7 @@ export async function coldStart({
               .replace(dir + path.sep, '')
               .split(path.sep)
               .join('/')
-            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+            Log.warn(`event at ${workingFile} is too deep, it will be ignored.`)
           } else filtered.commands.push(chunk as any)
         }
 
@@ -575,7 +574,7 @@ export async function coldStart({
               )
               .join('\n')
             Log.error(
-              `These files are conflicting each other for the \`${name}\` ${
+              `these files are conflicting each other for the \`${name}\` ${
                 type === 'command' ? 'slash ' + type : type
               }:\n${message}`
             )
@@ -1254,7 +1253,7 @@ export async function incrementalBuild({
 
           if (depth > 2) {
             Log.warn(
-              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           } else if (depth === 2) {
             const parentDir = workingDir.split('/').at(0) as string
@@ -1263,7 +1262,7 @@ export async function incrementalBuild({
               existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
             if (!hasCommand)
               Log.warn(
-                `Subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+                `subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
               )
             else filterAppCommands.push(chunk)
           } else filterAppCommands.push(chunk)
@@ -1280,7 +1279,7 @@ export async function incrementalBuild({
 
           if (!DISCORD_EVENTS.includes(camel_case))
             Log.warn(
-              `Event at "${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+              `event at "${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
           else filterAppEvents.push(chunk)
         }
@@ -1328,7 +1327,7 @@ export async function incrementalBuild({
               .split(path.sep)
               .join('/')
             Log.warn(
-              `Command at ${workingFile} is too deep, it will be ignored.`
+              `command at ${workingFile} is too deep, it will be ignored.`
             )
           } else filtered.commands.push(chunk as any)
         }
@@ -1340,7 +1339,7 @@ export async function incrementalBuild({
               .replace(dir + path.sep, '')
               .split(path.sep)
               .join('/')
-            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+            Log.warn(`event at ${workingFile} is too deep, it will be ignored.`)
           } else filtered.commands.push(chunk as any)
         }
 
@@ -1393,7 +1392,7 @@ export async function incrementalBuild({
               )
               .join('\n')
             Log.error(
-              `These files are conflicting each other for the \`${name}\` ${
+              `these files are conflicting each other for the \`${name}\` ${
                 type === 'command' ? 'slash ' + type : type
               }:\n${message}`
             )
@@ -1795,7 +1794,7 @@ export async function attemptCacheHit({
               if (allFiles.indexOf(file) > 0) console.log()
 
               Log.error(
-                `The \`${name}\` slash command has a few errors:\n${message}`
+                `the \`${name}\` slash command has a few errors:\n${message}`
               )
             } else valid.push(file)
           } else if (file.origin.includes('event')) {
@@ -1833,13 +1832,13 @@ export async function attemptCacheHit({
 
               if (allFiles.indexOf(file) > 0) console.log()
 
-              Log.error(`The \`${name}\` event has a few errors:\n${message}`)
+              Log.error(`the \`${name}\` event has a few errors:\n${message}`)
             } else valid.push(file)
           }
         }
 
         if (valid.length !== allFiles.length) {
-          Log.warn('The invalid files will be ignored.')
+          Log.warn('the invalid files will be ignored.')
           console.log()
         } else if (valid.length === 0)
           printAndExit(
@@ -1889,7 +1888,7 @@ export async function attemptCacheHit({
 
           if (depth > 2) {
             Log.warn(
-              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           } else if (depth === 2) {
             const parentDir = workingDir.split('/').at(0) as string
@@ -1898,7 +1897,7 @@ export async function attemptCacheHit({
               existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
             if (!hasCommand)
               Log.warn(
-                `Subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+                `subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
               )
             else filterAppCommands.push(file)
           } else filterAppCommands.push(file)
@@ -1913,7 +1912,7 @@ export async function attemptCacheHit({
 
           if (!DISCORD_EVENTS.includes(camel_case))
             Log.warn(
-              `Event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+              `event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
           else filterAppEvents.push(file)
         }
@@ -1961,7 +1960,7 @@ export async function attemptCacheHit({
               .split(path.sep)
               .join('/')
             Log.warn(
-              `Command at ${workingFile} is too deep, it will be ignored.`
+              `command at ${workingFile} is too deep, it will be ignored.`
             )
           } else filtered.commands.push(file)
         }
@@ -1973,7 +1972,7 @@ export async function attemptCacheHit({
               .replace(dir + path.sep, '')
               .split(path.sep)
               .join('/')
-            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+            Log.warn(`event at ${workingFile} is too deep, it will be ignored.`)
           } else filtered.commands.push(file)
         }
 
@@ -2061,7 +2060,7 @@ export async function attemptCacheHit({
       })
     } else if (existingCaches.invalid.length < 1) {
       console.log()
-      Log.info('No invalid caches, nothing to update')
+      Log.info('no invalid caches, nothing to update')
     }
   })
 }
@@ -2135,7 +2134,7 @@ export default async function build(
         })
       // No cache but the server directory exists, this is a fallback as we cannot check the cache (Most likely when running `jujutsu build`)
       else if (changedFiles.length < 1) {
-        Log.info('No cache to read from, rebuilding project')
+        Log.info('no cache to read from, rebuilding project')
         return await coldStart({
           dir,
           distDir,

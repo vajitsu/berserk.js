@@ -22,12 +22,13 @@ export default async function startServer(
   )
 
   if (
-    existsSync(join(distDir, 'server')) &&
-    existsSync(join(distDir, 'app-build-manifest.json')) &&
-    join(distDir, 'build-manifest.json')
+    !options.dev &&
+    (!existsSync(join(distDir, 'server')) ||
+      !existsSync(join(distDir, 'app-build-manifest.json')) ||
+      !existsSync(join(distDir, 'build-manifest.json')))
   )
     printAndExit(
-      '> Missing production build of your application, did you run `jujutsu build`?'
+      `> Missing production build of your application, did you run \`jujutsu build\`?`
     )
 
   const abm = json5.parse(
@@ -37,7 +38,7 @@ export default async function startServer(
     readFileSync(join(distDir, 'build-manifest.json'), 'utf8')
   )
 
-  if (abm.mode === 'development' || bm.mode === 'production')
+  if ((abm.mode === 'development' || bm.mode === 'development') && !options.dev)
     printAndExit(
       '> The current build of your project is the development build, run `jujutsu build` to create a build for production.'
     )
