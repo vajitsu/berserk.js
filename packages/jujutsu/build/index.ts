@@ -1741,7 +1741,7 @@ export async function attemptCacheHit({
 
         for (let file of allFiles) {
           const mod = requireFromString(
-            await compiler.transform(file.content.toString('utf8'))
+            await compiler.transform(file.content.toString('utf8'), file.path.endsWith('.ts'))
           )
 
           if (file.origin.includes('command')) {

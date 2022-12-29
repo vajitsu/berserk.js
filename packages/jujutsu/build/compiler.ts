@@ -8,15 +8,17 @@ import {
 } from '@swc/core'
 import { compileBundleOptions, config as spackConfig } from '@swc/core/spack'
 import { builtinModules } from 'module'
-import { promises } from 'fs-extra'
+import { promises } from 'jujutsu/dist/compiled/fs-extra'
 import path from 'path'
 import { SWC_CONFIG } from '../lib/constants'
 
 export default class Compiler {
-  private config: Config = SWC_CONFIG
+  private config: any = SWC_CONFIG
 
-  async transform(code: string) {
+  async transform(code: string, typescript = false) {
     let config = this.config
+
+    if (typescript) (config.jsc as any).parser.syntax = "typescript"
 
     const out = await transform(code, config)
     return out.code

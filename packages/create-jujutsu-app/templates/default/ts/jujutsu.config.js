@@ -5,10 +5,7 @@ const jujutsuConfig = {
     options: {
       intents: [1],
     },
-  },
-  experimental: {
-    appDir: true,
-  },
+  }
 }
 
 module.exports = jujutsuConfig
