@@ -8,7 +8,7 @@ import { z } from 'jujutsu/dist/compiled/zod'
 
 export const discordJs = {
   client: z.instanceof(Client),
-  channelTypes: z.number().positive().min(0).max(15)
+  channelTypes: z.number().positive().min(0).max(15),
 }
 
 export const slashCommand = {
@@ -81,7 +81,7 @@ export const slashCommand = {
           .number()
           .positive('Maximum value must be a postive number')
           .optional(),
-        channelTypes: z.array(discordJs.channelTypes)
+        channelTypes: z.array(discordJs.channelTypes),
       })
     )
     .default([]),
@@ -94,7 +94,16 @@ export interface CommandFile {
   dmPermission: boolean
   nsfw: boolean
   options: {
-    name: 'string' | 'boolean' | 'number' | 'integer' | 'attachment' | 'channel' | 'role' | 'user' | 'mentionable'
+    name:
+      | 'string'
+      | 'boolean'
+      | 'number'
+      | 'integer'
+      | 'attachment'
+      | 'channel'
+      | 'role'
+      | 'user'
+      | 'mentionable'
     description: string
     minLength?: number
     maxLength?: number

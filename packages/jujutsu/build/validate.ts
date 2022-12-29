@@ -1,4 +1,11 @@
-import { CommandFile, EventFile, SubcommandFile, commandFile, eventFile, subcommandFile } from '../lib/schemas'
+import {
+  CommandFile,
+  EventFile,
+  SubcommandFile,
+  commandFile,
+  eventFile,
+  subcommandFile,
+} from '../lib/schemas'
 
 export function validateCommandFile(input: CommandFile):
   | { pass: true }
@@ -153,11 +160,7 @@ export function validateSubcommandFile(input: SubcommandFile):
 
     return {
       pass: false,
-      errors: [
-        ...desc_errs,
-        ...name_errs,
-        ...fn_errs,
-      ],
+      errors: [...desc_errs, ...name_errs, ...fn_errs],
     }
   } else
     return {

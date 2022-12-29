@@ -57,7 +57,7 @@ function formData({
   slash_command.setDefaultMemberPermissions(defaultMemberPermission)
 
   for (let command of subcommands) {
-    slash_command.addSubcommand((subcommand) => 
+    slash_command.addSubcommand((subcommand) =>
       subcommand.setName(command.name).setDescription(command.description)
     )
   }
