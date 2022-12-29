@@ -7,6 +7,7 @@ importers:
       '@babel/core': 7.18.0
       '@babel/eslint-parser': 7.18.2
       '@babel/generator': 7.18.0
+      '@jujutsu/release': workspace:*
       '@napi-rs/cli': 2.13.3
       '@swc/cli': 0.1.55
       '@swc/core': 1.2.203
@@ -45,6 +46,7 @@ importers:
       '@babel/core': 7.18.0
       '@babel/eslint-parser': 7.18.2_uxoojzahptggrua2tvdiqlh7xm
       '@babel/generator': 7.18.0
+      '@jujutsu/release': link:packages/jujutsu-release
       '@napi-rs/cli': 2.13.3
       '@swc/cli': 0.1.55_@swc+core@1.2.203
       '@swc/core': 1.2.203
