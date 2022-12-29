@@ -5,7 +5,7 @@ import { DevServerOptions } from './options'
 import { EventEmitter } from 'jujutsu/dist/compiled/ws'
 import { DiscordConfig } from '../config-shared'
 import { Client } from 'jujutsu/dist/compiled/discord.js'
-import path, { join } from 'path'
+import { join } from 'path'
 import JujutsuDevServer from '../dev/jujutsu-dev-server'
 import { JujutsuServerOptions } from '../jujutsu'
 import { existsSync, readFileSync } from 'jujutsu/dist/compiled/fs-extra'
@@ -21,8 +21,14 @@ export default async function startServer(
     options.conf?.distDir || '.jujutsu'
   )
 
-  if (existsSync(join(distDir, "server")) && existsSync(join(distDir, 'app-build-manifest.json')) && join(distDir, 'build-manifest.json'))
-    printAndExit("> Missing production build of your application, did you run `jujutsu build`?")
+  if (
+    existsSync(join(distDir, 'server')) &&
+    existsSync(join(distDir, 'app-build-manifest.json')) &&
+    join(distDir, 'build-manifest.json')
+  )
+    printAndExit(
+      '> Missing production build of your application, did you run `jujutsu build`?'
+    )
 
   const abm = json5.parse(
     readFileSync(join(distDir, 'app-build-manifest.json'), 'utf8')
@@ -31,10 +37,12 @@ export default async function startServer(
     readFileSync(join(distDir, 'build-manifest.json'), 'utf8')
   )
 
-  if (abm.mode === "development" || bm.mode === "production")
-    printAndExit("> The current build of your project is the development build, run `jujutsu build` to create a build for production.")
-  
-    const events = new EventEmitter()
+  if (abm.mode === 'development' || bm.mode === 'production')
+    printAndExit(
+      '> The current build of your project is the development build, run `jujutsu build` to create a build for production.'
+    )
+
+  const events = new EventEmitter()
 
   events.once('ready', (client: Client) => {
     Log.ready(`located at ${client.user?.tag}`)

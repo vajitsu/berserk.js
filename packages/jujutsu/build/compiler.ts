@@ -8,6 +8,7 @@ import {
 } from '@swc/core'
 import { compileBundleOptions, config as spackConfig } from '@swc/core/spack'
 import { builtinModules } from 'module'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { promises } from 'jujutsu/dist/compiled/fs-extra'
 import path from 'path'
 import { SWC_CONFIG } from '../lib/constants'
@@ -18,7 +19,7 @@ export default class Compiler {
   async transform(code: string, typescript = false) {
     let config = this.config
 
-    if (typescript) (config.jsc as any).parser.syntax = "typescript"
+    if (typescript) (config.jsc as any).parser.syntax = 'typescript'
 
     const out = await transform(code, config)
     return out.code
