@@ -21,7 +21,6 @@ jobs:
       TURBO_TEAM: 'vajitsu'
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
     outputs:
-      docsChange: ${{ steps.docs-change.outputs.DOCS_CHANGE }}
       isRelease: ${{ steps.check-release.outputs.IS_RELEASE }}
       discordChange: ${{ steps.discord-change.outputs.DISCORD_CHANGE }}
       turboToken: ${{ steps.turbo-token.outputs.TURBO_TOKEN }}
@@ -117,7 +116,6 @@ jobs:
     steps:
       - name: Setup node
         uses: actions/setup-node@v3
-        if: ${{needs.build.outputs.docsChange == 'nope'}}
         with:
           node-version: 16
           check-latest: true

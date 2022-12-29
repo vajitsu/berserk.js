@@ -36,10 +36,6 @@ const configSchema = {
           minLength: 1,
           type: 'string',
         },
-        library: {
-          type: 'string',
-          default: 'discord.js',
-        },
         options: {
           type: 'object',
           additionalProperties: true,
@@ -56,12 +52,6 @@ const configSchema = {
     experimental: {
       additionalProperties: false,
       properties: {
-        swcMinify: {
-          type: 'boolean',
-        },
-        compress: {
-          type: 'boolean',
-        },
         appDir: {
           type: 'boolean',
         },

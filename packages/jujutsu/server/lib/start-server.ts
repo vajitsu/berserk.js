@@ -8,17 +8,45 @@ import { Client } from 'jujutsu/dist/compiled/discord.js'
 import { join } from 'path'
 import JujutsuDevServer from '../dev/jujutsu-dev-server'
 import { JujutsuServerOptions } from '../jujutsu'
-import { readFileSync } from 'jujutsu/dist/compiled/fs-extra'
+import { existsSync, readFileSync } from 'jujutsu/dist/compiled/fs-extra'
 import json5 from 'jujutsu/dist/compiled/json5'
+import { printAndExit } from './utils'
 
 export default async function startServer(
   options: JujutsuServerOptions,
   debug = false
 ) {
+  const distDir = join(
+    options.dir || process.cwd(),
+    options.conf?.distDir || '.jujutsu'
+  )
+
+  if (
+    !options.dev &&
+    (!existsSync(join(distDir, 'server')) ||
+      !existsSync(join(distDir, 'app-build-manifest.json')) ||
+      !existsSync(join(distDir, 'build-manifest.json')))
+  )
+    printAndExit(
+      `> Missing production build of your application, did you run \`jujutsu build\`?`
+    )
+
+  const abm = json5.parse(
+    readFileSync(join(distDir, 'app-build-manifest.json'), 'utf8')
+  )
+  const bm = json5.parse(
+    readFileSync(join(distDir, 'build-manifest.json'), 'utf8')
+  )
+
+  if ((abm.mode === 'development' || bm.mode === 'development') && !options.dev)
+    printAndExit(
+      '> The current build of your project is the development build, run `jujutsu build` to create a build for production.'
+    )
+
   const events = new EventEmitter()
 
   events.once('ready', (client: Client) => {
-    Log.ready(`Bot is located at ${client.user?.tag}`)
+    Log.ready(`located at ${client.user?.tag}`)
   })
 
   const instance = new bot(
@@ -31,20 +59,7 @@ export default async function startServer(
     debug
   )
 
-  const distDir = join(
-    options.dir || process.cwd(),
-    options.conf?.distDir || '.jujutsu'
-  )
-
   const startBot = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const abm = json5.parse(
-      readFileSync(join(distDir, 'app-build-manifest.json'), 'utf8')
-    )
-    const bm = json5.parse(
-      readFileSync(join(distDir, 'build-manifest.json'), 'utf8')
-    )
-
     const event_files = [
       ...(Object.entries(bm.events) as unknown as [string, string][]),
       ...(Object.entries(abm.events) as unknown as [string, string][]),
