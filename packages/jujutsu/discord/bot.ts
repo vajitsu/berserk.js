@@ -45,6 +45,7 @@ export default class bot {
       if (this.config.quiet) return void 0
       Log.error(e.type === 'init' ? e.message : e)
       if (this.dev) Log.wait('waiting for changes')
+      else process.exit(1)
     })
     this.client.on('debug', (message) =>
       this.debug && !this.config.quiet ? Log.event(message) : void 0

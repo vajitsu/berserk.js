@@ -21,7 +21,8 @@ export default function assignDefaults(
   // eslint-disable-next-line default-case
   switch (type) {
     case 'command':
-      return { ...commandDefaults, ...currentInfo } as any
+      const obj = Object.entries(currentInfo).filter(([_k, v]) => !!v)
+      return { ...commandDefaults, ...Object.fromEntries(obj) } as any
     case 'event':
       return Object.fromEntries(
         Object.entries({

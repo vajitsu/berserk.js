@@ -65,6 +65,24 @@ export const commandFile = z.object({
     .returns(z.void().promise().or(z.void())),
 })
 
+export interface SubcommandFile {
+  name: string
+  description: string
+  fn: (
+    interaction: ChatInputCommandInteraction,
+    client: Client
+  ) => void | Promise<void>
+}
+
+export const subcommandFile = z.object({
+  name: slashCommand.name,
+  description: slashCommand.description,
+  fn: z
+    .function()
+    .args(z.unknown(), discordJs.client)
+    .returns(z.void().promise().or(z.void())),
+})
+
 export interface EventFile {
   name: string
   fn: (client: Client) => void | Promise<void>
