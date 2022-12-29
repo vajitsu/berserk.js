@@ -16,7 +16,7 @@
   ],
   "license": "MIT",
   "bin": {
-    "release": "./bin/release.js"
+    "jujutsu-release": "./bin/release.js"
   },
   "dependencies": {
     "@octokit/rest": "15.2.6",
