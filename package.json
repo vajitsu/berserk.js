@@ -10,7 +10,7 @@
     "dev": "turbo run dev --parallel",
     "create-jujutsu-app": "node --trace-deprecation --enable-source-maps packages/create-jujutsu-app/dist/index.js",
     "jujutsu": "node --trace-deprecation --enable-source-maps packages/jujutsu/dist/bin/jujutsu",
-    "jujutsu-release" : "node --trace-deprecation --enable-source-maps packages/jujutsu-release/bin/release",
+    "jujutsu-release": "node --trace-deprecation --enable-source-maps packages/jujutsu-release/bin/release",
     "lint-typescript": "turbo run typescript",
     "lint-eslint": "eslint . --ext js,jsx,ts,tsx --max-warnings=0 --config .eslintrc.json --no-eslintrc",
     "lint-no-typescript": "run-p prettier-check lint-eslint",
@@ -34,6 +34,7 @@
     "@babel/core": "7.18.0",
     "@babel/eslint-parser": "7.18.2",
     "@babel/generator": "7.18.0",
+    "@jujutsu/release": "workspace:*",
     "@napi-rs/cli": "2.13.3",
     "@swc/cli": "0.1.55",
     "@swc/core": "1.2.203",
@@ -41,7 +42,6 @@
     "@types/fs-extra": "8.1.0",
     "@typescript-eslint/eslint-plugin": "4.29.1",
     "@typescript-eslint/parser": "4.29.1",
-    "@jujutsu/release": "workspace:*",
     "@vercel/ncc": "0.36.0",
     "alex": "11.0.0",
     "arg": "^5.0.2",
@@ -67,8 +67,7 @@
     "tsconfig-paths": "^4.1.1",
     "tsec": "0.2.6",
     "turbo": "1.6.3",
-    "typescript": "next",
-    "vercel": "28.10.1"
+    "typescript": "4.9.4"
   },
   "packageManager": "pnpm@7.3.0",
   "engines": {
