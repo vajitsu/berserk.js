@@ -35,7 +35,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive  \
     && npm config -g set prefix ${NPM_GLOBAL} \
     && sudo -u ${USERNAME} npm config -g set prefix ${NPM_GLOBAL} \
     # Install eslint
-    && su ${USERNAME} -c "umask 0002 && npm install -g eslint" \
+    && su ${USERNAME} -c "umask 0002 && npm install -g eslint prettier" \
     && npm cache clean --force > /dev/null 2>&1 \
     # Install python-is-python3 on bullseye to prevent node-gyp regressions
     && . /etc/os-release \
@@ -53,3 +53,5 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive  \
 
 # [Optional] Uncomment if you want to install more global node modules
 # RUN su node -c "npm install -g <your-package-list-here>""
+
+RUN echo PS1=\"\\h:\\W \\u$ \" >> etc/zsh/.zshrc
