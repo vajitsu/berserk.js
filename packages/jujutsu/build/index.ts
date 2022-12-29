@@ -144,6 +144,7 @@ function validate(dir: string, chunks: AllChunks) {
       description: mod.description,
       dmPermission: mod.dmPermission,
       nsfw: mod.nsfw,
+      options: mod.options,
       fn: mod.default,
     }
     const result = validateCommandFile(info)
@@ -1813,6 +1814,7 @@ export async function attemptCacheHit({
               description: mod.description,
               dmPermission: mod.dmPermission,
               nsfw: mod.nsfw,
+              options: mod.options,
               fn: mod.default,
             }
             const result = validateCommandFile(info)

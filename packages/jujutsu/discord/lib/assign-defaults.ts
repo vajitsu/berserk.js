@@ -11,6 +11,7 @@ export default function assignDefaults(
     nsfw: false,
     defaultMemberPermission: null,
     subcommands: [],
+    options: [],
     fn() {},
   }
   const eventDefaults: EventComplete = {
