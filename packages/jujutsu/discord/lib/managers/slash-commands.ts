@@ -11,6 +11,38 @@ import * as Log from '../../../build/output/log'
 import { CommandComplete, SubCommandComplete } from '../../../build/types'
 import assignDefaults from '../assign-defaults'
 
+/*
+const options = {
+  string(builder: SlashCommandBuilder) {
+    builder.addStringOption()
+  },
+  boolean(builder: SlashCommandBuilder) {
+    builder.addBooleanOption()
+  },
+  number(builder: SlashCommandBuilder) {
+    builder.addNumberOption()
+  },
+  integer(builder: SlashCommandBuilder) {
+    builder.addIntegerOption()
+  },
+  attachment(builder: SlashCommandBuilder) {
+    builder.addAttachmentOption()
+  },
+  channel(builder: SlashCommandBuilder) {
+    builder.addChannelOption()
+  },
+  role(builder: SlashCommandBuilder) {
+    builder.addRoleOption()
+  },
+  user(builder: SlashCommandBuilder) {
+    builder.addUserOption()
+  },
+  mentionable(builder: SlashCommandBuilder) {
+    builder.addMentionableOption()
+  },
+}
+*/
+
 function formData({
   name,
   description,
@@ -34,161 +66,161 @@ function formData({
   if (localizations?.name) _.setNameLocalizations(localizations.name)
   if (localizations?.description)
     _.setDescriptionLocalizations(localizations.description)
-  if (options && options.length > 0)
-    for (let _opt of options) {
-      let opt = _opt as any
-      // eslint-disable-next-line default-case
-      switch (opt.type) {
-        // Autocomplete, min & max length
-        case String:
-          _.addStringOption((i) => {
-            i.setName(opt.name)
-              .setDescriptionLocalizations(
-                opt.localizations?.description || null
-              )
-              .setNameLocalizations(opt.localizations?.name || null)
+  // if (options && options.length > 0)
+  //   for (let _opt of options) {
+  //     let opt = _opt as any
+  //     // eslint-disable-next-line default-case
+  //     switch (opt.type) {
+  //       // Autocomplete, min & max length
+  //       case String:
+  //         _.addStringOption((i) => {
+  //           i.setName(opt.name)
+  //             .setDescriptionLocalizations(
+  //               opt.localizations?.description || null
+  //             )
+  //             .setNameLocalizations(opt.localizations?.name || null)
 
-            if (opt.description) i.setDescription(opt.description)
-            if (opt.autoComplete !== undefined)
-              i.setAutocomplete(opt.autoComplete)
-            if (opt.minLength !== undefined) i.setMinLength(opt.minLength)
-            if (opt.maxLength !== undefined) i.setMaxLength(opt.maxLength)
+  //           if (opt.description) i.setDescription(opt.description)
+  //           if (opt.autoComplete !== undefined)
+  //             i.setAutocomplete(opt.autoComplete)
+  //           if (opt.minLength !== undefined) i.setMinLength(opt.minLength)
+  //           if (opt.maxLength !== undefined) i.setMaxLength(opt.maxLength)
 
-            return i
-          })
+  //           return i
+  //         })
 
-          break
+  //         break
 
-        // Nothing special
-        case Boolean:
-          _.addBooleanOption((i) => {
-            i.setName(opt.name)
-              .setDescriptionLocalizations(
-                opt.localizations?.description || null
-              )
-              .setNameLocalizations(opt.localizations?.name || null)
+  //       // Nothing special
+  //       case Boolean:
+  //         _.addBooleanOption((i) => {
+  //           i.setName(opt.name)
+  //             .setDescriptionLocalizations(
+  //               opt.localizations?.description || null
+  //             )
+  //             .setNameLocalizations(opt.localizations?.name || null)
 
-            if (opt.description) i.setDescription(opt.description)
+  //           if (opt.description) i.setDescription(opt.description)
 
-            return i
-          })
-          break
+  //           return i
+  //         })
+  //         break
 
-        // Autocomplete, min & max value
-        case Number:
-          _.addNumberOption((i) => {
-            i.setName(opt.name)
-              .setDescriptionLocalizations(
-                opt.localizations?.description || null
-              )
-              .setNameLocalizations(opt.localizations?.name || null)
+  //       // Autocomplete, min & max value
+  //       case Number:
+  //         _.addNumberOption((i) => {
+  //           i.setName(opt.name)
+  //             .setDescriptionLocalizations(
+  //               opt.localizations?.description || null
+  //             )
+  //             .setNameLocalizations(opt.localizations?.name || null)
 
-            if (opt.description) i.setDescription(opt.description)
-            if (opt.autoComplete !== undefined)
-              i.setAutocomplete(opt.autoComplete)
-            if (opt.minValue !== undefined) i.setMinValue(opt.minValue)
-            if (opt.maxValue !== undefined) i.setMaxValue(opt.maxValue)
+  //           if (opt.description) i.setDescription(opt.description)
+  //           if (opt.autoComplete !== undefined)
+  //             i.setAutocomplete(opt.autoComplete)
+  //           if (opt.minValue !== undefined) i.setMinValue(opt.minValue)
+  //           if (opt.maxValue !== undefined) i.setMaxValue(opt.maxValue)
 
-            return i
-          })
-          break
+  //           return i
+  //         })
+  //         break
 
-        // Autocomplete, min & max value
-        case 'Integer':
-          _.addIntegerOption((i) => {
-            i.setName(opt.name)
-              .setDescriptionLocalizations(
-                opt.localizations?.description || null
-              )
-              .setNameLocalizations(opt.localizations?.name || null)
+  //       // Autocomplete, min & max value
+  //       case 'Integer':
+  //         _.addIntegerOption((i) => {
+  //           i.setName(opt.name)
+  //             .setDescriptionLocalizations(
+  //               opt.localizations?.description || null
+  //             )
+  //             .setNameLocalizations(opt.localizations?.name || null)
 
-            if (opt.description) i.setDescription(opt.description)
-            if (opt.autoComplete !== undefined)
-              i.setAutocomplete(opt.autoComplete)
-            if (opt.minValue !== undefined) i.setMinValue(opt.minValue)
-            if (opt.maxValue !== undefined) i.setMaxValue(opt.maxValue)
+  //           if (opt.description) i.setDescription(opt.description)
+  //           if (opt.autoComplete !== undefined)
+  //             i.setAutocomplete(opt.autoComplete)
+  //           if (opt.minValue !== undefined) i.setMinValue(opt.minValue)
+  //           if (opt.maxValue !== undefined) i.setMaxValue(opt.maxValue)
 
-            return i
-          })
-          break
+  //           return i
+  //         })
+  //         break
 
-        // Nothing special
-        case 'User':
-          _.addUserOption((i) => {
-            i.setName(opt.name)
-              .setDescriptionLocalizations(
-                opt.localizations?.description || null
-              )
-              .setNameLocalizations(opt.localizations?.name || null)
+  //       // Nothing special
+  //       case 'User':
+  //         _.addUserOption((i) => {
+  //           i.setName(opt.name)
+  //             .setDescriptionLocalizations(
+  //               opt.localizations?.description || null
+  //             )
+  //             .setNameLocalizations(opt.localizations?.name || null)
 
-            if (opt.description) i.setDescription(opt.description)
+  //           if (opt.description) i.setDescription(opt.description)
 
-            return i
-          })
-          break
+  //           return i
+  //         })
+  //         break
 
-        // Channel Types
-        case 'Channel':
-          _.addChannelOption((i) => {
-            i.setName(opt.name)
-              .setDescriptionLocalizations(
-                opt.localizations?.description || null
-              )
-              .setNameLocalizations(opt.localizations?.name || null)
+  //       // Channel Types
+  //       case 'Channel':
+  //         _.addChannelOption((i) => {
+  //           i.setName(opt.name)
+  //             .setDescriptionLocalizations(
+  //               opt.localizations?.description || null
+  //             )
+  //             .setNameLocalizations(opt.localizations?.name || null)
 
-            if (opt.description) i.setDescription(opt.description)
-            if (opt.channelTypes) i.addChannelTypes(opt.channelTypes)
+  //           if (opt.description) i.setDescription(opt.description)
+  //           if (opt.channelTypes) i.addChannelTypes(opt.channelTypes)
 
-            return i
-          })
-          break
+  //           return i
+  //         })
+  //         break
 
-        // Nothing special
-        case 'Attachment':
-          _.addAttachmentOption((i) => {
-            i.setName(opt.name)
-              .setDescriptionLocalizations(
-                opt.localizations?.description || null
-              )
-              .setNameLocalizations(opt.localizations?.name || null)
+  //       // Nothing special
+  //       case 'Attachment':
+  //         _.addAttachmentOption((i) => {
+  //           i.setName(opt.name)
+  //             .setDescriptionLocalizations(
+  //               opt.localizations?.description || null
+  //             )
+  //             .setNameLocalizations(opt.localizations?.name || null)
 
-            if (opt.description) i.setDescription(opt.description)
+  //           if (opt.description) i.setDescription(opt.description)
 
-            return i
-          })
-          break
+  //           return i
+  //         })
+  //         break
 
-        // Nothing special
-        case 'Role':
-          _.addRoleOption((i) => {
-            i.setName(opt.name)
-              .setDescriptionLocalizations(
-                opt.localizations?.description || null
-              )
-              .setNameLocalizations(opt.localizations?.name || null)
+  //       // Nothing special
+  //       case 'Role':
+  //         _.addRoleOption((i) => {
+  //           i.setName(opt.name)
+  //             .setDescriptionLocalizations(
+  //               opt.localizations?.description || null
+  //             )
+  //             .setNameLocalizations(opt.localizations?.name || null)
 
-            if (opt.description) i.setDescription(opt.description)
+  //           if (opt.description) i.setDescription(opt.description)
 
-            return i
-          })
-          break
+  //           return i
+  //         })
+  //         break
 
-        // Nothing special
-        case 'Mentionable':
-          _.addMentionableOption((i) => {
-            i.setName(opt.name)
-              .setDescriptionLocalizations(
-                opt.localizations?.description || null
-              )
-              .setNameLocalizations(opt.localizations?.name || null)
+  //       // Nothing special
+  //       case 'Mentionable':
+  //         _.addMentionableOption((i) => {
+  //           i.setName(opt.name)
+  //             .setDescriptionLocalizations(
+  //               opt.localizations?.description || null
+  //             )
+  //             .setNameLocalizations(opt.localizations?.name || null)
 
-            if (opt.description) i.setDescription(opt.description)
+  //           if (opt.description) i.setDescription(opt.description)
 
-            return i
-          })
-          break
-      }
-    }
+  //           return i
+  //         })
+  //         break
+  //     }
+  //   }
   if (subcommands && subcommands.length > 0)
     // eslint-disable-next-line no-loop-func
     for (let _opt of subcommands)

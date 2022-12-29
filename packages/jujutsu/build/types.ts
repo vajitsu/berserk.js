@@ -20,6 +20,23 @@ export interface CommandComplete {
   dmPermission: boolean
   defaultMemberPermission: number | bigint | null
   subcommands: SubCommandComplete[]
+  options: {
+    name:
+      | 'string'
+      | 'boolean'
+      | 'number'
+      | 'integer'
+      | 'attachment'
+      | 'channel'
+      | 'role'
+      | 'user'
+      | 'mentionable'
+    description: string
+    minLength?: number
+    maxLength?: number
+    minValue?: number
+    maxValue?: number
+  }[]
   fn: (
     interaction: ChatInputCommandInteraction,
     client: Client

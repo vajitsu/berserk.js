@@ -8,6 +8,7 @@ import { z } from 'jujutsu/dist/compiled/zod'
 
 export const discordJs = {
   client: z.instanceof(Client),
+  channelTypes: z.number().positive().min(0).max(15),
 }
 
 export const slashCommand = {
@@ -43,6 +44,47 @@ export const slashCommand = {
     )
     .nullable()
     .default(null),
+  options: z
+    .array(
+      z.object({
+        name: z
+          .string()
+          .min(1, {
+            message: 'Must be longer than or equal to 1 character',
+          })
+          .max(32, {
+            message: 'Must be less than or equal to 32 characters',
+          }),
+        description: z
+          .string({
+            required_error: 'This is a required export',
+          })
+          .min(1, {
+            message: 'Must be longer than or equal to 1 character',
+          })
+          .max(100, {
+            message: 'Must be less than or equal to 100 characters',
+          }),
+        minLength: z
+          .number()
+          .positive('Minimum length must be a postive number')
+          .optional(),
+        maxLength: z
+          .number()
+          .positive('Maximum length must be a postive number')
+          .optional(),
+        minValue: z
+          .number()
+          .positive('Minimum value must be a postive number')
+          .optional(),
+        maxValue: z
+          .number()
+          .positive('Maximum value must be a postive number')
+          .optional(),
+        channelTypes: z.array(discordJs.channelTypes),
+      })
+    )
+    .default([]),
   nsfw: z.boolean().optional().default(false),
 }
 
@@ -51,6 +93,23 @@ export interface CommandFile {
   description: string
   dmPermission: boolean
   nsfw: boolean
+  options: {
+    name:
+      | 'string'
+      | 'boolean'
+      | 'number'
+      | 'integer'
+      | 'attachment'
+      | 'channel'
+      | 'role'
+      | 'user'
+      | 'mentionable'
+    description: string
+    minLength?: number
+    maxLength?: number
+    minValue?: number
+    maxValue?: number
+  }[]
   fn: (
     interaction: ChatInputCommandInteraction,
     client: Client
@@ -59,6 +118,24 @@ export interface CommandFile {
 
 export const commandFile = z.object({
   ...slashCommand,
+  fn: z
+    .function()
+    .args(z.unknown(), discordJs.client)
+    .returns(z.void().promise().or(z.void())),
+})
+
+export interface SubcommandFile {
+  name: string
+  description: string
+  fn: (
+    interaction: ChatInputCommandInteraction,
+    client: Client
+  ) => void | Promise<void>
+}
+
+export const subcommandFile = z.object({
+  name: slashCommand.name,
+  description: slashCommand.description,
   fn: z
     .function()
     .args(z.unknown(), discordJs.client)
