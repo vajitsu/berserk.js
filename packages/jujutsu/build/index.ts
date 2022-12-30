@@ -37,7 +37,9 @@ import requireFromString from 'jujutsu/dist/compiled/require-from-string'
 import { camelCase, snakeCase } from 'jujutsu/dist/compiled/lodash'
 import json5 from 'jujutsu/dist/compiled/json5'
 import { printAndExit } from '../lib/utils'
+import { areSimilar } from 'jujutsu/dist/compiled/similar-words'
 import chalk from '../lib/chalk'
+import { Events } from 'jujutsu/dist/compiled/discord.js'
 
 interface BuildManifest {
   mode: 'production' | 'development'
@@ -125,7 +127,7 @@ function validate(dir: string, chunks: AllChunks) {
 
   // Commands
   for (let chunk of commandChunks) {
-    const inApp = chunk.type.includes('app')
+    const inApp = chunk.app
     const mod = requireFromString(chunk.code)
     const fileName = path.basename(chunk.path)
     const name = inApp
@@ -143,6 +145,7 @@ function validate(dir: string, chunks: AllChunks) {
       name: name,
       description: mod.description,
       dmPermission: mod.dmPermission,
+      defaultMemberPermission: mod.defaultMemberPermission,
       nsfw: mod.nsfw,
       options: mod.options,
       fn: mod.default,
@@ -175,13 +178,13 @@ function validate(dir: string, chunks: AllChunks) {
 
       if (chunks.indexOf(chunk) > 0) console.log()
 
-      Log.error(`the \`${name}\` slash command has a few errors:\n${message}`)
+      Log.error(`The \`${name}\` slash command has a few errors:\n${message}`)
     }
   }
 
   // Events
   for (let chunk of eventChunks) {
-    const inApp = chunk.type.includes('app')
+    const inApp = chunk.app
     const mod = requireFromString(chunk.code)
     const allDirs = path.dirname(chunk.path).replace(dir + path.sep, '')
     const snake_case = allDirs.replace(path.sep, '_')
@@ -190,10 +193,7 @@ function validate(dir: string, chunks: AllChunks) {
       : path.basename(chunk.path).replace(path.extname(chunk.path), '')
 
     const info = {
-      name: name,
-      description: mod.description,
-      dmPermission: mod.dmPermission,
-      nsfw: mod.nsfw,
+      name,
       fn: mod.default,
     }
     const result = validateEventFile(info)
@@ -208,9 +208,23 @@ function validate(dir: string, chunks: AllChunks) {
         pre_messages[err.origin].push(err.message)
       }
 
+      const events = Object.entries(Events).map((ev) => ev[1])
+
       const messages = Object.entries(pre_messages).map((msg) => [
         msg[0],
-        msg[1].map((m) => `  - ${m}`).join('\n'),
+        msg[1]
+          .map((m) => {
+            const similars = events
+              .map((ev) => areSimilar(m, ev))
+              .filter((ev) => !!ev)
+            const similar = similars.length > 0 ? similars[0] : null
+            return `  - ${
+              m.startsWith('Invalid enum value.')
+                ? `Invalid value, did you mean \`${similar}\`?`
+                : m
+            }`
+          })
+          .join('\n'),
       ])
 
       const message = messages
@@ -220,7 +234,7 @@ function validate(dir: string, chunks: AllChunks) {
 
       if (chunks.indexOf(chunk) > 0) console.log()
 
-      Log.error(`the \`${name}\` event has a few errors:\n${message}`)
+      Log.error(`The \`${name}\` event has a few errors:\n${message}`)
     }
   }
 
@@ -268,7 +282,7 @@ function validate(dir: string, chunks: AllChunks) {
 
       if (chunks.indexOf(chunk) > 0) console.log()
 
-      Log.error(`the \`${name}\` slash command has a few errors:\n${message}`)
+      Log.error(`The \`${name}\` slash command has a few errors:\n${message}`)
     }
   }
 
@@ -415,7 +429,7 @@ function generateBuildManifest({
     ),
     events: Object.fromEntries(
       events.map((i) => [
-        path.basename(i.path)?.replace(path.extname(i.path), ''),
+        path.basename(i.originPath)?.replace(path.extname(i.originPath), ''),
         i.path.replace(`${distDir}${path.sep}`, '').split(path.sep).join('/'),
       ])
     ),
@@ -787,7 +801,7 @@ export async function coldStart({
               )
               .join('\n')
             Log.error(
-              `these files are conflicting each other for the \`${name}\` ${
+              `These files are conflicting each other for The \`${name}\` ${
                 type === 'command' ? 'slash ' + type : type
               }:\n${message}`
             )
@@ -1499,7 +1513,7 @@ export async function incrementalBuild({
               )
               .join('\n')
             Log.error(
-              `these files are conflicting each other for the \`${name}\` ${
+              `These files are conflicting each other for The \`${name}\` ${
                 type === 'command' ? 'slash ' + type : type
               }:\n${message}`
             )
@@ -1814,6 +1828,7 @@ export async function attemptCacheHit({
               name: name,
               description: mod.description,
               dmPermission: mod.dmPermission,
+              defaultMemberPermission: mod.defaultMemberPermission,
               nsfw: mod.nsfw,
               options: mod.options,
               fn: mod.default,
@@ -1827,6 +1842,7 @@ export async function attemptCacheHit({
                 '`nsfw` export': [] as unknown as string[],
                 '`description` export': [] as unknown as string[],
                 '`dmPermission` export': [] as unknown as string[],
+                '`defaultMemberPermission` export': [] as unknown as string[],
                 '`options` export': [] as unknown as string[],
               }
               for (let err of result.errors) {
@@ -1846,19 +1862,19 @@ export async function attemptCacheHit({
               if (allFiles.indexOf(file) > 0) console.log()
 
               Log.error(
-                `the \`${name}\` slash command has a few errors:\n${message}`
+                `The \`${name}\` slash command has a few errors:\n${message}`
               )
             } else valid.push(file)
           } else if (file.origin.includes('event')) {
+            const inApp = file.origin.includes('app')
             const allDirs = path.dirname(file.path).replace(dir + path.sep, '')
             const snake_case = allDirs.replace(path.sep, '_')
-            const name = camelCase(snake_case)
+            const name = inApp
+              ? camelCase(snake_case)
+              : path.basename(file.path).replace(path.extname(file.path), '')
 
             const info = {
               name: name,
-              description: mod.description,
-              dmPermission: mod.dmPermission,
-              nsfw: mod.nsfw,
               fn: mod.default,
             }
             const result = validateEventFile(info)
@@ -1884,13 +1900,13 @@ export async function attemptCacheHit({
 
               if (allFiles.indexOf(file) > 0) console.log()
 
-              Log.error(`the \`${name}\` event has a few errors:\n${message}`)
+              Log.error(`The \`${name}\` event has a few errors:\n${message}`)
             } else valid.push(file)
           }
         }
 
         if (valid.length !== allFiles.length) {
-          Log.warn('the invalid files will be ignored.')
+          Log.warn('The invalid files will be ignored.')
           console.log()
         } else if (valid.length === 0)
           printAndExit(
