@@ -1,6 +1,6 @@
-import { EventComplete } from '../../../build/types'
-import bot from '../../bot'
-import assignDefaults from '../assign-defaults'
+import { EventComplete } from '../../build/types'
+import bot from '../bot'
+import assignDefaults from '../lib/assign-defaults'
 
 export default class EventManager {
   private events: { [name: string]: EventComplete } = {}
@@ -18,8 +18,10 @@ export default class EventManager {
       name: event.name,
       fn: mod.default || mod,
     }) as EventComplete
-    const new_event = this.events[event.name]
-    this.instance.client.on(new_event.name, new_event.fn.bind(event))
+    const { fn, name } = this.events[event.name]
+    this.instance.client.on(name, (...args) =>
+      fn(this.instance.client, ...args)
+    )
   }
 
   public getEvent(name: string) {

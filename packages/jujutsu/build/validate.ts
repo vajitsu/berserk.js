@@ -7,6 +7,17 @@ import {
   subcommandFile,
 } from '../lib/schemas'
 
+const field: {
+  [key: string]: string
+} = {
+  description: '`description` export',
+  dmPermission: '`dmPermission` export',
+  nsfw: '`nsfw` export',
+  name: 'name (file name/parent directory)',
+  fn: 'default export (function)',
+  options: '`options` export',
+}
+
 export function validateCommandFile(input: CommandFile):
   | { pass: true }
   | {
@@ -19,18 +30,44 @@ export function validateCommandFile(input: CommandFile):
           | '`nsfw` export'
           | 'name (file name/parent directory)'
           | 'default export (function)'
+          | '`options` export'
       }[]
     } {
   const result = commandFile.safeParse(input)
 
   if (!result.success) {
     const error = result.error
-    const { description, dmPermission, nsfw, fn, name } = error.format()
+    const { description, dmPermission, nsfw, fn, name, options } =
+      error.format()
 
     const desc_errs = description?._errors
       ? description?._errors.map((err) => ({
           message: err,
           origin: '`description` export' as const,
+        }))
+      : []
+
+    const catch_all = Object.entries(result.error.formErrors.fieldErrors)
+      .map((e) => [field[e[0]], e[1]])
+      .flatMap((e) =>
+        typeof e[1] === 'string'
+          ? ({
+              message: e[1] as string,
+              origin: e[0],
+            } as const)
+          : e[1].flatMap(
+              (f) =>
+                ({
+                  message: f,
+                  origin: e[0],
+                } as const)
+            )
+      )
+
+    const opt_errs = options?._errors
+      ? options?._errors.map((err) => ({
+          message: err,
+          origin: '`options` export' as const,
         }))
       : []
 
@@ -62,15 +99,18 @@ export function validateCommandFile(input: CommandFile):
         }))
       : []
 
+    const errs = [
+      ...opt_errs,
+      ...desc_errs,
+      ...dmPerms_errs,
+      ...nsfw_errs,
+      ...name_errs,
+      ...fn_errs,
+    ]
+
     return {
       pass: false,
-      errors: [
-        ...desc_errs,
-        ...dmPerms_errs,
-        ...nsfw_errs,
-        ...name_errs,
-        ...fn_errs,
-      ],
+      errors: errs.length > 0 ? errs : (catch_all as any),
     }
   } else
     return {
