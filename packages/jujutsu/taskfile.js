@@ -16,13 +16,6 @@ export async function ncc_node_fetch(task, opts) {
     .ncc({ packageName: 'node-fetch', externals })
     .target('compiled/node-fetch')
 }
-externals['similar-words'] = 'jujutsu/dist/compiled/similar-words'
-export async function ncc_similar_words(task, opts) {
-await task
-  .source(opts.src || relative(__dirname, require.resolve('similar-words')))
-  .ncc({ packageName: 'similar-words', externals })
-  .target('compiled/similar-words')
-}
 // eslint-disable-next-line camelcase
 externals['zod'] = 'jujutsu/dist/compiled/zod'
 export async function ncc_zod(task, opts) {
@@ -390,7 +383,6 @@ export async function trace(task, opts) {
     .source(opts.src || 'trace/**/*.+(js|ts|tsx)')
     .swc('server', { dev: opts.dev })
     .target('dist/trace')
-  notify('Compiled trace files')
 }
 
 export async function discord_esm(task, opts) {
@@ -456,7 +448,6 @@ export async function ncc(task, opts) {
         'ncc_nft',
         'ncc_ws',
         'ncc_nanoid',
-        'ncc_similar_words'
       ],
       opts
     )

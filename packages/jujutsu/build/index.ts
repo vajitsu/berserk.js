@@ -35,11 +35,12 @@ import {
 } from './validate'
 import requireFromString from 'jujutsu/dist/compiled/require-from-string'
 import { camelCase, snakeCase } from 'jujutsu/dist/compiled/lodash'
+import { Events } from 'jujutsu/dist/compiled/discord.js'
 import json5 from 'jujutsu/dist/compiled/json5'
 import { printAndExit } from '../lib/utils'
-import { areSimilar } from 'jujutsu/dist/compiled/similar-words'
 import chalk from '../lib/chalk'
-import { Events } from 'jujutsu/dist/compiled/discord.js'
+// @ts-ignore
+import leven from './leven'
 
 interface BuildManifest {
   mode: 'production' | 'development'
@@ -103,6 +104,25 @@ type AllChunks = (
   | EventChunk
   | SubCommandChunk
 )[]
+
+function findSimilar(word: string, candidates: string[], options = {}) {
+  let { maxScore = 3 } = options as any
+  const { criteria = 0.5, prefix = '' } = options as any
+  const matches = []
+  for (const candidate of candidates) {
+    const length = Math.max(word.length, candidate.length)
+    const score = leven(word, candidate)
+    const similarity = (length - score) / length
+    if (similarity >= criteria && score <= maxScore) {
+      if (score < maxScore) {
+        maxScore = score
+        matches.length = 0
+      }
+      matches.push(prefix + candidate)
+    }
+  }
+  return matches
+}
 
 function getDepth(dir: string, filepath: string) {
   const removed_dir = path.dirname(filepath).replace(dir, '')
@@ -214,9 +234,7 @@ function validate(dir: string, chunks: AllChunks) {
         msg[0],
         msg[1]
           .map((m) => {
-            const similars = events
-              .map((ev) => areSimilar(m, ev))
-              .filter((ev) => !!ev)
+            const similars = findSimilar(name, events)
             const similar = similars.length > 0 ? similars[0] : null
             return `  - ${
               m.startsWith('Invalid enum value.')
@@ -1888,9 +1906,19 @@ export async function attemptCacheHit({
                 pre_messages[err.origin].push(err.message)
               }
 
+      const events = Object.entries(Events).map((ev) => ev[1])
+
               const messages = Object.entries(pre_messages).map((msg) => [
                 msg[0],
-                msg[1].map((m) => `  - ${m}`).join('\n'),
+                msg[1].map((m) => {
+                  const similars = findSimilar(name, events)
+                  const similar = similars.length > 0 ? similars[0] : null
+                  return `  - ${
+                    m.startsWith('Invalid enum value.') && similar
+                      ? `Invalid value, did you mean \`${similar}\`?`
+                      : m
+                  }`
+                }).join('\n'),
               ])
 
               const message = messages
@@ -1907,7 +1935,6 @@ export async function attemptCacheHit({
 
         if (valid.length !== allFiles.length) {
           Log.warn('The invalid files will be ignored.')
-          console.log()
         } else if (valid.length === 0)
           printAndExit(
             `> No valid files out of the all modified files. Fix these errors before ${

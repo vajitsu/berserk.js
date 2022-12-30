@@ -5,10 +5,6 @@ declare module 'jujutsu/dist/compiled/node-fetch' {
   export * from 'node-fetch'
 }
 
-declare module 'jujutsu/dist/compiled/similar-words' {
-  export function areSimilar(first: string, second: string): boolean
-}
-
 declare module 'jujutsu/dist/compiled/fflate' {
   import m from 'fflate'
   export = m
