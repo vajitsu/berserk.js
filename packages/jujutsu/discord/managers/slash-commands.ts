@@ -1,47 +1,202 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
+  AttachmentBuilder,
+  ChannelType,
   ChatInputCommandInteraction,
   REST,
   Routes,
   SlashCommandBuilder,
 } from 'jujutsu/dist/compiled/discord.js'
-import isError from '../../../lib/is-error'
-import bot from '../../bot'
-import * as Log from '../../../build/output/log'
-import { CommandComplete, SubCommandComplete } from '../../../build/types'
-import assignDefaults from '../assign-defaults'
+import isError from '../../lib/is-error'
+import bot from '../bot'
+import * as Log from '../../build/output/log'
+import { CommandComplete, SubCommandComplete } from '../../build/types'
+import assignDefaults from '../lib/assign-defaults'
+import { isNumber } from 'jujutsu/dist/compiled/lodash'
+import fetch from 'jujutsu/dist/compiled/node-fetch'
 
-/*
-const options = {
-  string(builder: SlashCommandBuilder) {
-    builder.addStringOption()
+const Options = {
+  string(
+    builder: SlashCommandBuilder,
+    {
+      name,
+      description,
+      minLength,
+      maxLength,
+      required = false,
+    }: {
+      name: string
+      description: string
+      minLength?: number | undefined
+      maxLength?: number | undefined
+      required: boolean
+    }
+  ) {
+    builder.addStringOption((input) => {
+      input.setName(name).setRequired(required)
+      input.setDescription(description)
+      if (isNumber(minLength)) input.setMinLength(minLength)
+      if (isNumber(maxLength)) input.setMaxLength(maxLength)
+      return input
+    })
   },
-  boolean(builder: SlashCommandBuilder) {
-    builder.addBooleanOption()
+  boolean(
+    builder: SlashCommandBuilder,
+    {
+      name,
+      description,
+      required = false,
+    }: {
+      name: string
+      description: string
+      required: boolean
+    }
+  ) {
+    builder.addBooleanOption((input) =>
+      input.setName(name).setDescription(description).setRequired(required)
+    )
   },
-  number(builder: SlashCommandBuilder) {
-    builder.addNumberOption()
+  number(
+    builder: SlashCommandBuilder,
+    {
+      name,
+      description,
+      minValue,
+      maxValue,
+      required = false,
+    }: {
+      name: string
+      description: string
+      minValue?: number | undefined
+      maxValue?: number | undefined
+      required: boolean
+    }
+  ) {
+    builder.addNumberOption((input) => {
+      input.setName(name).setDescription(description).setRequired(required)
+      if (isNumber(minValue)) input.setMinValue(minValue)
+      if (isNumber(maxValue)) input.setMaxValue(maxValue)
+      return input
+    })
   },
-  integer(builder: SlashCommandBuilder) {
-    builder.addIntegerOption()
+  integer(
+    builder: SlashCommandBuilder,
+    {
+      name,
+      description,
+      minValue,
+      maxValue,
+      required = false,
+    }: {
+      name: string
+      description: string
+      minValue?: number | undefined
+      maxValue?: number | undefined
+      required: boolean
+    }
+  ) {
+    builder.addIntegerOption((input) => {
+      input.setName(name).setDescription(description).setRequired(required)
+      if (isNumber(minValue)) input.setMinValue(minValue)
+      if (isNumber(maxValue)) input.setMaxValue(maxValue)
+      return input
+    })
   },
-  attachment(builder: SlashCommandBuilder) {
-    builder.addAttachmentOption()
+  attachment(
+    builder: SlashCommandBuilder,
+    {
+      name,
+      description,
+      required = false,
+    }: {
+      name: string
+      description: string
+      required: boolean
+    }
+  ) {
+    builder.addAttachmentOption((input) =>
+      input.setName(name).setDescription(description).setRequired(required)
+    )
   },
-  channel(builder: SlashCommandBuilder) {
-    builder.addChannelOption()
+  channel(
+    builder: SlashCommandBuilder,
+    {
+      name,
+      description,
+      required = false,
+      channelTypes,
+    }: {
+      name: string
+      description: string
+      required: boolean
+      channelTypes: (
+        | ChannelType.GuildText
+        | ChannelType.GuildVoice
+        | ChannelType.GuildCategory
+        | ChannelType.GuildAnnouncement
+        | ChannelType.AnnouncementThread
+        | ChannelType.PublicThread
+        | ChannelType.PrivateThread
+        | ChannelType.GuildStageVoice
+        | ChannelType.GuildForum
+      )[]
+    }
+  ) {
+    builder.addChannelOption((input) => {
+      input.setName(name).setDescription(description).setRequired(required)
+      if (channelTypes.length > 0) input.addChannelTypes(...channelTypes)
+      return input
+    })
   },
-  role(builder: SlashCommandBuilder) {
-    builder.addRoleOption()
+  role(
+    builder: SlashCommandBuilder,
+    {
+      name,
+      description,
+      required = false,
+    }: {
+      name: string
+      description: string
+      required: boolean
+    }
+  ) {
+    builder.addRoleOption((input) =>
+      input.setName(name).setDescription(description).setRequired(required)
+    )
   },
-  user(builder: SlashCommandBuilder) {
-    builder.addUserOption()
+  user(
+    builder: SlashCommandBuilder,
+    {
+      name,
+      description,
+      required = false,
+    }: {
+      name: string
+      description: string
+      required: boolean
+    }
+  ) {
+    builder.addUserOption((input) =>
+      input.setName(name).setDescription(description).setRequired(required)
+    )
   },
-  mentionable(builder: SlashCommandBuilder) {
-    builder.addMentionableOption()
+  mentionable(
+    builder: SlashCommandBuilder,
+    {
+      name,
+      description,
+      required = false,
+    }: {
+      name: string
+      description: string
+      required: boolean
+    }
+  ) {
+    builder.addMentionableOption((input) =>
+      input.setName(name).setDescription(description).setRequired(required)
+    )
   },
 }
-*/
 
 function formData({
   name,
@@ -49,12 +204,16 @@ function formData({
   dmPermission,
   defaultMemberPermission,
   subcommands,
+  options,
 }: CommandComplete) {
   const slash_command = new SlashCommandBuilder()
   slash_command.setName(name)
   slash_command.setDescription(description)
   slash_command.setDMPermission(dmPermission)
   slash_command.setDefaultMemberPermissions(defaultMemberPermission)
+  for (let option of options) {
+    Options[option.type](slash_command, option as any)
+  }
 
   for (let command of subcommands) {
     slash_command.addSubcommand((subcommand) =>
@@ -417,6 +576,7 @@ export default class SlashCommandManager {
       nsfw: mod.nsfw,
       dmPermission: mod.dmPermission,
       defaultMemberPermission: mod.defaultMemberPermission,
+      options: mod.options,
       subcommands:
         command.subcommands.length > 0
           ? command.subcommands
@@ -445,23 +605,44 @@ export default class SlashCommandManager {
 
     if (!command) return
 
-    if (command.subcommands.length > 0) {
-      const subCommandName = interaction.options.getSubcommand()
-      const subcommand = command.subcommands.find(
-        (sub) => sub.name === subCommandName
-      ) as SubCommandComplete
+    try {
+      if (command.subcommands.length > 0) {
+        const subCommandName = interaction.options.getSubcommand()
+        const subcommand = command.subcommands.find(
+          (sub) => sub.name === subCommandName
+        ) as SubCommandComplete
 
-      try {
-        return void (await subcommand.fn(interaction, this.instance.client))
-      } catch (error) {
-        return void this.instance.events.emit('error', error)
+        return void (await subcommand.fn({
+          interaction,
+          client: this.instance.client,
+        }))
+      } else {
+        return void (await command.fn({
+          interaction,
+          client: this.instance.client,
+        }))
       }
-    } else {
-      try {
-        return void (await command.fn(interaction, this.instance.client))
-      } catch (error) {
-        return void this.instance.events.emit('error', error)
-      }
+    } catch (error) {
+      if (isError(error)) {
+        const url = new URL('https://jujutsujs.vercel.app/api/og')
+        url.searchParams.set('context', 'An error has occurred.')
+        url.searchParams.set('content', error.message)
+
+        const res = await fetch(url)
+
+        if (res.ok) {
+          const image = new AttachmentBuilder(
+            Buffer.from(await res.arrayBuffer())
+          )
+
+          interaction
+            .reply({
+              files: [image.attachment],
+              ephemeral: true,
+            })
+            .then(() => this.instance.events.emit('error', error))
+        }
+      } else return void this.instance.events.emit('error', error)
     }
   }
 

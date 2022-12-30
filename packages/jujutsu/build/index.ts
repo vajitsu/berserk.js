@@ -157,6 +157,7 @@ function validate(dir: string, chunks: AllChunks) {
         '`nsfw` export': [] as unknown as string[],
         '`description` export': [] as unknown as string[],
         '`dmPermission` export': [] as unknown as string[],
+        '`options` export': [] as unknown as string[],
       }
       for (let err of result.errors) {
         pre_messages[err.origin].push(err.message)
@@ -164,12 +165,12 @@ function validate(dir: string, chunks: AllChunks) {
 
       const messages = Object.entries(pre_messages).map((msg) => [
         msg[0],
-        msg[1].map((m) => `          - ${m}`).join('\n'),
+        msg[1].map((m) => ` - ${m}`).join('\n'),
       ])
 
       const message = messages
         .filter((data) => data[1].length > 0)
-        .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+        .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
         .join('\n')
 
       if (chunks.indexOf(chunk) > 0) console.log()
@@ -209,12 +210,12 @@ function validate(dir: string, chunks: AllChunks) {
 
       const messages = Object.entries(pre_messages).map((msg) => [
         msg[0],
-        msg[1].map((m) => `          - ${m}`).join('\n'),
+        msg[1].map((m) => `  - ${m}`).join('\n'),
       ])
 
       const message = messages
         .filter((data) => data[1].length > 0)
-        .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+        .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
         .join('\n')
 
       if (chunks.indexOf(chunk) > 0) console.log()
@@ -257,12 +258,12 @@ function validate(dir: string, chunks: AllChunks) {
 
       const messages = Object.entries(pre_messages).map((msg) => [
         msg[0],
-        msg[1].map((m) => `          - ${m}`).join('\n'),
+        msg[1].map((m) => `  - ${m}`).join('\n'),
       ])
 
       const message = messages
         .filter((data) => data[1].length > 0)
-        .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+        .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
         .join('\n')
 
       if (chunks.indexOf(chunk) > 0) console.log()
@@ -275,7 +276,7 @@ function validate(dir: string, chunks: AllChunks) {
   if (error) {
     console.log()
     printAndExit(
-      '> fix these errors before attempting to build your project again.'
+      '> Fix these errors before attempting to build your project again.'
     )
     console.log()
   }
@@ -1826,6 +1827,7 @@ export async function attemptCacheHit({
                 '`nsfw` export': [] as unknown as string[],
                 '`description` export': [] as unknown as string[],
                 '`dmPermission` export': [] as unknown as string[],
+                '`options` export': [] as unknown as string[],
               }
               for (let err of result.errors) {
                 pre_messages[err.origin].push(err.message)
@@ -1833,12 +1835,12 @@ export async function attemptCacheHit({
 
               const messages = Object.entries(pre_messages).map((msg) => [
                 msg[0],
-                msg[1].map((m) => `           - ${m}`).join('\n'),
+                msg[1].map((m) => `   - ${m}`).join('\n'),
               ])
 
               const message = messages
                 .filter((data) => data[1].length > 0)
-                .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+                .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
                 .join('\n')
 
               if (allFiles.indexOf(file) > 0) console.log()
@@ -1872,12 +1874,12 @@ export async function attemptCacheHit({
 
               const messages = Object.entries(pre_messages).map((msg) => [
                 msg[0],
-                msg[1].map((m) => `          - ${m}`).join('\n'),
+                msg[1].map((m) => `  - ${m}`).join('\n'),
               ])
 
               const message = messages
                 .filter((data) => data[1].length > 0)
-                .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+                .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
                 .join('\n')
 
               if (allFiles.indexOf(file) > 0) console.log()

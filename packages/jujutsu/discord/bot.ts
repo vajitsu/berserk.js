@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Client, ClientOptions } from 'jujutsu/dist/compiled/discord.js'
 import { DiscordConfig } from '../server/config-shared'
-import SlashCommandManager from './lib/managers/slash-commands'
+import SlashCommandManager from './managers/slash-commands'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { EventEmitter } from 'jujutsu/dist/compiled/ws'
-import EventManager from './lib/managers/events'
+import EventManager from './managers/events'
 import isError, { JujutsuError } from '../lib/is-error'
 import * as Log from '../build/output/log'
 import { printAndExit } from '../lib/utils'
@@ -45,7 +45,6 @@ export default class bot {
       if (this.config.quiet) return void 0
       Log.error(e.type === 'init' ? e.message : e)
       if (this.dev) Log.wait('waiting for changes')
-      else process.exit(1)
     })
     this.client.on('debug', (message) =>
       this.debug && !this.config.quiet ? Log.event(message) : void 0
