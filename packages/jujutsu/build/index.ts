@@ -169,6 +169,7 @@ function validate(dir: string, chunks: AllChunks) {
       nsfw: mod.nsfw,
       options: mod.options,
       fn: mod.default,
+      middleware: mod.middleware
     }
     const result = validateCommandFile(info)
 
@@ -181,6 +182,8 @@ function validate(dir: string, chunks: AllChunks) {
         '`description` export': [] as unknown as string[],
         '`dmPermission` export': [] as unknown as string[],
         '`options` export': [] as unknown as string[],
+        '`defaultMemberPermission` export': [] as unknown as string[],
+        '`middleware` export (function)': [] as unknown as string[],
       }
       for (let err of result.errors) {
         pre_messages[err.origin].push(err.message)
@@ -1850,6 +1853,7 @@ export async function attemptCacheHit({
               nsfw: mod.nsfw,
               options: mod.options,
               fn: mod.default,
+              middleware: mod.middleware
             }
             const result = validateCommandFile(info)
 
@@ -1860,8 +1864,9 @@ export async function attemptCacheHit({
                 '`nsfw` export': [] as unknown as string[],
                 '`description` export': [] as unknown as string[],
                 '`dmPermission` export': [] as unknown as string[],
-                '`defaultMemberPermission` export': [] as unknown as string[],
                 '`options` export': [] as unknown as string[],
+                '`defaultMemberPermission` export': [] as unknown as string[],
+                '`middleware` export (function)': [] as unknown as string[],
               }
               for (let err of result.errors) {
                 pre_messages[err.origin].push(err.message)

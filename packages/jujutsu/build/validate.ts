@@ -7,15 +7,24 @@ import {
   subcommandFile,
 } from '../lib/schemas'
 
-const field: {
+const commandField: {
   [key: string]: string
 } = {
   description: '`description` export',
   dmPermission: '`dmPermission` export',
+  defaultMemberPermission: '`defaultMemberPermission` export (function)',
+  middleware: '`middleware` export (function)',
   nsfw: '`nsfw` export',
   name: 'name (file name/parent directory)',
   fn: 'default export (function)',
   options: '`options` export',
+}
+
+const eventField: {
+  [key: string]: string
+} = {
+  name: 'name (file name/parent directory)',
+  fn: 'default export (function)',
 }
 
 export function validateCommandFile(input: CommandFile):
@@ -31,14 +40,23 @@ export function validateCommandFile(input: CommandFile):
           | 'name (file name/parent directory)'
           | 'default export (function)'
           | '`options` export'
+          | '`middleware` export (function)'
       }[]
     } {
   const result = commandFile.safeParse(input)
 
   if (!result.success) {
     const error = result.error
-    const { description, dmPermission, nsfw, fn, name, options } =
-      error.format()
+    const {
+      description,
+      dmPermission,
+      nsfw,
+      fn,
+      name,
+      options,
+      defaultMemberPermission,
+      middleware,
+    } = error.format()
 
     const desc_errs = description?._errors
       ? description?._errors.map((err) => ({
@@ -47,8 +65,22 @@ export function validateCommandFile(input: CommandFile):
         }))
       : []
 
+    const def_errs = defaultMemberPermission?._errors
+      ? defaultMemberPermission?._errors.map((err) => ({
+          message: err,
+          origin: '`defaultMemberPermission` export' as const,
+        }))
+      : []
+
+    const middle_errs = middleware?._errors
+      ? middleware?._errors.map((err) => ({
+          message: err,
+          origin: '`middleware` export (function)',
+        }))
+      : []
+
     const catch_all = Object.entries(result.error.formErrors.fieldErrors)
-      .map((e) => [field[e[0]], e[1]])
+      .map((e) => [commandField[e[0]], e[1]])
       .flatMap((e) =>
         typeof e[1] === 'string'
           ? ({
@@ -100,6 +132,8 @@ export function validateCommandFile(input: CommandFile):
       : []
 
     const errs = [
+      ...def_errs,
+      ...middle_errs,
       ...opt_errs,
       ...desc_errs,
       ...dmPerms_errs,
@@ -149,9 +183,28 @@ export function validateEventFile(input: EventFile):
         }))
       : []
 
+    const catch_all = Object.entries(result.error.formErrors.fieldErrors)
+      .map((e) => [eventField[e[0]], e[1]])
+      .flatMap((e) =>
+        typeof e[1] === 'string'
+          ? ({
+              message: e[1] as string,
+              origin: e[0],
+            } as const)
+          : e[1].flatMap(
+              (f) =>
+                ({
+                  message: f,
+                  origin: e[0],
+                } as const)
+            )
+      )
+
+    const errors = [...name_errs, ...fn_errs]
+
     return {
       pass: false,
-      errors: [...name_errs, ...fn_errs],
+      errors: errors.length > 0 ? errors : (catch_all as any),
     }
   } else
     return {

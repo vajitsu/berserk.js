@@ -146,17 +146,18 @@ export interface CommandFile {
     maxValue?: number
     required: boolean
   }[]
-  fn: (
+  fn: (props: {
     interaction: ChatInputCommandInteraction,
     client: Client
-  ) => void | Promise<void>
+  }) => void | Promise<void>
 }
 
 export const commandFile = z.object({
   ...slashCommand,
-  // middleware: z
-  //   .function()
-  //   .args(z.object({ interaction: z.any(), client: discordJs.client })),
+  middleware: z
+    .function()
+    .args(z.object({ interaction: z.any(), client: discordJs.client }))
+    .returns(z.boolean()),
   fn: z
     .function()
     .args(z.object({ interaction: z.any(), client: discordJs.client }))
@@ -166,10 +167,10 @@ export const commandFile = z.object({
 export interface SubcommandFile {
   name: string
   description: string
-  fn: (
-    interaction: ChatInputCommandInteraction,
+  fn: (props: {
+    interaction: ChatInputCommandInteraction
     client: Client
-  ) => void | Promise<void>
+  }) => void | Promise<void>
 }
 
 export const subcommandFile = z.object({
@@ -188,7 +189,7 @@ export const subcommandFile = z.object({
 
 export interface EventFile {
   name: string
-  fn: (client: Client) => void | Promise<void>
+  fn: (client: Client, ...args: any[]) => void | Promise<void>
 }
 
 export const eventFile = z.object({
