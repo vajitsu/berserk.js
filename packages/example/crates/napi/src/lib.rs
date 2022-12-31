@@ -9,30 +9,33 @@ use std::{env, panic::set_hook, sync::Arc};
 use backtrace::Backtrace;
 use fxhash::FxHashSet;
 
+use discord::gateway;
 use futures::prelude::*;
 use napi::bindgen_prelude::*;
 
 #[derive(Debug)]
 #[napi(js_name = "JujutsuClient")]
 pub struct JujutsuClient {
-  token: String
+    token: String,
 }
 
 #[napi]
 impl JujutsuClient {
-  #[napi(constructor)]
-  pub fn new() -> Self {
-    JujutsuClient { token: String::from("") }
-  }
+    #[napi(constructor)]
+    pub fn new() -> Self {
+        JujutsuClient {
+            token: String::from(""),
+        }
+    }
 
-  #[napi]
-  pub fn login(&mut self, token: String) -> napi::Result<&str> {
-    self.token = token;
-    Ok(&self.token)
-  }
+    #[napi]
+    pub fn login(&mut self, token: String) -> napi::Result<&str> {
+        self.token = token;
+        Ok(&self.token)
+    }
 
-  #[napi(getter)]
-  pub fn token(&self) -> napi::Result<&str> {
-    Ok(&self.token)
-  }
+    #[napi(getter)]
+    pub fn token(&self) -> napi::Result<&str> {
+        Ok(&self.token)
+    }
 }

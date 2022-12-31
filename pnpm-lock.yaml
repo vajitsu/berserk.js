@@ -126,6 +126,12 @@ importers:
       update-check: 1.5.4
       validate-npm-package-name: 3.0.0
 
+  packages/example:
+    specifiers:
+      '@napi-rs/cli': 2.12.0
+    devDependencies:
+      '@napi-rs/cli': 2.12.0
+
   packages/jujutsu:
     specifiers:
       '@napi-rs/triples': 1.1.0
@@ -1494,6 +1500,12 @@ packages:
     dependencies:
       call-me-maybe: 1.0.2
       glob-to-regexp: 0.3.0
+    dev: true
+
+  /@napi-rs/cli/2.12.0:
+    resolution: {integrity: sha512-DWx9jDpun9JqDBypiXKjcYMm7gEnh83bry7b6UkItpmVE3w3tNrj91fOEPKDbFQZ7EULfFt+aQBbqtUHq5oNzQ==}
+    engines: {node: '>= 10'}
+    hasBin: true
     dev: true
 
   /@napi-rs/cli/2.13.3:
@@ -11823,7 +11835,6 @@ packages:
   /semver/5.7.1:
     resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
     hasBin: true
-    dev: true
 
   /semver/6.3.0:
     resolution: {integrity: sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==}
