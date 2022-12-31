@@ -157,7 +157,8 @@ export const commandFile = z.object({
   middleware: z
     .function()
     .args(z.object({ interaction: z.any(), client: discordJs.client }))
-    .returns(z.boolean()).optional(),
+    .returns(z.boolean())
+    .optional(),
   fn: z
     .function()
     .args(z.object({ interaction: z.any(), client: discordJs.client }))
