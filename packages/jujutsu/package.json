@@ -1,6 +1,6 @@
 {
   "name": "jujutsu",
-  "version": "1.0.0-canary.3",
+  "version": "1.0.0-canary.4",
   "description": "The Discord Framework",
   "main": "./dist/server/jujutsu.js",
   "license": "MIT",
