@@ -147,7 +147,7 @@ export interface CommandFile {
     required: boolean
   }[]
   fn: (props: {
-    interaction: ChatInputCommandInteraction,
+    interaction: ChatInputCommandInteraction
     client: Client
   }) => void | Promise<void>
 }

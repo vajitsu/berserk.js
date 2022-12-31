@@ -169,7 +169,7 @@ function validate(dir: string, chunks: AllChunks) {
       nsfw: mod.nsfw,
       options: mod.options,
       fn: mod.default,
-      middleware: mod.middleware
+      middleware: mod.middleware,
     }
     const result = validateCommandFile(info)
 
@@ -1853,7 +1853,7 @@ export async function attemptCacheHit({
               nsfw: mod.nsfw,
               options: mod.options,
               fn: mod.default,
-              middleware: mod.middleware
+              middleware: mod.middleware,
             }
             const result = validateCommandFile(info)
 
