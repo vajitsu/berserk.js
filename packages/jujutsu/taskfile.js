@@ -383,7 +383,6 @@ export async function trace(task, opts) {
     .source(opts.src || 'trace/**/*.+(js|ts|tsx)')
     .swc('server', { dev: opts.dev })
     .target('dist/trace')
-  notify('Compiled trace files')
 }
 
 export async function discord_esm(task, opts) {
