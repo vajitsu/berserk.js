@@ -154,9 +154,12 @@ export interface CommandFile {
 
 export const commandFile = z.object({
   ...slashCommand,
+  // middleware: z
+  //   .function()
+  //   .args(z.object({ interaction: z.any(), client: discordJs.client })),
   fn: z
     .function()
-    .args(z.unknown(), discordJs.client)
+    .args(z.object({ interaction: z.any(), client: discordJs.client }))
     .returns(z.void().promise().or(z.void())),
 })
 

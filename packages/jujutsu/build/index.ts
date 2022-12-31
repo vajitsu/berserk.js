@@ -1906,19 +1906,21 @@ export async function attemptCacheHit({
                 pre_messages[err.origin].push(err.message)
               }
 
-      const events = Object.entries(Events).map((ev) => ev[1])
+              const events = Object.entries(Events).map((ev) => ev[1])
 
               const messages = Object.entries(pre_messages).map((msg) => [
                 msg[0],
-                msg[1].map((m) => {
-                  const similars = findSimilar(name, events)
-                  const similar = similars.length > 0 ? similars[0] : null
-                  return `  - ${
-                    m.startsWith('Invalid enum value.') && similar
-                      ? `Invalid value, did you mean \`${similar}\`?`
-                      : m
-                  }`
-                }).join('\n'),
+                msg[1]
+                  .map((m) => {
+                    const similars = findSimilar(name, events)
+                    const similar = similars.length > 0 ? similars[0] : null
+                    return `  - ${
+                      m.startsWith('Invalid enum value.') && similar
+                        ? `Invalid value, did you mean \`${similar}\`?`
+                        : m
+                    }`
+                  })
+                  .join('\n'),
               ])
 
               const message = messages
