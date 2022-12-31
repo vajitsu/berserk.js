@@ -12,6 +12,7 @@ export default function assignDefaults(
     defaultMemberPermission: null,
     subcommands: [],
     options: [],
+    middleware: undefined as any,
     fn() {},
   }
   const eventDefaults: EventComplete = {

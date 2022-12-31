@@ -587,6 +587,7 @@ export default class SlashCommandManager {
                 fn: sub[1].default || sub[1],
               }))
           : [],
+      middleware: mod.middleware,
     }) as CommandComplete
   }
 
@@ -612,15 +613,25 @@ export default class SlashCommandManager {
           (sub) => sub.name === subCommandName
         ) as SubCommandComplete
 
-        return void (await subcommand.fn({
+        await subcommand.fn({
           interaction,
           client: this.instance.client,
-        }))
+        })
       } else {
-        return void (await command.fn({
-          interaction,
-          client: this.instance.client,
-        }))
+        let pass = true
+        if (command.middleware !== undefined) {
+          pass = await command.middleware({
+            interaction,
+            client: this.instance.client,
+          })
+        }
+
+        if (pass) {
+          await command.fn({
+            interaction,
+            client: this.instance.client,
+          })
+        }
       }
     } catch (error) {
       if (isError(error)) {

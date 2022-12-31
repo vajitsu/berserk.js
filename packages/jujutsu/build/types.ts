@@ -44,6 +44,10 @@ export interface CommandComplete {
     interaction: ChatInputCommandInteraction
     client: Client
   }) => Promise<void> | void
+  middleware: (props: {
+    interaction: ChatInputCommandInteraction
+    client: Client
+  }) => boolean | Promise<boolean>
 }
 
 export interface EventComplete {
