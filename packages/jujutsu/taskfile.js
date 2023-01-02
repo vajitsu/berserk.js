@@ -9,6 +9,14 @@ const externals = {
 }
 
 // eslint-disable-next-line camelcase
+externals['node-fetch'] = 'jujutsu/dist/compiled/node-fetch'
+export async function ncc_node_fetch(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('node-fetch')))
+    .ncc({ packageName: 'node-fetch', externals })
+    .target('compiled/node-fetch')
+}
+// eslint-disable-next-line camelcase
 externals['zod'] = 'jujutsu/dist/compiled/zod'
 export async function ncc_zod(task, opts) {
   await task
@@ -85,14 +93,6 @@ export async function ncc_watchpack(task, opts) {
     .source(opts.src || relative(__dirname, require.resolve('watchpack')))
     .ncc({ packageName: 'watchpack', externals })
     .target('compiled/watchpack')
-}
-// eslint-disable-next-line camelcase
-externals['node-fetch'] = 'jujutsu/dist/compiled/node-fetch'
-export async function ncc_node_fetch(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('node-fetch')))
-    .ncc({ packageName: 'node-fetch', externals })
-    .target('compiled/node-fetch')
 }
 // eslint-disable-next-line camelcase
 externals['fflate'] = 'jujutsu/dist/compiled/fflate'
@@ -383,7 +383,6 @@ export async function trace(task, opts) {
     .source(opts.src || 'trace/**/*.+(js|ts|tsx)')
     .swc('server', { dev: opts.dev })
     .target('dist/trace')
-  notify('Compiled trace files')
 }
 
 export async function discord_esm(task, opts) {

@@ -1,3 +1,7 @@
 import { ChatInputCommandInteraction as Interaction, Client } from 'discord.js'
 
-export { Interaction, Client }
+interface CommandProps {
+  interaction: Interaction
+  client: Client
+}
+export { CommandProps, Interaction, Client }

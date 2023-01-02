@@ -1,4 +1,5 @@
 import {
+  Awaitable,
   ChatInputCommandInteraction,
   Client,
   // eslint-disable-next-line import/no-extraneous-dependencies
@@ -7,25 +8,49 @@ import {
 export interface SubCommandComplete {
   name: string
   description: string
-  fn: (
-    interaction: ChatInputCommandInteraction,
+  fn: (props: {
+    interaction: ChatInputCommandInteraction
     client: Client
-  ) => Promise<void> | void
+  }) => Promise<void> | void
 }
+
 export interface CommandComplete {
   name: string
   description: string
   nsfw: boolean
   dmPermission: boolean
-  subcommands: SubCommandComplete[]
   defaultMemberPermission: number | bigint | null
-  fn: (
-    interaction: ChatInputCommandInteraction,
+  subcommands: SubCommandComplete[]
+  options: {
+    type:
+      | 'string'
+      | 'boolean'
+      | 'number'
+      | 'integer'
+      | 'attachment'
+      | 'channel'
+      | 'role'
+      | 'user'
+      | 'mentionable'
+    name: string
+    description: string
+    minLength?: number
+    maxLength?: number
+    minValue?: number
+    maxValue?: number
+    required?: boolean
+  }[]
+  fn: (props: {
+    interaction: ChatInputCommandInteraction
     client: Client
-  ) => Promise<void> | void
+  }) => Promise<void> | void
+  middleware: (props: {
+    interaction: ChatInputCommandInteraction
+    client: Client
+  }) => boolean | Promise<boolean>
 }
 
 export interface EventComplete {
   name: string
-  fn: (client: Client) => Promise<void> | void
+  fn: (client: Client, ...args: any) => Awaitable<void>
 }

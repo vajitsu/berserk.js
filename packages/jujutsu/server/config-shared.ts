@@ -15,28 +15,9 @@ export interface TypeScriptConfig {
   tsconfigPath?: string
 }
 
-export interface JujutsuDiscordConfig {
-  token?: string
-  library: '@jujutsu/discord'
-  options?: {
-    intents: number[]
-  }
-}
-
-export interface DiscordJsConfig {
-  token?: string
-  library: 'discord.js'
-  options?: ClientOptions
-}
-
 export interface DiscordConfig {
   token?: string
-  library: '@jujutsu/discord' | 'discord.js'
-  options?:
-    | {
-        intents: number[]
-      }
-    | ClientOptions
+  options?: ClientOptions
 }
 
 export interface ExperimentalConfig {
@@ -68,7 +49,7 @@ export interface JujutsuConfig extends Record<string, any> {
   /**
    * Configure your Discord application
    */
-  discord?: DiscordJsConfig | JujutsuDiscordConfig
+  discord?: DiscordConfig
   /**
    * Destination directory (defaults to `.jujutsu`)
    */
@@ -93,7 +74,6 @@ export const defaultConfig: JujutsuConfig = {
   cleanDistDir: true,
   discord: {
     token: '',
-    library: 'discord.js',
     options: {
       intents: [1],
     },

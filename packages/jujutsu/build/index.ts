@@ -28,12 +28,19 @@ import { recursiveDelete } from '../lib/recursive-delete'
 import { compressSync, decompressSync } from 'jujutsu/dist/compiled/fflate'
 import * as Log from './output/log'
 import { nanoid } from 'jujutsu/dist/compiled/nanoid'
-import { validateCommandFile, validateEventFile } from './validate'
+import {
+  validateCommandFile,
+  validateEventFile,
+  validateSubcommandFile,
+} from './validate'
 import requireFromString from 'jujutsu/dist/compiled/require-from-string'
 import { camelCase, snakeCase } from 'jujutsu/dist/compiled/lodash'
+import { Events } from 'jujutsu/dist/compiled/discord.js'
 import json5 from 'jujutsu/dist/compiled/json5'
 import { printAndExit } from '../lib/utils'
 import chalk from '../lib/chalk'
+// @ts-ignore
+import leven from './leven'
 
 interface BuildManifest {
   mode: 'production' | 'development'
@@ -54,22 +61,67 @@ interface AppBuildManifest extends BuildManifest {
 interface BaseChunk {
   code: string
   path: string
+  app: boolean
 }
 
 interface EventChunk extends BaseChunk {
   type: 'event'
+  app: false
 }
 
 interface CommandChunk extends BaseChunk {
   type: 'command'
+  app: false
+}
+
+interface SubCommandChunk extends BaseChunk {
+  app: true
+  type: 'subcommand'
 }
 
 interface AppEventChunk extends BaseChunk {
-  type: 'app__event'
+  type: 'event'
+  app: true
 }
 
 interface AppCommandChunk extends BaseChunk {
-  type: 'app__command'
+  type: 'command'
+  app: true
+}
+
+type AllFiles = (
+  | Omit<AppEventChunk, 'code'>
+  | Omit<AppCommandChunk, 'code'>
+  | Omit<CommandChunk, 'code'>
+  | Omit<EventChunk, 'code'>
+  | Omit<SubCommandChunk, 'code'>
+)[]
+
+type AllChunks = (
+  | AppEventChunk
+  | AppCommandChunk
+  | CommandChunk
+  | EventChunk
+  | SubCommandChunk
+)[]
+
+function findSimilar(word: string, candidates: string[], options = {}) {
+  let { maxScore = 3 } = options as any
+  const { criteria = 0.5, prefix = '' } = options as any
+  const matches = []
+  for (const candidate of candidates) {
+    const length = Math.max(word.length, candidate.length)
+    const score = leven(word, candidate)
+    const similarity = (length - score) / length
+    if (similarity >= criteria && score <= maxScore) {
+      if (score < maxScore) {
+        maxScore = score
+        matches.length = 0
+      }
+      matches.push(prefix + candidate)
+    }
+  }
+  return matches
 }
 
 function getDepth(dir: string, filepath: string) {
@@ -78,17 +130,24 @@ function getDepth(dir: string, filepath: string) {
   return split.length
 }
 
-function validate(
-  dir: string,
-  chunks: (EventChunk | CommandChunk | AppEventChunk | AppCommandChunk)[]
-) {
+function validate(dir: string, chunks: AllChunks) {
   let error = false
-  const commandChunks = chunks.filter((chunk) => chunk.type.includes('command'))
-  const eventChunks = chunks.filter((chunk) => chunk.type.includes('event'))
+  const subcommandChunks = chunks
+    .filter((chunk) => chunk.type === 'subcommand')
+    .map((chunk) => ({
+      ...chunk,
+      parent: chunk.path
+        .replace(path.join(dir, 'app') + path.sep, '')
+        .replace(path.sep + path.basename(chunk.path), '')
+        .split(path.sep)
+        .at(0),
+    }))
+  const commandChunks = chunks.filter((chunk) => chunk.type === 'command')
+  const eventChunks = chunks.filter((chunk) => chunk.type === 'event')
 
-  // Commands and subcommands
+  // Commands
   for (let chunk of commandChunks) {
-    const inApp = chunk.type.includes('app')
+    const inApp = chunk.app
     const mod = requireFromString(chunk.code)
     const fileName = path.basename(chunk.path)
     const name = inApp
@@ -106,8 +165,11 @@ function validate(
       name: name,
       description: mod.description,
       dmPermission: mod.dmPermission,
+      defaultMemberPermission: mod.defaultMemberPermission,
       nsfw: mod.nsfw,
+      options: mod.options,
       fn: mod.default,
+      middleware: mod.middleware,
     }
     const result = validateCommandFile(info)
 
@@ -119,6 +181,9 @@ function validate(
         '`nsfw` export': [] as unknown as string[],
         '`description` export': [] as unknown as string[],
         '`dmPermission` export': [] as unknown as string[],
+        '`options` export': [] as unknown as string[],
+        '`defaultMemberPermission` export': [] as unknown as string[],
+        '`middleware` export (function)': [] as unknown as string[],
       }
       for (let err of result.errors) {
         pre_messages[err.origin].push(err.message)
@@ -126,12 +191,12 @@ function validate(
 
       const messages = Object.entries(pre_messages).map((msg) => [
         msg[0],
-        msg[1].map((m) => `          - ${m}`).join('\n'),
+        msg[1].map((m) => ` - ${m}`).join('\n'),
       ])
 
       const message = messages
         .filter((data) => data[1].length > 0)
-        .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+        .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
         .join('\n')
 
       if (chunks.indexOf(chunk) > 0) console.log()
@@ -142,7 +207,7 @@ function validate(
 
   // Events
   for (let chunk of eventChunks) {
-    const inApp = chunk.type.includes('app')
+    const inApp = chunk.app
     const mod = requireFromString(chunk.code)
     const allDirs = path.dirname(chunk.path).replace(dir + path.sep, '')
     const snake_case = allDirs.replace(path.sep, '_')
@@ -151,10 +216,7 @@ function validate(
       : path.basename(chunk.path).replace(path.extname(chunk.path), '')
 
     const info = {
-      name: name,
-      description: mod.description,
-      dmPermission: mod.dmPermission,
-      nsfw: mod.nsfw,
+      name,
       fn: mod.default,
     }
     const result = validateEventFile(info)
@@ -169,14 +231,26 @@ function validate(
         pre_messages[err.origin].push(err.message)
       }
 
+      const events = Object.entries(Events).map((ev) => ev[1])
+
       const messages = Object.entries(pre_messages).map((msg) => [
         msg[0],
-        msg[1].map((m) => `          - ${m}`).join('\n'),
+        msg[1]
+          .map((m) => {
+            const similars = findSimilar(name, events)
+            const similar = similars.length > 0 ? similars[0] : null
+            return `  - ${
+              m.startsWith('Invalid enum value.')
+                ? `Invalid value, did you mean \`${similar}\`?`
+                : m
+            }`
+          })
+          .join('\n'),
       ])
 
       const message = messages
         .filter((data) => data[1].length > 0)
-        .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+        .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
         .join('\n')
 
       if (chunks.indexOf(chunk) > 0) console.log()
@@ -185,15 +259,283 @@ function validate(
     }
   }
 
+  // Subcommands
+  for (let chunk of subcommandChunks) {
+    const mod = requireFromString(chunk.code)
+    const name = camelCase(
+      chunk.path
+        .replace(path.join(dir, 'app'), '')
+        .replace(path.basename(chunk.path), '')
+        .replace(path.extname(chunk.path), '')
+        .split(path.sep)
+        .join('_')
+    )
+
+    const info = {
+      name: name,
+      description: mod.description,
+      dmPermission: mod.dmPermission,
+      nsfw: mod.nsfw,
+      fn: mod.default,
+    }
+    const result = validateSubcommandFile(info)
+
+    if (!result.pass) {
+      error = true
+      const pre_messages = {
+        'default export (function)': [] as unknown as string[],
+        'name (file name/parent directory)': [] as unknown as string[],
+        '`description` export': [] as unknown as string[],
+      }
+      for (let err of result.errors) {
+        pre_messages[err.origin].push(err.message)
+      }
+
+      const messages = Object.entries(pre_messages).map((msg) => [
+        msg[0],
+        msg[1].map((m) => `  - ${m}`).join('\n'),
+      ])
+
+      const message = messages
+        .filter((data) => data[1].length > 0)
+        .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
+        .join('\n')
+
+      if (chunks.indexOf(chunk) > 0) console.log()
+
+      Log.error(`The \`${name}\` slash command has a few errors:\n${message}`)
+    }
+  }
+
   // Exits build process if theres any issues
   if (error) {
     console.log()
     printAndExit(
-      'Fix these errors before attempting to build your project again.',
-      0
+      '> Fix these errors before attempting to build your project again.'
     )
     console.log()
   }
+}
+
+function normalizeChunkPath(
+  filepath: string,
+  dir: string,
+  type: 'command' | 'event' | 'subcommand',
+  inAppDir = false
+) {
+  const replaceDir = inAppDir
+    ? path.join(dir, 'app')
+    : type === 'event'
+    ? path.join(dir, 'events')
+    : path.join(dir, 'commands')
+  const replaceBase = inAppDir
+    ? path.sep + path.basename(filepath)
+    : path.extname(filepath)
+  const replaced = filepath.replace(replaceDir, '').replace(replaceBase, '')
+  return inAppDir ? (replaced.split(path.sep).at(-1) as string) : replaced
+}
+
+async function getFiles(
+  dir: string,
+  dirs: {
+    appDir: string | undefined
+    eventsDir: string | undefined
+    commandsDir: string | undefined
+  }
+): Promise<{
+  commands: Omit<CommandChunk, 'code'>[]
+  events: Omit<EventChunk, 'code'>[]
+  app: {
+    commands: Omit<AppCommandChunk, 'code'>[]
+    events: Omit<AppEventChunk, 'code'>[]
+    subcommands: Omit<SubCommandChunk, 'code'>[]
+  }
+}> {
+  const { eventsDir, commandsDir, appDir } = dirs
+
+  // RegEx to catch specific files only in the `events`, `commands`, or `app` directory
+  const regex_commands = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
+  const regex_events = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
+  const regex_app_event = new RegExp(`^event\\.(?:js|ts)$`, '')
+  const regex_app_command = new RegExp(`^command\\.(?:js|ts)$`, '')
+
+  return {
+    commands: commandsDir
+      ? (await recursiveReadDir(commandsDir, regex_commands)).map(
+          (file) =>
+            ({
+              path: path.join(dir, 'commands', file),
+              type: 'command',
+              app: false,
+            } as const)
+        )
+      : [],
+    events: eventsDir
+      ? (await recursiveReadDir(eventsDir, regex_events)).map(
+          (file) =>
+            ({
+              path: path.join(dir, 'events', file),
+              type: 'event',
+              app: false,
+            } as const)
+        )
+      : [],
+    app: appDir
+      ? {
+          commands: (await recursiveReadDir(appDir, regex_app_command))
+            .map(
+              (file) =>
+                ({
+                  path: path.join(dir, 'app', file),
+                  type: 'command',
+                  app: true,
+                } as const)
+            )
+            .filter((file) => getDepth(appDir, file.path) === 1),
+          events: (await recursiveReadDir(appDir, regex_app_event)).map(
+            (file) =>
+              ({
+                path: path.join(dir, 'app', file),
+                type: 'event',
+                app: true,
+              } as const)
+          ),
+          subcommands: (await recursiveReadDir(appDir, regex_app_command))
+            .map(
+              (file) =>
+                ({
+                  path: path.join(dir, 'app', file),
+                  type: 'subcommand',
+                  app: true,
+                } as const)
+            )
+            .filter((file) => getDepth(appDir, file.path) === 2),
+        }
+      : {
+          commands: [],
+          events: [],
+          subcommands: [],
+        },
+  }
+}
+
+function generateBuildManifest({
+  commands,
+  events,
+  dev,
+  distDir,
+}: {
+  commands: {
+    path: string
+    app: boolean
+    originPath: string
+    origin: 'command'
+  }[]
+  events: {
+    path: string
+    app: boolean
+    originPath: string
+    origin: 'event'
+  }[]
+  dev: boolean
+  distDir: string
+}) {
+  const build_manifest: BuildManifest = {
+    mode: dev ? 'development' : 'production',
+    commands: Object.fromEntries(
+      commands.map((i) => [
+        path.basename(i.originPath)?.replace(path.extname(i.originPath), ''),
+        i.path.replace(`${distDir}${path.sep}`, '').split(path.sep).join('/'),
+      ])
+    ),
+    events: Object.fromEntries(
+      events.map((i) => [
+        path.basename(i.originPath)?.replace(path.extname(i.originPath), ''),
+        i.path.replace(`${distDir}${path.sep}`, '').split(path.sep).join('/'),
+      ])
+    ),
+  }
+  return build_manifest
+}
+
+function generateAppBuildManifest({
+  subcommands,
+  commands,
+  distDir,
+  events,
+  dev,
+  dir,
+}: {
+  commands: {
+    path: string
+    app: boolean
+    originPath: string
+    origin: 'command'
+  }[]
+  events: {
+    path: string
+    app: boolean
+    originPath: string
+    origin: 'event'
+  }[]
+  subcommands: {
+    path: string
+    app: boolean
+    originPath: string
+    origin: 'subcommand'
+  }[]
+  dev: boolean
+  dir: string
+  distDir: string
+}) {
+  const app_build_manifest: AppBuildManifest = {
+    mode: dev ? 'development' : 'production',
+    commands: Object.fromEntries(
+      commands.map((i) => [
+        camelCase(
+          i.originPath
+            .replace(path.join(dir, 'app'), '')
+            .replace(path.basename(i.originPath), '')
+            .split(path.sep)
+            .join('_')
+        ),
+        i.path.replace(`${distDir}${path.sep}`, '').split(path.sep).join('/'),
+      ])
+    ),
+    events: Object.fromEntries(
+      events.map((i) => [
+        camelCase(
+          i.originPath
+            .replace(path.join(dir, 'app'), '')
+            .replace(path.basename(i.originPath), '')
+            .split(path.sep)
+            .join('_')
+        ),
+        i.path.replace(`${distDir}${path.sep}`, '').split(path.sep).join('/'),
+      ])
+    ),
+    subcommands: Object.fromEntries(
+      subcommands.map((i) => [
+        i.originPath
+          .replace(path.join(dir, 'app') + path.sep, '')
+          .replace(path.sep + path.basename(i.originPath), '')
+          .split(path.sep)
+          .at(1),
+        {
+          path: i.path
+            .replace(`${distDir}${path.sep}`, '')
+            .split(path.sep)
+            .join('/'),
+          parent: i.originPath
+            .replace(path.join(dir, 'app') + path.sep, '')
+            .replace(path.sep + path.basename(i.originPath), '')
+            .split(path.sep)
+            .at(0),
+        },
+      ])
+    ),
+  }
+  return app_build_manifest
 }
 
 export async function coldStart({
@@ -261,88 +603,41 @@ export async function coldStart({
 
     const { eventsDir, commandsDir, appDir } = dirs
 
-    // RegEx to catch specific files only in the `events`, `commands`, or `app` directory
-    const regex_commands = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
-    const regex_events = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
-    const regex_app_event = new RegExp(`^event\\.(?:js|ts)$`, '')
-    const regex_app_command = new RegExp(`^command\\.(?:js|ts)$`, '')
-
     // All the files, even if they haven't been modified
-    const files = {
-      commands: commandsDir
-        ? (await recursiveReadDir(commandsDir, regex_commands)).map((file) => ({
-            path: path.join(dir, 'commands', file),
-            type: 'command',
-          }))
-        : [],
-      events: eventsDir
-        ? (await recursiveReadDir(eventsDir, regex_events)).map((file) => ({
-            path: path.join(dir, 'events', file),
-            type: 'event',
-          }))
-        : [],
-      app: appDir
-        ? {
-            commands: (await recursiveReadDir(appDir, regex_app_command)).map(
-              (file) => ({
-                path: path.join(dir, 'app', file),
-                type: 'app__command',
-              })
-            ),
-            events: (await recursiveReadDir(appDir, regex_app_event)).map(
-              (file) => ({
-                path: path.join(dir, 'app', file),
-                type: 'app__event',
-              })
-            ),
-          }
-        : {
-            commands: [],
-            events: [],
-          },
-    }
+    const files = await getFiles(dir, dirs)
+
+    // Combines all files into one array
+    const allFiles: AllFiles = [
+      ...files.events,
+      ...files.commands,
+      ...files.app.subcommands,
+      ...files.app.commands,
+      ...files.app.events,
+    ]
 
     // Checks if there are any files  in the `events`, `commands`, or `app` directory
-    if (
-      [
-        ...files.events,
-        ...files.commands,
-        ...files.app.commands,
-        ...files.app.events,
-      ].length === 0
-    )
+    if (allFiles.length === 0)
       printAndExit(
         '\n> No files found in the `commands`, `events`, and `app` directory.',
         0
       )
 
-    // Bundles up all the files into one array
-    const allFiles = [
-      ...files.app.events,
-      ...files.app.commands,
-      ...files.commands,
-      ...files.events,
-    ]
-
     // Transpile all files into their own 'chunks'
     let chunks = await coldStartSpan
       .traceChild('generate-chunks')
       .traceAsyncFn(async () => {
-        const allChunks: {
-          code: string
-          path: string
-          type: 'event' | 'command' | 'app__command' | 'app__event'
-        }[] = []
+        const allChunks: AllChunks = []
         for (let file of allFiles) {
           mkdirp(distDir)
           const code = await compiler.transformFile(
             file.path,
-            path.extname(file.path) === '.ts'
+            file.path.endsWith('.ts')
           )
           allChunks.push({
             path: file.path,
             code: code as string,
             type: file.type as any,
+            app: file.app,
           })
         }
         return allChunks
@@ -370,14 +665,14 @@ export async function coldStart({
             events: [],
           }
 
-        const appCommandChunks = chunks.filter(
-          (chunk) => chunk.type === 'app__command'
-        )
+        const appCommandChunks: AppCommandChunk[] = chunks.filter(
+          (chunk) => chunk.type === 'command' && chunk.app
+        ) as any
         const filterAppCommands = []
 
-        const appEventChunks = chunks.filter(
-          (chunk) => chunk.type === 'app__event'
-        )
+        const appEventChunks: AppEventChunk[] = chunks.filter(
+          (chunk) => chunk.type === 'event' && chunk.app
+        ) as any
         const filterAppEvents = []
 
         for (let chunk of appCommandChunks) {
@@ -392,7 +687,7 @@ export async function coldStart({
 
           if (depth > 2) {
             Log.warn(
-              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           } else if (depth === 2) {
             const parentDir = workingDir.split('/').at(0) as string
@@ -401,7 +696,7 @@ export async function coldStart({
               existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
             if (!hasCommand)
               Log.warn(
-                `Subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+                `subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
               )
             else filterAppCommands.push(chunk)
           } else filterAppCommands.push(chunk)
@@ -418,7 +713,7 @@ export async function coldStart({
 
           if (!DISCORD_EVENTS.includes(camel_case))
             Log.warn(
-              `Event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+              `event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
           else filterAppEvents.push(chunk)
         }
@@ -440,16 +735,8 @@ export async function coldStart({
           ? chunks.filter((chunk) => chunk.type === 'event')
           : []
         const filtered: {
-          commands: {
-            code: string
-            path: string
-            type: 'command'
-          }[]
-          events: {
-            code: string
-            path: string
-            type: 'event'
-          }[]
+          commands: CommandChunk[]
+          events: EventChunk[]
         } = {
           events: [],
           commands: [],
@@ -466,7 +753,7 @@ export async function coldStart({
               .split(path.sep)
               .join('/')
             Log.warn(
-              `Command at ${workingFile} is too deep, it will be ignored.`
+              `command at ${workingFile} is too deep, it will be ignored.`
             )
           } else filtered.commands.push(chunk as any)
         }
@@ -478,7 +765,7 @@ export async function coldStart({
               .replace(dir + path.sep, '')
               .split(path.sep)
               .join('/')
-            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+            Log.warn(`event at ${workingFile} is too deep, it will be ignored.`)
           } else filtered.commands.push(chunk as any)
         }
 
@@ -491,6 +778,7 @@ export async function coldStart({
       ...filteredAppChunks.events,
       ...filteredRegularChunks.commands,
       ...filteredRegularChunks.events,
+      ...chunks.filter((chunk) => chunk.type === 'subcommand'),
     ]
 
     // Ensures that there are files that remained after validation and filtration
@@ -501,6 +789,53 @@ export async function coldStart({
         } your project again.`
       )
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const findConflictingChunks = await coldStartSpan
+      .traceChild('check-for-conflicting-chunks')
+      .traceAsyncFn(async () => {
+        let conflict = false
+        for (let chunk of chunks) {
+          const name = normalizeChunkPath(
+            chunk.path,
+            dir,
+            chunk.type,
+            chunk.app
+          )
+          const type = chunk.type
+          const filtered = chunks
+            .map((c) => ({
+              ...c,
+              name: normalizeChunkPath(c.path, dir, c.type, c.app),
+              refinedType: c.type.includes('command') ? 'command' : 'event',
+            }))
+            .filter((c) => c.name === name && c.refinedType === type)
+
+          if (filtered.length > 1) {
+            conflict = true
+            const message = filtered
+              .map(
+                (c) =>
+                  `  - ${c.path
+                    .replace(dir + path.sep, '')
+                    .split(path.sep)
+                    .join('/')}`
+              )
+              .join('\n')
+            Log.error(
+              `These files are conflicting each other for The \`${name}\` ${
+                type === 'command' ? 'slash ' + type : type
+              }:\n${message}`
+            )
+          }
+        }
+        if (conflict)
+          printAndExit(
+            `> Fix these conflicts before ${
+              dev ? 'updating' : 'building'
+            } your project again.`
+          )
+      })
+
     // Write these valid chunks to the dist directory
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const writeChunks = await coldStartSpan
@@ -508,8 +843,9 @@ export async function coldStart({
       .traceAsyncFn(async () => {
         const information: {
           path: string
-          origin: 'event' | 'command' | 'app__command' | 'app__event'
+          app: boolean
           originPath: string
+          origin: 'event' | 'command' | 'subcommand'
         }[] = []
         for (let chunk of chunks) {
           let outDir = path.join(distDir, 'server')
@@ -525,6 +861,7 @@ export async function coldStart({
             path: outFile,
             origin: chunk.type,
             originPath: chunk.path,
+            app: chunk.app,
           })
         }
         return information
@@ -535,32 +872,17 @@ export async function coldStart({
     const buildManifest = await coldStartSpan
       .traceChild('create-build-manifest')
       .traceAsyncFn(async () => {
-        const commands = writeChunks.filter((t) => t.origin === 'command')
-        const events = writeChunks.filter((t) => t.origin === 'event')
+        const commands = writeChunks.filter(
+          (t) => t.origin === 'command'
+        ) as any
+        const events = writeChunks.filter((t) => t.origin === 'event') as any
 
-        const build_manifest: BuildManifest = {
-          mode: dev ? 'development' : 'production',
-          commands: Object.fromEntries(
-            commands.map((i) => [
-              path
-                .basename(i.originPath)
-                ?.replace(path.extname(i.originPath), ''),
-              i.path
-                .replace(`${distDir}${path.sep}`, '')
-                .split(path.sep)
-                .join('/'),
-            ])
-          ),
-          events: Object.fromEntries(
-            events.map((i) => [
-              path.basename(i.path)?.replace(path.extname(i.path), ''),
-              i.path
-                .replace(`${distDir}${path.sep}`, '')
-                .split(path.sep)
-                .join('/'),
-            ])
-          ),
-        }
+        const build_manifest = generateBuildManifest({
+          commands,
+          events,
+          dev,
+          distDir,
+        })
 
         await writeFile(
           path.join(distDir, 'build-manifest.json'),
@@ -574,73 +896,24 @@ export async function coldStart({
     const appBuildManifest = await coldStartSpan
       .traceChild('create-app-build-manifest')
       .traceAsyncFn(async () => {
-        const commands = writeChunks
-          .filter((chunk) => chunk.origin === 'app__command')
-          .filter(
-            (chunk) => getDepth(path.join(dir, 'app'), chunk.originPath) === 1
-          )
-        const subcommands = writeChunks
-          .filter((chunk) => chunk.origin === 'app__command')
-          .filter(
-            (chunk) => getDepth(path.join(dir, 'app'), chunk.originPath) === 2
-          )
+        const commands = writeChunks.filter(
+          (chunk) => chunk.origin === 'command' && chunk.app
+        ) as any
+        const subcommands = writeChunks.filter(
+          (chunk) => chunk.origin === 'subcommand' && chunk.app
+        ) as any
         const events = writeChunks.filter(
-          (chunk) => chunk.origin === 'app__event'
-        )
+          (chunk) => chunk.origin === 'event' && chunk.app
+        ) as any
 
-        const app_build_manifest: AppBuildManifest = {
-          mode: dev ? 'development' : 'production',
-          commands: Object.fromEntries(
-            commands.map((i) => [
-              camelCase(
-                i.originPath
-                  .replace(path.join(dir, 'app'), '')
-                  .replace(path.basename(i.originPath), '')
-                  .split(path.sep)
-                  .join('_')
-              ),
-              i.path
-                .replace(`${distDir}${path.sep}`, '')
-                .split(path.sep)
-                .join('/'),
-            ])
-          ),
-          events: Object.fromEntries(
-            events.map((i) => [
-              camelCase(
-                i.originPath
-                  .replace(path.join(dir, 'app'), '')
-                  .replace(path.basename(i.originPath), '')
-                  .split(path.sep)
-                  .join('_')
-              ),
-              i.path
-                .replace(`${distDir}${path.sep}`, '')
-                .split(path.sep)
-                .join('/'),
-            ])
-          ),
-          subcommands: Object.fromEntries(
-            subcommands.map((i) => [
-              i.originPath
-                .replace(path.join(dir, 'app') + path.sep, '')
-                .replace(path.sep + path.basename(i.originPath), '')
-                .split(path.sep)
-                .at(1),
-              {
-                path: i.path
-                  .replace(`${distDir}${path.sep}`, '')
-                  .split(path.sep)
-                  .join('/'),
-                parent: i.originPath
-                  .replace(path.join(dir, 'app') + path.sep, '')
-                  .replace(path.sep + path.basename(i.originPath), '')
-                  .split(path.sep)
-                  .at(0),
-              },
-            ])
-          ),
-        }
+        const app_build_manifest = generateAppBuildManifest({
+          commands,
+          subcommands,
+          events,
+          dev,
+          dir,
+          distDir,
+        })
 
         await writeFile(
           path.join(distDir, 'app-build-manifest.json'),
@@ -725,58 +998,22 @@ export async function incrementalBuild({
 
     const { eventsDir, commandsDir, appDir } = dirs
 
-    // RegEx to catch specific files only in the `events`, `commands`, or `app` directory
-    const regex_commands = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
-    const regex_events = new RegExp(`^[\\w\\-\\.\\ ]+\\.(?:js|ts)$`, '')
-    const regex_app_event = new RegExp(`^event\\.(?:js|ts)$`, '')
-    const regex_app_command = new RegExp(`^command\\.(?:js|ts)$`, '')
-
     const filePaths = changedFiles
 
     // All the files, even if they haven't been modified
-    const files_all = {
-      commands: commandsDir
-        ? (await recursiveReadDir(commandsDir, regex_commands)).map((file) => ({
-            path: path.join(dir, 'commands', file),
-            type: 'command',
-          }))
-        : [],
-      events: eventsDir
-        ? (await recursiveReadDir(eventsDir, regex_events)).map((file) => ({
-            path: path.join(dir, 'events', file),
-            type: 'event',
-          }))
-        : [],
-      app: appDir
-        ? {
-            commands: (await recursiveReadDir(appDir, regex_app_command)).map(
-              (file) => ({
-                path: path.join(dir, 'app', file),
-                type: 'app__command',
-              })
-            ),
-            events: (await recursiveReadDir(appDir, regex_app_event)).map(
-              (file) => ({
-                path: path.join(dir, 'app', file),
-                type: 'app__event',
-              })
-            ),
-          }
-        : {
-            commands: [],
-            events: [],
-          },
-    }
+    const files_all = await getFiles(dir, dirs)
+
+    // Combines all files into one array
+    const allFiles: AllFiles = [
+      ...files_all.events,
+      ...files_all.commands,
+      ...files_all.app.subcommands,
+      ...files_all.app.commands,
+      ...files_all.app.events,
+    ]
 
     // Checks if there are any files  in the `events`, `commands`, or `app` directory
-    if (
-      [
-        ...files_all.events,
-        ...files_all.commands,
-        ...files_all.app.commands,
-        ...files_all.app.events,
-      ].length === 0
-    )
+    if (allFiles.length === 0)
       printAndExit(
         '\n> No files found in the `commands`, `events`, and `app` directory.',
         0
@@ -793,6 +1030,9 @@ export async function incrementalBuild({
           filePaths.includes(file.path)
         ),
         events: files_all.app.events.filter((file) =>
+          filePaths.includes(file.path)
+        ),
+        subcommands: files_all.app.subcommands.filter((file) =>
           filePaths.includes(file.path)
         ),
       },
@@ -1014,18 +1254,14 @@ export async function incrementalBuild({
     let chunks = await incrementalBuildSpan
       .traceChild('generate-changed-chunks')
       .traceAsyncFn(async () => {
-        const allChunks: (
-          | EventChunk
-          | CommandChunk
-          | AppCommandChunk
-          | AppEventChunk
-        )[] = []
+        const allChunks: AllChunks = []
 
         const all = [
-          ...files.events,
-          ...files.commands,
+          ...files.app.subcommands,
           ...files.app.commands,
           ...files.app.events,
+          ...files.commands,
+          ...files.events,
         ]
 
         for (let file of all) {
@@ -1038,6 +1274,7 @@ export async function incrementalBuild({
             path: file.path,
             code: code as string,
             type: file.type as any,
+            app: file.app,
           })
         }
         return allChunks
@@ -1144,14 +1381,14 @@ export async function incrementalBuild({
             events: [],
           }
 
-        const appCommandChunks = chunks.filter(
-          (chunk) => chunk.type === 'app__command'
-        )
+        const appCommandChunks: AppCommandChunk[] = chunks.filter(
+          (chunk) => chunk.type === 'command' && chunk.app
+        ) as any
         const filterAppCommands = []
 
-        const appEventChunks = chunks.filter(
-          (chunk) => chunk.type === 'app__event'
-        )
+        const appEventChunks: AppEventChunk[] = chunks.filter(
+          (chunk) => chunk.type === 'event' && chunk.app
+        ) as any
         const filterAppEvents = []
 
         for (let chunk of appCommandChunks) {
@@ -1166,7 +1403,7 @@ export async function incrementalBuild({
 
           if (depth > 2) {
             Log.warn(
-              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           } else if (depth === 2) {
             const parentDir = workingDir.split('/').at(0) as string
@@ -1175,7 +1412,7 @@ export async function incrementalBuild({
               existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
             if (!hasCommand)
               Log.warn(
-                `Subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+                `subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
               )
             else filterAppCommands.push(chunk)
           } else filterAppCommands.push(chunk)
@@ -1192,7 +1429,7 @@ export async function incrementalBuild({
 
           if (!DISCORD_EVENTS.includes(camel_case))
             Log.warn(
-              `Event at "${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+              `event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
           else filterAppEvents.push(chunk)
         }
@@ -1214,16 +1451,8 @@ export async function incrementalBuild({
           ? chunks.filter((chunk) => chunk.type === 'event')
           : []
         const filtered: {
-          commands: {
-            code: string
-            path: string
-            type: 'command'
-          }[]
-          events: {
-            code: string
-            path: string
-            type: 'event'
-          }[]
+          commands: CommandChunk[]
+          events: EventChunk[]
         } = {
           events: [],
           commands: [],
@@ -1240,7 +1469,7 @@ export async function incrementalBuild({
               .split(path.sep)
               .join('/')
             Log.warn(
-              `Command at ${workingFile} is too deep, it will be ignored.`
+              `command at ${workingFile} is too deep, it will be ignored.`
             )
           } else filtered.commands.push(chunk as any)
         }
@@ -1252,7 +1481,7 @@ export async function incrementalBuild({
               .replace(dir + path.sep, '')
               .split(path.sep)
               .join('/')
-            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+            Log.warn(`event at ${workingFile} is too deep, it will be ignored.`)
           } else filtered.commands.push(chunk as any)
         }
 
@@ -1267,6 +1496,58 @@ export async function incrementalBuild({
       ...filteredRegularChunks.events,
     ]
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const findConflictingChunks = await incrementalBuildSpan
+      .traceChild('check-for-conflicting-chunks')
+      .traceAsyncFn(async () => {
+        let conflict = false
+        for (let chunk of chunks) {
+          const name = normalizeChunkPath(
+            chunk.path,
+            dir,
+            chunk.type.includes('command') ? 'command' : 'event',
+            chunk.type.includes('app')
+          )
+          const type = chunk.type.includes('command') ? 'command' : 'event'
+          const filtered = chunks
+            .map((c) => ({
+              ...c,
+              name: normalizeChunkPath(
+                c.path,
+                dir,
+                c.type.includes('command') ? 'command' : 'event',
+                c.type.includes('app')
+              ),
+              refinedType: c.type.includes('command') ? 'command' : 'event',
+            }))
+            .filter((c) => c.name === name && c.refinedType === type)
+
+          if (filtered.length > 1) {
+            conflict = true
+            const message = filtered
+              .map(
+                (c) =>
+                  `  - ${c.path
+                    .replace(dir + path.sep, '')
+                    .split(path.sep)
+                    .join('/')}`
+              )
+              .join('\n')
+            Log.error(
+              `These files are conflicting each other for The \`${name}\` ${
+                type === 'command' ? 'slash ' + type : type
+              }:\n${message}`
+            )
+          }
+        }
+        if (conflict)
+          printAndExit(
+            `> Fix these conflicts before ${
+              dev ? 'updating' : 'building'
+            } your project again.`
+          )
+      })
+
     // Writes changed chunks to dist directory
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const writeChunks = await incrementalBuildSpan
@@ -1274,14 +1555,15 @@ export async function incrementalBuild({
       .traceAsyncFn(async () => {
         const information: {
           path: string
-          origin: 'event' | 'command' | 'app__command' | 'app__event'
+          app: boolean
+          origin: 'event' | 'command' | 'subcommand'
           originPath: string
         }[] = []
 
         for (let chunk of chunks) {
           let outDir = path.join(distDir, 'server')
 
-          if (chunk.type.startsWith('app__')) outDir = path.join(outDir, 'app')
+          if (chunk.app) outDir = path.join(outDir, 'app')
 
           const outFile = path.join(outDir, `chunk__${nanoid(5)}.js`)
 
@@ -1292,6 +1574,7 @@ export async function incrementalBuild({
             path: outFile,
             originPath: chunk.path,
             origin: chunk.type,
+            app: chunk.app,
           })
         }
         return information
@@ -1302,39 +1585,25 @@ export async function incrementalBuild({
     const buildManifest = await incrementalBuildSpan
       .traceChild('update-build-manifest')
       .traceAsyncFn(async () => {
-        const commands = writeChunks.filter((t) => t.origin === 'command')
-        const events = writeChunks.filter((t) => t.origin === 'event')
+        const commands = writeChunks.filter(
+          (t) => t.origin === 'command'
+        ) as any
+        const events = writeChunks.filter((t) => t.origin === 'event') as any
 
         const p = path.join(distDir, 'build-manifest.json')
 
         const old: BuildManifest = (await pathExists(p))
           ? JSON.parse(readFileSync(p, 'utf8'))
           : []
+        const over = generateBuildManifest({
+          distDir,
+          dev,
+          commands,
+          events,
+        })
         const build_manifest: BuildManifest = {
           ...old,
-          mode: dev ? 'development' : 'production',
-          commands: Object.fromEntries(
-            commands.map((i) => [
-              path
-                .basename(i.originPath)
-                ?.replace(path.extname(i.originPath), ''),
-              i.path
-                .replace(`${distDir}${path.sep}`, '')
-                .split(path.sep)
-                .join('/'),
-            ])
-          ),
-          events: Object.fromEntries(
-            events.map((i) => [
-              path
-                .basename(i.originPath)
-                ?.replace(path.extname(i.originPath), ''),
-              i.path
-                .replace(`${distDir}${path.sep}`, '')
-                .split(path.sep)
-                .join('/'),
-            ])
-          ),
+          ...over,
         }
 
         const no_changes =
@@ -1355,19 +1624,15 @@ export async function incrementalBuild({
     const appBuildManifest = await incrementalBuildSpan
       .traceChild('create-app-build-manifest')
       .traceAsyncFn(async () => {
-        const commands = writeChunks
-          .filter((chunk) => chunk.origin === 'app__command')
-          .filter(
-            (chunk) => getDepth(path.join(dir, 'app'), chunk.originPath) === 1
-          )
-        const subcommands = writeChunks
-          .filter((chunk) => chunk.origin === 'app__command')
-          .filter(
-            (chunk) => getDepth(path.join(dir, 'app'), chunk.originPath) === 2
-          )
+        const commands = writeChunks.filter(
+          (chunk) => chunk.origin === 'command' && chunk.app
+        ) as any
+        const subcommands = writeChunks.filter(
+          (chunk) => chunk.origin === 'subcommand' && chunk.app
+        ) as any
         const events = writeChunks.filter(
-          (chunk) => chunk.origin === 'app__event'
-        )
+          (chunk) => chunk.origin === 'event' && chunk.app
+        ) as any
 
         const p = path.join(distDir, 'app-build-manifest.json')
 
@@ -1375,59 +1640,18 @@ export async function incrementalBuild({
           ? JSON.parse(readFileSync(p, 'utf8'))
           : {}
 
+        const over = generateAppBuildManifest({
+          commands,
+          subcommands,
+          events,
+          distDir,
+          dev,
+          dir,
+        })
+
         const app_build_manifest: AppBuildManifest = {
           ...old,
-          mode: dev ? 'development' : 'production',
-          commands: Object.fromEntries(
-            commands.map((i) => [
-              camelCase(
-                i.originPath
-                  .replace(path.join(dir, 'app'), '')
-                  .replace(path.basename(i.originPath), '')
-                  .split(path.sep)
-                  .join('_')
-              ),
-              i.path
-                .replace(`${distDir}${path.sep}`, '')
-                .split(path.sep)
-                .join('/'),
-            ])
-          ),
-          events: Object.fromEntries(
-            events.map((i) => [
-              camelCase(
-                i.originPath
-                  .replace(path.join(dir, 'app'), '')
-                  .replace(path.basename(i.originPath), '')
-                  .split(path.sep)
-                  .join('_')
-              ),
-              i.path
-                .replace(`${distDir}${path.sep}`, '')
-                .split(path.sep)
-                .join('/'),
-            ])
-          ),
-          subcommands: Object.fromEntries(
-            subcommands.map((i) => [
-              i.originPath
-                .replace(path.join(dir, 'app') + path.sep, '')
-                .replace(path.sep + path.basename(i.originPath), '')
-                .split(path.sep)
-                .at(1),
-              {
-                path: i.path
-                  .replace(`${distDir}${path.sep}`, '')
-                  .split(path.sep)
-                  .join('/'),
-                parent: i.originPath
-                  .replace(path.join(dir, 'app') + path.sep, '')
-                  .replace(path.sep + path.basename(i.originPath), '')
-                  .split(path.sep)
-                  .at(0),
-              },
-            ])
-          ),
+          ...over,
         }
 
         const no_changes =
@@ -1601,7 +1825,10 @@ export async function attemptCacheHit({
 
         for (let file of allFiles) {
           const mod = requireFromString(
-            await compiler.transform(file.content.toString('utf8'))
+            await compiler.transform(
+              file.content.toString('utf8'),
+              file.path.endsWith('.ts')
+            )
           )
 
           if (file.origin.includes('command')) {
@@ -1622,8 +1849,11 @@ export async function attemptCacheHit({
               name: name,
               description: mod.description,
               dmPermission: mod.dmPermission,
+              defaultMemberPermission: mod.defaultMemberPermission,
               nsfw: mod.nsfw,
+              options: mod.options,
               fn: mod.default,
+              middleware: mod.middleware,
             }
             const result = validateCommandFile(info)
 
@@ -1634,6 +1864,9 @@ export async function attemptCacheHit({
                 '`nsfw` export': [] as unknown as string[],
                 '`description` export': [] as unknown as string[],
                 '`dmPermission` export': [] as unknown as string[],
+                '`options` export': [] as unknown as string[],
+                '`defaultMemberPermission` export': [] as unknown as string[],
+                '`middleware` export (function)': [] as unknown as string[],
               }
               for (let err of result.errors) {
                 pre_messages[err.origin].push(err.message)
@@ -1641,12 +1874,12 @@ export async function attemptCacheHit({
 
               const messages = Object.entries(pre_messages).map((msg) => [
                 msg[0],
-                msg[1].map((m) => `           - ${m}`).join('\n'),
+                msg[1].map((m) => `   - ${m}`).join('\n'),
               ])
 
               const message = messages
                 .filter((data) => data[1].length > 0)
-                .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+                .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
                 .join('\n')
 
               if (allFiles.indexOf(file) > 0) console.log()
@@ -1656,15 +1889,15 @@ export async function attemptCacheHit({
               )
             } else valid.push(file)
           } else if (file.origin.includes('event')) {
+            const inApp = file.origin.includes('app')
             const allDirs = path.dirname(file.path).replace(dir + path.sep, '')
             const snake_case = allDirs.replace(path.sep, '_')
-            const name = camelCase(snake_case)
+            const name = inApp
+              ? camelCase(snake_case)
+              : path.basename(file.path).replace(path.extname(file.path), '')
 
             const info = {
               name: name,
-              description: mod.description,
-              dmPermission: mod.dmPermission,
-              nsfw: mod.nsfw,
               fn: mod.default,
             }
             const result = validateEventFile(info)
@@ -1678,14 +1911,26 @@ export async function attemptCacheHit({
                 pre_messages[err.origin].push(err.message)
               }
 
+              const events = Object.entries(Events).map((ev) => ev[1])
+
               const messages = Object.entries(pre_messages).map((msg) => [
                 msg[0],
-                msg[1].map((m) => `          - ${m}`).join('\n'),
+                msg[1]
+                  .map((m) => {
+                    const similars = findSimilar(name, events)
+                    const similar = similars.length > 0 ? similars[0] : null
+                    return `  - ${
+                      m.startsWith('Invalid enum value.') && similar
+                        ? `Invalid value, did you mean \`${similar}\`?`
+                        : m
+                    }`
+                  })
+                  .join('\n'),
               ])
 
               const message = messages
                 .filter((data) => data[1].length > 0)
-                .map((data) => `        ${chalk.bold(data[0])}:\n${data[1]}`)
+                .map((data) => `${chalk.bold(data[0])}:\n${data[1]}`)
                 .join('\n')
 
               if (allFiles.indexOf(file) > 0) console.log()
@@ -1697,7 +1942,6 @@ export async function attemptCacheHit({
 
         if (valid.length !== allFiles.length) {
           Log.warn('The invalid files will be ignored.')
-          console.log()
         } else if (valid.length === 0)
           printAndExit(
             `> No valid files out of the all modified files. Fix these errors before ${
@@ -1746,18 +1990,8 @@ export async function attemptCacheHit({
 
           if (depth > 2) {
             Log.warn(
-              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
-          } else if (depth === 2) {
-            const parentDir = workingDir.split('/').at(0) as string
-            const hasCommand =
-              existsSync(path.join(dir, 'app', parentDir, 'command.js')) ||
-              existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
-            if (!hasCommand)
-              Log.warn(
-                `Subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
-              )
-            else filterAppCommands.push(file)
           } else filterAppCommands.push(file)
         }
 
@@ -1770,7 +2004,7 @@ export async function attemptCacheHit({
 
           if (!DISCORD_EVENTS.includes(camel_case))
             Log.warn(
-              `Event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+              `event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
           else filterAppEvents.push(file)
         }
@@ -1818,7 +2052,7 @@ export async function attemptCacheHit({
               .split(path.sep)
               .join('/')
             Log.warn(
-              `Command at ${workingFile} is too deep, it will be ignored.`
+              `command at ${workingFile} is too deep, it will be ignored.`
             )
           } else filtered.commands.push(file)
         }
@@ -1830,7 +2064,7 @@ export async function attemptCacheHit({
               .replace(dir + path.sep, '')
               .split(path.sep)
               .join('/')
-            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+            Log.warn(`event at ${workingFile} is too deep, it will be ignored.`)
           } else filtered.commands.push(file)
         }
 
@@ -1918,7 +2152,7 @@ export async function attemptCacheHit({
       })
     } else if (existingCaches.invalid.length < 1) {
       console.log()
-      Log.info('No invalid caches, nothing to update')
+      Log.info('no invalid caches, nothing to update')
     }
   })
 }
@@ -1992,7 +2226,7 @@ export default async function build(
         })
       // No cache but the server directory exists, this is a fallback as we cannot check the cache (Most likely when running `jujutsu build`)
       else if (changedFiles.length < 1) {
-        Log.info('No cache to read from, rebuilding project')
+        Log.info('no cache to read from, rebuilding project')
         return await coldStart({
           dir,
           distDir,
