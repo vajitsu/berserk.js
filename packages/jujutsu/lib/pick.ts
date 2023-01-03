@@ -21,12 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-let runtimeConfig: any
-
-export default () => {
-  return runtimeConfig
-}
-
-export function setConfig(configValue: any): void {
-  runtimeConfig = configValue
+export function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+  const newObj = {} as Pick<T, K>
+  for (const key of keys) {
+    newObj[key] = obj[key]
+  }
+  return newObj
 }

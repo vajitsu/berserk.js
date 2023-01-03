@@ -21,12 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-let runtimeConfig: any
-
-export default () => {
-  return runtimeConfig
-}
-
-export function setConfig(configValue: any): void {
-  runtimeConfig = configValue
+export function getOxfordCommaList(items: string[]): string {
+  return items
+    .map(
+      (v, index, { length }) =>
+        (index > 0
+          ? index === length - 1
+            ? length > 2
+              ? ', and '
+              : ' and '
+            : ', '
+          : '') + v
+    )
+    .join('')
 }
