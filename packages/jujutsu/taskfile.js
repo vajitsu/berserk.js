@@ -413,24 +413,6 @@ export async function compile_config_schema(task, opts) {
   await fs.rmdir(join(__dirname, 'dist/jujutsu-config-validate'))
 }
 
-const babelCorePackages = {
-  'code-frame': 'jujutsu/dist/compiled/babel/code-frame',
-  '@babel/generator': 'jujutsu/dist/compiled/babel/generator',
-  '@babel/traverse': 'jujutsu/dist/compiled/babel/traverse',
-  '@babel/types': 'jujutsu/dist/compiled/babel/types',
-  '@babel/core': 'jujutsu/dist/compiled/babel/core',
-  '@babel/parser': 'jujutsu/dist/compiled/babel/parser',
-  '@babel/core/lib/config': 'jujutsu/dist/compiled/babel/core-lib-config',
-  '@babel/core/lib/transformation/normalize-file':
-    'jujutsu/dist/compiled/babel/core-lib-normalize-config',
-  '@babel/core/lib/transformation/normalize-opts':
-    'jujutsu/dist/compiled/babel/core-lib-normalize-opts',
-  '@babel/core/lib/transformation/block-hoist-plugin':
-    'jujutsu/dist/compiled/babel/core-lib-block-hoisting-plugin',
-  '@babel/core/lib/transformation/plugin-pass':
-    'jujutsu/dist/compiled/babel/core-lib-plugin-pass',
-}
-
 export async function bin(task, opts) {
   await task
     .source(opts.src || 'bin/*')
