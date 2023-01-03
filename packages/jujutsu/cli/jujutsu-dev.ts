@@ -31,7 +31,7 @@ const jujutsuDev: cliCommand = async (argv) => {
     '--help': Boolean,
     '--debug': Boolean,
     '--quiet': Boolean,
-
+    '--force': Boolean,
     // Aliases
     '-h': '--help',
   }
@@ -57,6 +57,7 @@ const jujutsuDev: cliCommand = async (argv) => {
         --help, -h      Displays this message
         --debug         Log extra information (provided by Discord.js)
         --quiet         Disables logging of any kind
+        --force         Generates a fresh build
     `)
     process.exit(0)
   }
@@ -147,7 +148,7 @@ const jujutsuDev: cliCommand = async (argv) => {
 
   const conf = await loadConfig(PHASE_DEVELOPMENT_SERVER, dir)
 
-  return await build(dir, true).finally(async () => {
+  return await build(dir, args['--force'], true).finally(async () => {
     await flushAllTraces()
 
     startServer(
