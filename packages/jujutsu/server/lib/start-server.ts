@@ -11,6 +11,7 @@ import { JujutsuServerOptions } from '../jujutsu'
 import { existsSync, readFileSync } from 'jujutsu/dist/compiled/fs-extra'
 import json5 from 'jujutsu/dist/compiled/json5'
 import { printAndExit } from './utils'
+import chalk from 'jujutsu/dist/compiled/chalk'
 
 export default async function startServer(
   options: JujutsuServerOptions,
@@ -46,7 +47,7 @@ export default async function startServer(
   const events = new EventEmitter()
 
   events.once('ready', (client: Client) => {
-    Log.ready(`located at ${client.user?.tag}`)
+    Log.ready(`Located at ${chalk.bold(client.user?.tag as string)}`)
   })
 
   const instance = new bot(

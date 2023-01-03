@@ -12,6 +12,7 @@ const jujutsuBuild: cliCommand = (argv) => {
   const validArgs: arg.Spec = {
     // Types
     '--help': Boolean,
+    '--force': Boolean,
     // Aliases
     '-h': '--help',
   }
@@ -34,6 +35,9 @@ const jujutsuBuild: cliCommand = (argv) => {
         $ jujutsu build <dir>
       <dir> represents the directory of the Jujutsu.js application.
       If no directory is provided, the current directory will be used.
+      Options
+        --help, -h      Displays this message
+        --force         Generates a fresh build
     `,
       0
     )
@@ -45,7 +49,7 @@ const jujutsuBuild: cliCommand = (argv) => {
     printAndExit(`> No such directory exists as the project root: ${dir}`)
   }
 
-  return build(dir).catch((err) => {
+  return build(dir, args['--force'], false).catch((err) => {
     console.error('')
     if (
       isError(err) &&

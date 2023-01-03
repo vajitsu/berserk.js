@@ -1,4 +1,7 @@
-const { relative, join } = require('path')
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { relative, join, dirname } = require('path')
+// eslint-disable-next-line import/no-extraneous-dependencies
+const glob = require('glob')
 // eslint-disable-next-line import/no-extraneous-dependencies
 const fs = require('fs-extra')
 
@@ -15,6 +18,61 @@ export async function ncc_node_fetch(task, opts) {
     .source(opts.src || relative(__dirname, require.resolve('node-fetch')))
     .ncc({ packageName: 'node-fetch', externals })
     .target('compiled/node-fetch')
+}
+// eslint-disable-next-line camelcase
+externals['@babel/runtime'] = 'next/dist/compiled/@babel/runtime'
+export async function copy_babel_runtime(task, opts) {
+  const runtimeDir = dirname(require.resolve('@babel/runtime/package.json'))
+  const outputDir = join(__dirname, 'compiled/@babel/runtime')
+  const runtimeFiles = glob.sync('**/*', {
+    cwd: runtimeDir,
+    ignore: ['node_modules/**/*'],
+  })
+
+  for (const file of runtimeFiles) {
+    const inputPath = join(runtimeDir, file)
+    const outputPath = join(outputDir, file)
+
+    if (!fs.statSync(inputPath).isFile()) {
+      continue
+    }
+    let contents = fs.readFileSync(inputPath, 'utf8')
+
+    if (inputPath.endsWith('.js')) {
+      contents = contents
+        .replace(
+          'regenerator-runtime',
+          'jujutsu/dist/compiled/regenerator-runtime'
+        )
+        .replace('@babel/runtime', 'next/dist/compiled/@babel/runtime')
+    }
+
+    if (inputPath.endsWith('package.json')) {
+      contents = JSON.stringify({
+        ...JSON.parse(contents),
+        dependencies: {},
+      })
+    }
+
+    fs.mkdirSync(dirname(outputPath), { recursive: true })
+    fs.writeFileSync(outputPath, contents)
+  }
+}
+// eslint-disable-next-line camelcase
+externals['comment-json'] = 'jujutsu/dist/compiled/comment-json'
+export async function ncc_comment_json(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('comment-json')))
+    .ncc({ packageName: 'comment-json', externals })
+    .target('compiled/comment-json')
+}
+// eslint-disable-next-line camelcase
+externals['semver'] = 'jujutsu/dist/compiled/semver'
+export async function ncc_semver(task, opts) {
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('semver')))
+    .ncc({ packageName: 'semver', externals })
+    .target('compiled/semver')
 }
 // eslint-disable-next-line camelcase
 externals['zod'] = 'jujutsu/dist/compiled/zod'
@@ -180,14 +238,6 @@ export async function ncc_cross_spawn(task, opts) {
     .target('compiled/cross-spawn')
 }
 // eslint-disable-next-line camelcase
-externals['semver'] = 'jujutsu/dist/compiled/semver'
-export async function ncc_semver(task, opts) {
-  await task
-    .source(opts.src || relative(__dirname, require.resolve('semver')))
-    .ncc({ packageName: 'semver', externals })
-    .target('compiled/semver')
-}
-// eslint-disable-next-line camelcase
 externals['find-cache-dir'] = 'jujutsu/dist/compiled/find-cache-dir'
 export async function ncc_find_cache_dir(task, opts) {
   await task
@@ -202,6 +252,60 @@ export async function ncc_ws(task, opts) {
     .source(opts.src || relative(__dirname, require.resolve('ws')))
     .ncc({ packageName: 'ws', externals })
     .target('compiled/ws')
+}
+// eslint-disable-next-line camelcase
+externals['jest-worker'] = 'jujutsu/dist/compiled/jest-worker'
+export async function ncc_jest_worker(task, opts) {
+  await fs.remove(join(__dirname, 'compiled/jest-worker'))
+  await fs.ensureDir(join(__dirname, 'compiled/jest-worker/workers'))
+
+  const workers = ['processChild.js', 'threadChild.js']
+
+  await task
+    .source(opts.src || relative(__dirname, require.resolve('jest-worker')))
+    .ncc({ packageName: 'jest-worker', externals })
+    .target('compiled/jest-worker')
+
+  for (const worker of workers) {
+    const content = await fs.readFile(
+      join(
+        dirname(require.resolve('jest-worker/package.json')),
+        'build/workers',
+        worker
+      ),
+      'utf8'
+    )
+    await fs.writeFile(
+      join(
+        dirname(require.resolve('jest-worker/package.json')),
+        'build/workers',
+        worker + '.tmp.js'
+      ),
+      content.replace(/require\(file\)/g, '__non_webpack_require__(file)')
+    )
+    await task
+      .source(
+        opts.src ||
+          relative(
+            __dirname,
+            join(
+              dirname(require.resolve('jest-worker/package.json')),
+              'build/workers',
+              worker + '.tmp.js'
+            )
+          )
+      )
+      .ncc({ externals })
+      .target('compiled/jest-worker/out')
+
+    await fs.move(
+      join(__dirname, 'compiled/jest-worker/out', worker + '.tmp.js'),
+      join(__dirname, 'compiled/jest-worker', worker),
+      { overwrite: true }
+    )
+  }
+  await fs.remove(join(__dirname, 'compiled/jest-worker/workers'))
+  await fs.remove(join(__dirname, 'compiled/jest-worker/out'))
 }
 // eslint-disable-next-line camelcase
 externals['find-up'] = 'jujutsu/dist/compiled/find-up'
@@ -236,6 +340,15 @@ export async function ncc_ora(task, opts) {
     .source(opts.src || relative(__dirname, require.resolve('ora')))
     .ncc({ packageName: 'ora', externals })
     .target('compiled/ora')
+}
+externals['code-frame'] = 'jujutsu/dist/compiled/babel/code-frame'
+export async function ncc_babel_codeframe(task, opts) {
+  await task
+    .source(
+      opts.src || relative(__dirname, require.resolve('@babel/code-frame'))
+    )
+    .ncc({ packageName: '@babel/code-frame', externals })
+    .target('compiled/babel/code-frame')
 }
 // eslint-disable-next-line camelcase
 export async function ncc_segment_ajv_human_errors(task, opts) {
@@ -442,15 +555,18 @@ export async function ncc(task, opts) {
         'ncc_fs_extra',
         'ncc_ora',
         'ncc_semver',
+        'ncc_comment_json',
         'ncc_segment_ajv_human_errors',
         'ncc_napirs_triples',
         'ncc_title',
         'ncc_nft',
         'ncc_ws',
         'ncc_nanoid',
+        'ncc_babel_codeframe',
       ],
       opts
     )
+  await task.serial(['ncc_jest_worker'], opts)
 }
 
 export async function compile(task, opts) {

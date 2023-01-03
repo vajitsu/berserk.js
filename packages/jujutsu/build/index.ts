@@ -10,7 +10,7 @@ import {
   rmSync,
   existsSync,
 } from 'jujutsu/dist/compiled/fs-extra'
-import { trace, flushAllTraces, setGlobal } from '../trace'
+import { trace, flushAllTraces, setGlobal, Span } from '../trace'
 import {
   DISCORD_EVENTS,
   PHASE_DEVELOPMENT_SERVER,
@@ -39,8 +39,10 @@ import { Events } from 'jujutsu/dist/compiled/discord.js'
 import json5 from 'jujutsu/dist/compiled/json5'
 import { printAndExit } from '../lib/utils'
 import chalk from '../lib/chalk'
-// @ts-ignore
+import isFileEmpty from '../lib/is-file-empty'
+import { Worker as JestWorker } from 'jujutsu/dist/compiled/jest-worker'
 import leven from './leven'
+import createSpinner from './spinner'
 
 interface BuildManifest {
   mode: 'production' | 'development'
@@ -104,6 +106,67 @@ type AllChunks = (
   | EventChunk
   | SubCommandChunk
 )[]
+
+/**
+ * typescript will be loaded in "next/lib/verifyTypeScriptSetup" and
+ * then passed to "next/lib/typescript/runTypeCheck" as a parameter.
+ *
+ * Since it is impossible to pass a function from main thread to a worker,
+ * instead of running "next/lib/typescript/runTypeCheck" in a worker,
+ * we will run entire "next/lib/verifyTypeScriptSetup" in a worker instead.
+ */
+function verifyTypeScriptSetup(
+  dir: string,
+  distDir: string,
+  intentDirs: string[],
+  typeCheckPreflight: boolean,
+  tsconfigPath: string,
+  cacheDir: string | undefined,
+  numWorkers: number | undefined,
+  enableWorkerThreads: boolean | undefined,
+  isAppDirEnabled: boolean
+) {
+  const typeCheckWorker = new JestWorker(
+    require.resolve('../lib/verify-typescript-setup'),
+    {
+      numWorkers,
+      enableWorkerThreads,
+      maxRetries: 0,
+    }
+  ) as JestWorker & {
+    verifyTypeScriptSetup: typeof import('../lib/verify-typescript-setup').verifyTypeScriptSetup
+  }
+
+  typeCheckWorker.getStdout().pipe(process.stdout)
+  typeCheckWorker.getStderr().pipe(process.stderr)
+
+  return typeCheckWorker
+    .verifyTypeScriptSetup({
+      dir,
+      distDir,
+      intentDirs,
+      typeCheckPreflight,
+      tsconfigPath,
+      cacheDir,
+      isAppDirEnabled,
+    })
+    .then((result) => {
+      typeCheckWorker.end()
+      return result
+    })
+}
+
+function benchmark(start: [number, number], dev = false) {
+  // Benchmarking
+  const end = process.hrtime(start)
+  const seconds = end[0] + end[1] / 1000000000
+  const template = `in ${seconds.toFixed(4)}s`
+
+  console.log()
+
+  if (dev) Log.event(`updated in ${template}`)
+  else Log.info(`done in ${template}`)
+}
 
 function findSimilar(word: string, candidates: string[], options = {}) {
   let { maxScore = 3 } = options as any
@@ -494,8 +557,8 @@ function generateAppBuildManifest({
       commands.map((i) => [
         camelCase(
           i.originPath
-            .replace(path.join(dir, 'app'), '')
-            .replace(path.basename(i.originPath), '')
+            .replace(path.join(dir, 'app') + path.sep, '')
+            .replace(path.sep + path.basename(i.originPath), '')
             .split(path.sep)
             .join('_')
         ),
@@ -506,8 +569,8 @@ function generateAppBuildManifest({
       events.map((i) => [
         camelCase(
           i.originPath
-            .replace(path.join(dir, 'app'), '')
-            .replace(path.basename(i.originPath), '')
+            .replace(path.join(dir, 'app') + path.sep, '')
+            .replace(path.sep + path.basename(i.originPath), '')
             .split(path.sep)
             .join('_')
         ),
@@ -536,6 +599,72 @@ function generateAppBuildManifest({
     ),
   }
   return app_build_manifest
+}
+
+async function startTypeChecking({
+  config,
+  span,
+  dirs,
+  dir,
+  cacheDir,
+  isAppDirEnabled,
+}: {
+  config: JujutsuConfigComplete
+  span: Span
+  dirs: (string | undefined)[]
+  dir: string
+  cacheDir: string
+  isAppDirEnabled: boolean
+}) {
+  const ignoreTypeScriptErrors = Boolean(config.typescript.ignoreBuildErrors)
+  if (ignoreTypeScriptErrors) {
+    Log.info('Skipping validation of types')
+  }
+  let typeCheckingSpinnerPrefixText: string | undefined
+  let typeCheckingSpinner: ReturnType<typeof createSpinner> | undefined
+
+  if (!ignoreTypeScriptErrors) {
+    typeCheckingSpinnerPrefixText = 'Checking validity of types'
+  }
+
+  // we will not create a spinner if both ignoreTypeScriptErrors and ignoreESLint are
+  // enabled, but we will still verifying project's tsconfig and dependencies.
+  if (typeCheckingSpinnerPrefixText) {
+    typeCheckingSpinner = createSpinner({
+      prefixText: `${Log.prefixes.info} ${typeCheckingSpinnerPrefixText}`,
+    })
+  }
+
+  const typeCheckStart = process.hrtime()
+
+  try {
+    await Promise.all([
+      span.traceChild('verify-typescript-setup').traceAsyncFn(() =>
+        verifyTypeScriptSetup(
+          dir,
+          config.distDir,
+          dirs.filter(Boolean) as string[],
+          !ignoreTypeScriptErrors,
+          config.typescript.tsconfigPath,
+          cacheDir,
+          1,
+          false,
+          isAppDirEnabled
+        ).then((resolved) => {
+          const checkEnd = process.hrtime(typeCheckStart)
+          return [resolved, checkEnd] as const
+        })
+      ),
+    ])
+    typeCheckingSpinner?.stopAndPersist()
+  } catch (err) {
+    // prevent showing jest-worker internal error as it
+    // isn't helpful for users and clutters output
+    if (isError(err) && err.message === 'Call retries were exceeded') {
+      process.exit(1)
+    }
+    throw err
+  }
 }
 
 export async function coldStart({
@@ -574,7 +703,7 @@ export async function coldStart({
 
     // Remove everything except the cache (edge case: if there is a cache folder, it would default to inc. build isntead of cold start)
     if (config.cleanDistDir) {
-      await recursiveDelete(distDir, /^cache/)
+      await recursiveDelete(distDir)
     }
 
     // Create custom or default dist directory
@@ -666,7 +795,9 @@ export async function coldStart({
           }
 
         const appCommandChunks: AppCommandChunk[] = chunks.filter(
-          (chunk) => chunk.type === 'command' && chunk.app
+          (chunk) =>
+            (chunk.type === 'command' || chunk.type === 'subcommand') &&
+            chunk.app
         ) as any
         const filterAppCommands = []
 
@@ -687,7 +818,7 @@ export async function coldStart({
 
           if (depth > 2) {
             Log.warn(
-              `command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `Command at \`app/${workingDir}/command${ending}\` is too deep, it will be ignored.`
             )
           } else if (depth === 2) {
             const parentDir = workingDir.split('/').at(0) as string
@@ -696,9 +827,15 @@ export async function coldStart({
               existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
             if (!hasCommand)
               Log.warn(
-                `subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+                `Subcommand at \`app/${workingDir}/command${ending}\` does not have a parent command, it will be ignored.`
               )
             else filterAppCommands.push(chunk)
+          } else if (isFileEmpty(chunk.path, true)) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`\`${workingFile}\` has no contents, it will be ignored.`)
           } else filterAppCommands.push(chunk)
         }
 
@@ -715,7 +852,13 @@ export async function coldStart({
             Log.warn(
               `event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
-          else filterAppEvents.push(chunk)
+          else if (isFileEmpty(chunk.path, true)) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`\`${workingFile}\` has no contents, it will be ignored.`)
+          } else filterAppEvents.push(chunk)
         }
 
         return {
@@ -753,8 +896,14 @@ export async function coldStart({
               .split(path.sep)
               .join('/')
             Log.warn(
-              `command at ${workingFile} is too deep, it will be ignored.`
+              `Command at ${workingFile} is too deep, it will be ignored.`
             )
+          } else if (isFileEmpty(chunk.path, true)) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`\`${workingFile}\` has no contents, it will be ignored.`)
           } else filtered.commands.push(chunk as any)
         }
 
@@ -765,7 +914,13 @@ export async function coldStart({
               .replace(dir + path.sep, '')
               .split(path.sep)
               .join('/')
-            Log.warn(`event at ${workingFile} is too deep, it will be ignored.`)
+            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+          } else if (isFileEmpty(chunk.path, true)) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`\`${workingFile}\` has no contents, it will be ignored.`)
           } else filtered.commands.push(chunk as any)
         }
 
@@ -778,16 +933,17 @@ export async function coldStart({
       ...filteredAppChunks.events,
       ...filteredRegularChunks.commands,
       ...filteredRegularChunks.events,
-      ...chunks.filter((chunk) => chunk.type === 'subcommand'),
     ]
 
     // Ensures that there are files that remained after validation and filtration
-    if (chunks.length === 0)
+    if (chunks.length === 0) {
+      console.log()
       printAndExit(
         `> There are no remaining files that are valid, fix the errors associated with each file before ${
           dev ? 'updating' : 'building'
         } your project again.`
       )
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const findConflictingChunks = await coldStartSpan
@@ -873,9 +1029,11 @@ export async function coldStart({
       .traceChild('create-build-manifest')
       .traceAsyncFn(async () => {
         const commands = writeChunks.filter(
-          (t) => t.origin === 'command'
+          (t) => t.origin === 'command' && !t.app
         ) as any
-        const events = writeChunks.filter((t) => t.origin === 'event') as any
+        const events = writeChunks.filter(
+          (t) => t.origin === 'event' && !t.app
+        ) as any
 
         const build_manifest = generateBuildManifest({
           commands,
@@ -948,15 +1106,7 @@ export async function coldStart({
         }
       })
 
-    // Benchmarking
-    const end = process.hrtime(start)
-    const seconds = end[0] + end[1] / 1000000000
-    const template = `in ${seconds.toFixed(4)}s`
-
-    console.log()
-
-    if (dev) Log.event(`updated in ${template}`)
-    else Log.info(`done in ${template}`)
+    benchmark(start, dev)
   })
 }
 
@@ -1382,7 +1532,9 @@ export async function incrementalBuild({
           }
 
         const appCommandChunks: AppCommandChunk[] = chunks.filter(
-          (chunk) => chunk.type === 'command' && chunk.app
+          (chunk) =>
+            (chunk.type === 'command' || chunk.type === 'subcommand') &&
+            chunk.app
         ) as any
         const filterAppCommands = []
 
@@ -1403,7 +1555,7 @@ export async function incrementalBuild({
 
           if (depth > 2) {
             Log.warn(
-              `command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           } else if (depth === 2) {
             const parentDir = workingDir.split('/').at(0) as string
@@ -1412,9 +1564,15 @@ export async function incrementalBuild({
               existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
             if (!hasCommand)
               Log.warn(
-                `subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
+                `Subcommand at "app/${workingDir}/command${ending}" does not have a parent command, it will be ignored.`
               )
             else filterAppCommands.push(chunk)
+          } else if (isFileEmpty(chunk.path, true)) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`\`${workingFile}\` has no contents, it will be ignored.`)
           } else filterAppCommands.push(chunk)
         }
 
@@ -1429,9 +1587,15 @@ export async function incrementalBuild({
 
           if (!DISCORD_EVENTS.includes(camel_case))
             Log.warn(
-              `event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+              `Event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
-          else filterAppEvents.push(chunk)
+          else if (isFileEmpty(chunk.path, true)) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`\`${workingFile}\` has no contents, it will be ignored.`)
+          } else filterAppEvents.push(chunk)
         }
 
         return {
@@ -1469,8 +1633,28 @@ export async function incrementalBuild({
               .split(path.sep)
               .join('/')
             Log.warn(
-              `command at ${workingFile} is too deep, it will be ignored.`
+              `Command at \`${workingFile}\` is too deep, it will be ignored.`
             )
+          } else if (depth === 2) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            const parentDir = path.dirname(workingFile).at(-1) as string
+            const hasCommand =
+              existsSync(path.join(dir, 'app', parentDir, 'command.js')) ||
+              existsSync(path.join(dir, 'app', parentDir, 'command.ts'))
+            if (!hasCommand)
+              Log.warn(
+                `Subcommand at \`${workingFile}\` does not have a parent command, it will be ignored.`
+              )
+            else filtered.commands.push(chunk as any)
+          } else if (isFileEmpty(chunk.path, true)) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`\`${workingFile}\` has no contents, it will be ignored.`)
           } else filtered.commands.push(chunk as any)
         }
 
@@ -1481,7 +1665,13 @@ export async function incrementalBuild({
               .replace(dir + path.sep, '')
               .split(path.sep)
               .join('/')
-            Log.warn(`event at ${workingFile} is too deep, it will be ignored.`)
+            Log.warn(`Event at ${workingFile} is too deep, it will be ignored.`)
+          } else if (isFileEmpty(chunk.path, true)) {
+            const workingFile = chunk.path
+              .replace(dir + path.sep, '')
+              .split(path.sep)
+              .join('/')
+            Log.warn(`\`${workingFile}\` has no contents, it will be ignored.`)
           } else filtered.commands.push(chunk as any)
         }
 
@@ -1493,7 +1683,6 @@ export async function incrementalBuild({
       ...filteredAppChunks.commands,
       ...filteredAppChunks.events,
       ...filteredRegularChunks.commands,
-      ...filteredRegularChunks.events,
     ]
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1586,9 +1775,11 @@ export async function incrementalBuild({
       .traceChild('update-build-manifest')
       .traceAsyncFn(async () => {
         const commands = writeChunks.filter(
-          (t) => t.origin === 'command'
+          (t) => t.origin === 'command' && !t.app
         ) as any
-        const events = writeChunks.filter((t) => t.origin === 'event') as any
+        const events = writeChunks.filter(
+          (t) => t.origin === 'event' && !t.app
+        ) as any
 
         const p = path.join(distDir, 'build-manifest.json')
 
@@ -1693,15 +1884,7 @@ export async function incrementalBuild({
         }
       })
 
-    // Benchmarking
-    const end = process.hrtime(start)
-    const seconds = end[0] + end[1] / 1000000000
-    const template = `in ${seconds.toFixed(4)}s`
-
-    console.log()
-
-    if (dev) Log.event(`updated in ${template}`)
-    else Log.info(`done in ${template}`)
+    benchmark(start, dev)
   })
 }
 
@@ -1990,7 +2173,7 @@ export async function attemptCacheHit({
 
           if (depth > 2) {
             Log.warn(
-              `command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
+              `Command at "app/${workingDir}/command${ending}" is too deep, it will be ignored.`
             )
           } else filterAppCommands.push(file)
         }
@@ -2004,7 +2187,7 @@ export async function attemptCacheHit({
 
           if (!DISCORD_EVENTS.includes(camel_case))
             Log.warn(
-              `event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
+              `Event at "app/${workingDir}/event${ending}" is not a valid client event, it will be ignored.`
             )
           else filterAppEvents.push(file)
         }
@@ -2052,7 +2235,7 @@ export async function attemptCacheHit({
               .split(path.sep)
               .join('/')
             Log.warn(
-              `command at ${workingFile} is too deep, it will be ignored.`
+              `Command at \`${workingFile}\` is too deep, it will be ignored.`
             )
           } else filtered.commands.push(file)
         }
@@ -2064,7 +2247,9 @@ export async function attemptCacheHit({
               .replace(dir + path.sep, '')
               .split(path.sep)
               .join('/')
-            Log.warn(`event at ${workingFile} is too deep, it will be ignored.`)
+            Log.warn(
+              `Event at \`${workingFile}\` is too deep, it will be ignored.`
+            )
           } else filtered.commands.push(file)
         }
 
@@ -2159,6 +2344,7 @@ export async function attemptCacheHit({
 
 export default async function build(
   dir: string,
+  force = false,
   dev = false,
   changedFiles: string[] = []
 ) {
@@ -2193,49 +2379,68 @@ export default async function build(
       // Find directories that will be used in children processes
       const dirs = findDirs(dir, isAppDirEnabled)
 
-      // Called when a user changes their codebase while runnig the `jujutsu dev` command in the CLI
-      if (serverDistExists && changedFiles.length > 0)
-        return await incrementalBuild({
-          changedFiles,
-          parentId: jujutsuBuildSpan.id,
-          dir,
-          distDir,
-          config,
-          dev,
-          dirs,
-        })
-      // Called when the `server` directory does not exist, this user has not built their project yet
-      else if (!serverDistExists)
-        return await coldStart({
-          dir,
-          distDir,
-          config,
-          parentId: jujutsuBuildSpan.id,
-          dev,
-          dirs,
-        })
-      // This user is most likely running `jujutsu build` or the initial build check when running `jujutsu dev` (already built their project formerly)
-      else if (changedFiles.length < 1 && cacheDirExists)
-        return await attemptCacheHit({
-          dir,
-          distDir,
-          parentId: jujutsuBuildSpan.id,
-          config,
-          dev,
-          dirs,
-        })
-      // No cache but the server directory exists, this is a fallback as we cannot check the cache (Most likely when running `jujutsu build`)
-      else if (changedFiles.length < 1) {
-        Log.info('no cache to read from, rebuilding project')
-        return await coldStart({
-          dir,
-          distDir,
-          config,
-          parentId: jujutsuBuildSpan.id,
-          dev,
-          dirs,
-        })
-      }
+      startTypeChecking({
+        config,
+        span: jujutsuBuildSpan,
+        cacheDir: path.join(distDir, 'cache'),
+        dirs: [dirs.appDir, dirs.eventsDir, dirs.commandsDir],
+        dir,
+        isAppDirEnabled,
+      }).then(() => {
+        // Developer opted-in to a 'cold start'
+        if (force)
+          coldStart({
+            dir,
+            distDir,
+            config,
+            parentId: jujutsuBuildSpan.id,
+            dev,
+            dirs,
+          })
+        // Called when a user changes their codebase while runnig the `jujutsu dev` command in the CLI
+        else if (serverDistExists && changedFiles.length > 0)
+          incrementalBuild({
+            changedFiles,
+            parentId: jujutsuBuildSpan.id,
+            dir,
+            distDir,
+            config,
+            dev,
+            dirs,
+          })
+        // Called when the `server` directory does not exist, this user has not built their project yet
+        else if (!serverDistExists)
+          coldStart({
+            dir,
+            distDir,
+            config,
+            parentId: jujutsuBuildSpan.id,
+            dev,
+            dirs,
+          })
+        // This user is most likely running `jujutsu build` or the initial build check when running `jujutsu dev` (already built their project formerly)
+        else if (changedFiles.length < 1 && cacheDirExists)
+          attemptCacheHit({
+            dir,
+            distDir,
+            parentId: jujutsuBuildSpan.id,
+            config,
+            dev,
+            dirs,
+          })
+        // No cache but the server directory exists, this is a fallback as we cannot check the cache (Most likely when running `jujutsu build`)
+        else if (changedFiles.length < 1) {
+          Log.info('no cache to read from, rebuilding project')
+          coldStart({
+            dir,
+            distDir,
+            config,
+            parentId: jujutsuBuildSpan.id,
+            dev,
+            dirs,
+          })
+        }
+      })
     })
   } finally {
     flushAllTraces()
