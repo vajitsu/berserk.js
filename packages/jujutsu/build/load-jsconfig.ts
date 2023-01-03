@@ -24,7 +24,7 @@ SOFTWARE.
 import path from 'path'
 import { fileExists } from '../lib/file-exists'
 import { JujutsuConfigComplete } from '../server/config-shared'
-import { getTypeScriptConfiguration } from '../lib/typescript/get-configuration'
+import { getTypeScriptConfiguration } from '../lib/typescript/get-typescript-configuration'
 import * as Log from './output/log'
 import { readFileSync } from 'fs'
 import isError from '../lib/is-error'

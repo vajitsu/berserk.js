@@ -5,6 +5,10 @@ declare module 'jujutsu/dist/compiled/node-fetch' {
   export * from 'node-fetch'
 }
 
+declare module 'jujutsu/dist/compiled/babel/code-frame' {
+  export * from '@babel/code-frame'
+}
+
 declare module 'jujutsu/dist/compiled/fflate' {
   import m from 'fflate'
   export = m
