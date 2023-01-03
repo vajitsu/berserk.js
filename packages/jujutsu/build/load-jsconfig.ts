@@ -48,6 +48,7 @@ function parseJsonFile(filePath: string) {
     if (!isError(err)) throw err
     const {
       codeFrameColumns,
+      // eslint-disable-next-line import/no-extraneous-dependencies
     } = require('jujutsu/dist/compiled/babel/code-frame')
     const codeFrame = codeFrameColumns(
       String(contents),
