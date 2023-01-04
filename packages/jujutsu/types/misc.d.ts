@@ -9,6 +9,10 @@ declare module 'jujutsu/dist/compiled/babel/code-frame' {
   export * from '@babel/code-frame'
 }
 
+declare module 'jujutsu/dist/compiled/discord.js/builders' {
+  export * from '@discordjs/builders'
+}
+
 declare module 'jujutsu/dist/compiled/fflate' {
   import m from 'fflate'
   export = m
