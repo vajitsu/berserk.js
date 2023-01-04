@@ -9,10 +9,24 @@ export const SWC_CONFIG = {
   jsc: {
     loose: true,
     parser: {
-      syntax: 'typescript',
+      syntax: 'ecmascript',
     },
     target: 'es5',
     externalHelpers: true,
+    experimental: {
+      keepImportAssertions: true,
+      optimizeHygiene: true,
+      plugins: [
+        [
+          'transform-imports',
+          {
+            jujutsu: {
+              transform: 'jujutsu/dist/{{member}}',
+            },
+          },
+        ],
+      ],
+    },
     minify: {
       compress: {
         arguments: false,
@@ -59,7 +73,7 @@ export const SWC_CONFIG = {
         unused: true,
         const_to_let: true,
         pristine_globals: true,
-      },
+      } as any,
       mangle: {
         toplevel: false,
         keep_classnames: false,
@@ -73,6 +87,10 @@ export const SWC_CONFIG = {
   module: {
     type: 'commonjs',
     noInterop: false,
+    importInterop: 'swc',
+    ignoreDynamic: true,
+    lazy: true,
+    preserveImportMeta: false,
   },
   isModule: true,
 }

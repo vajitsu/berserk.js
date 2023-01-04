@@ -2,7 +2,7 @@ exports.id = 82;
 exports.ids = [82];
 exports.modules = {
 
-/***/ 48783:
+/***/ 8783:
 /***/ ((__unused_webpack_module, exports) => {
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
@@ -94,7 +94,7 @@ exports.c = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 /***/ }),
 
-/***/ 15082:
+/***/ 8633:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -113,7 +113,7 @@ __webpack_require__.d(__webpack_exports__, {
 });
 
 // EXTERNAL MODULE: external "node:fs"
-var external_node_fs_ = __webpack_require__(87561);
+var external_node_fs_ = __webpack_require__(7561);
 ;// CONCATENATED MODULE: ../../node_modules/.pnpm/strtok3@7.0.0/node_modules/strtok3/lib/FsPromise.js
 /**
  * Module convert fs functions to promise based functions
@@ -344,7 +344,7 @@ class StreamReader {
 
 
 // EXTERNAL MODULE: external "node:buffer"
-var external_node_buffer_ = __webpack_require__(72254);
+var external_node_buffer_ = __webpack_require__(2254);
 ;// CONCATENATED MODULE: ../../node_modules/.pnpm/strtok3@7.0.0/node_modules/strtok3/lib/AbstractTokenizer.js
 
 
@@ -697,7 +697,7 @@ async function lib_fromStream(stream, fileInfo) {
 }
 
 // EXTERNAL MODULE: ../../node_modules/.pnpm/ieee754@1.2.1/node_modules/ieee754/index.js
-var ieee754 = __webpack_require__(48783);
+var ieee754 = __webpack_require__(8783);
 ;// CONCATENATED MODULE: ../../node_modules/.pnpm/token-types@5.0.1/node_modules/token-types/lib/index.js
 
 
@@ -2968,7 +2968,7 @@ class FileTypeParser {
 }
 
 async function fileTypeStream(readableStream, {sampleSize = minimumBytes} = {}) {
-	const {default: stream} = await Promise.resolve(/* import() */).then(__webpack_require__.t.bind(__webpack_require__, 84492, 19));
+	const {default: stream} = await Promise.resolve(/* import() */).then(__webpack_require__.t.bind(__webpack_require__, 4492, 19));
 
 	return new Promise((resolve, reject) => {
 		readableStream.on('error', reject);

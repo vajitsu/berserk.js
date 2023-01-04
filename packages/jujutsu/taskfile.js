@@ -254,6 +254,16 @@ export async function ncc_ws(task, opts) {
     .target('compiled/ws')
 }
 // eslint-disable-next-line camelcase
+externals['@discordjs/builders'] = 'jujutsu/dist/compiled/discord.js/builders'
+export async function ncc_discordjs_builders(task, opts) {
+  await task
+    .source(
+      opts.src || relative(__dirname, require.resolve('@discordjs/builders'))
+    )
+    .ncc({ packageName: 'ws', externals })
+    .target('compiled/discord.js/builders')
+}
+// eslint-disable-next-line camelcase
 externals['jest-worker'] = 'jujutsu/dist/compiled/jest-worker'
 export async function ncc_jest_worker(task, opts) {
   await fs.remove(join(__dirname, 'compiled/jest-worker'))
@@ -563,6 +573,7 @@ export async function ncc(task, opts) {
         'ncc_ws',
         'ncc_nanoid',
         'ncc_babel_codeframe',
+        'ncc_discordjs_builders',
       ],
       opts
     )
