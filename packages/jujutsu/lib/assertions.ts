@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import {
   ButtonStyle,
   ChannelType,
@@ -14,7 +15,6 @@ import {
   ApplicationCommandOptionBase,
 } from 'jujutsu/dist/compiled/discord.js/builders'
 
-/* eslint-disable import/no-extraneous-dependencies */
 import { isSafeInteger } from 'jujutsu/dist/compiled/lodash'
 import { z } from 'jujutsu/dist/compiled/zod'
 
