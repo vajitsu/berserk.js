@@ -51,7 +51,8 @@ export default function Hello({ interaction }) {
 ```
 
 > ESM supported out of the box without having enabling it (dont worry, CommonJS is still supported)
-> Running the Development Server
+
+## Running the Development Server
 
 1. Run `npm run dev` to start the development server.
 2. Visit a Discord channel that the bot has access to.
