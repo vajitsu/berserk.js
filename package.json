@@ -8,7 +8,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "create-jujutsu-app": "node --trace-deprecation --enable-source-maps packages/create-jujutsu-app/dist/index.js",
+    "create-jujutsu": "node --trace-deprecation --enable-source-maps packages/create-jujutsu/dist/index.js",
     "jujutsu": "node --trace-deprecation --enable-source-maps packages/jujutsu/dist/bin/jujutsu",
     "jujutsu-release": "node --trace-deprecation --enable-source-maps packages/jujutsu-release/bin/release",
     "lint-typescript": "turbo run typescript",
