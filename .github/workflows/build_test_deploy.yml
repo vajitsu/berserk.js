@@ -26,6 +26,7 @@ jobs:
       discordChange: ${{ steps.discord-change.outputs.DISCORD_CHANGE }}
       turboToken: ${{ steps.turbo-token.outputs.TURBO_TOKEN }}
       weekNum: ${{ steps.get-week.outputs.WEEK }}
+      currentBranch: ${{ steps.current-branch.outputs.CURRENT_BRANCH }}
     steps:
       - name: Setup node
         uses: actions/setup-node@v3
@@ -42,11 +43,18 @@ jobs:
       - name: tune linux network
         run: sudo ethtool -K eth0 tx off rx off
 
-      - name: Check non-docs only change
+      - name: Check docs change
         run: echo "::set-output name=DOCS_CHANGE::$(node scripts/run-for-change.js --type docs --exec echo 'yup')"
         id: docs-change
 
       - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: current-branch
+
+      - run: echo ${{steps.current-branch.outputs.CURRENT_BRANCH}}
 
       - name: Check @jujutsu/discord change
         run: echo "::set-output name=DISCORD_CHANGE::$(node scripts/run-for-change.js --type discord --exec echo 'yup')"
@@ -114,7 +122,8 @@ jobs:
       - run: pnpm lint
 
   deployWebsite:
-    if: ${{ needs.build.outputs.docsChange == 'yup' }}
+    name: Deploy website
+    if: ${{ needs.build.outputs.docsChange == 'yup' && needs.build.outputs.currentBranch == 'canary' }}
     runs-on: ubuntu-latest
     needs: lint
     env:
