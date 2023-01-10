@@ -21,7 +21,7 @@ Now that a Discord application has been initialized, we need to create a Discord
 
 The token should now appear under the username input area.
 
-## Implementing Discord Token
+## Implementing Your Discord Token
 
 If you have already created a `jujutsu.config.js`, add the token to the `discord.token` property.
 
@@ -34,6 +34,7 @@ const jujutsuConfig = {
     token: 'your-token-goes-here',
   },
 }
+
 module.exports = jujutsuConfig
 ```
 
