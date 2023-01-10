@@ -4,7 +4,7 @@ import { CONFIG_FILES, PHASE_DEVELOPMENT_SERVER } from '../lib/constants'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import arg from 'jujutsu/dist/compiled/arg/index.js'
 import { printAndExit } from '../server/lib/utils'
-import { JujutsuConfig } from '../types'
+import { JujutsuConfig } from '../server/config'
 import { cliCommand } from '../lib/commands'
 import * as Log from '../build/output/log'
 import { existsSync, watchFile } from 'fs'
