@@ -11,7 +11,7 @@ First, make sure your development environment meets the following requirements:
 To automatically create a new Jujutsu.js project using the app directory:
 
 ```bash:Terminal
-npm install jujutsu@latest discord.js@latest
+npm create jujutsu@latest
 ```
 
 ## Manual Installation
